@@ -1,0 +1,55 @@
+
+=== high-speed-lane-test ===
+city 60km/h: max offset=0.350m, settled=0.048m, lane departure=false
+city 100km/h: max offset=0.350m, settled=0.082m, lane departure=false
+city 140km/h: max offset=0.350m, settled=0.132m, lane departure=false
+boulevard 60km/h: max offset=0.350m, settled=0.030m, lane departure=false
+boulevard 100km/h: max offset=0.350m, settled=0.051m, lane departure=false
+boulevard 140km/h: max offset=0.350m, settled=0.083m, lane departure=false
+ring-road 60km/h: max offset=0.350m, settled=0.004m, lane departure=false
+ring-road 100km/h: max offset=0.350m, settled=0.008m, lane departure=false
+ring-road 140km/h: max offset=0.350m, settled=0.020m, lane departure=false
+motorway 60km/h: max offset=0.350m, settled=0.009m, lane departure=false
+motorway 100km/h: max offset=0.350m, settled=0.015m, lane departure=false
+motorway 140km/h: max offset=0.350m, settled=0.024m, lane departure=false
+national 60km/h: max offset=0.350m, settled=0.018m, lane departure=false
+national 100km/h: max offset=0.350m, settled=0.030m, lane departure=false
+national 140km/h: max offset=0.350m, settled=0.048m, lane departure=false
+18 lane/step-size stress runs at 140km/h: maximum offset=0.361m, no lane boundary crossed
+ACC/grip city/mu=1: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=48.8km/h
+ACC/grip city/mu=0.6: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=40.3km/h
+ACC/grip motorway/mu=1: max offset=0.006m, curve cap=true, tyre saturation=false, bend speed=101.4km/h
+ACC/grip motorway/mu=0.6: max offset=0.005m, curve cap=true, tyre saturation=false, bend speed=78.5km/h
+ACC/grip national/mu=1: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=71.7km/h
+ACC/grip national/mu=0.6: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=57.1km/h
+Simulation motorway: speed=151km/h, max offset=0.007m, no contact or departure
+Simulation ring-road: speed=151km/h, max offset=0.002m, no contact or departure
+HIGH-SPEED-LANE PASS
+
+=== driving-systems-test ===
+PRND / engine / EPB: interlocks hold; reverse moves backward while the vehicle remains forward-facing
+AEB pressure boost: driver 30%, assistance 77%, total 77%
+RCTA / Rear AEB: left-side crossing motorcycle detected and reverse motion inhibited
+Collision response: body contact detected, vehicles stopped and separated without persistent mesh overlap
+Pedal priority: manual and ADAS without ACC preserve 50% braking while accelerator is held; human resets start at rest
+
+DRIVING-SYSTEMS-TEST PASS — PRND/EPB, reverse, brake-pressure boost, RCTA/Rear AEB and collision response.
+
+=== projection-cache-test ===
+city: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+boulevard: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+ring-road: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+motorway: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+national: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+two-way: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+neighborhood: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+Projection-only CPU: 91.2ms full scan vs 2.1ms cache (9600 static observations)
+PROJECTION-CACHE PASS — 56000 moving observations exactly match full search
+
+=== runtime-recovery-test ===
+Actual rear-end: impact retained, 3-second pause, lead drives away, no new collision
+NPC pair: both resume in order after actual swept contact
+Untriggered R crossing: no phantom braking in D
+RUNTIME-RECOVERY PASS
+
+TEST SUITE PASS — 4 headless checks in 10.7s.

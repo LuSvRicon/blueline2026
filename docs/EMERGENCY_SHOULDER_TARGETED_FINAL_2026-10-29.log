@@ -1,0 +1,260 @@
+
+=== adas-reference-test ===
+ADAS REFERENCE PASS: ACC interlocks, independent faults, LFA/LKA, ALC domain, signal confirmation, ISA, HBA hysteresis, driver stop/override/replay, RCTA, Rear AEB and parking.
+
+=== emergency-shoulder-test ===
+{
+  perception: false,
+  weather: 'clear',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'clear',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.00000043280238,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'clear',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.000000415930117,
+  maxLateral: 0.844671979497545,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999482092335,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 13.999999610378154,
+  maxLateral: 0.8463737609043873,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.00000043280238,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.000000415930117,
+  maxLateral: 0.844671979497545,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999482092335,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 13.999999610378154,
+  maxLateral: 0.8463737609043873,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+curve clear {
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 3.540664468617026,
+  maxMove: 0.46240740740748276,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo'
+}
+curve rain {
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 3.540664468617026,
+  maxMove: 0.46240740740748276,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo'
+}
+blocked shoulder {
+  states: [ 'preparing', 'changing-lane', 'assessing', 'fallback', 'hold' ],
+  d: 10.375000000002274,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trong làn · số P, phanh đỗ và đèn cảnh báo'
+}
+EMERGENCY SHOULDER PASS — road geometry, all lanes/weather/sensing, curves, blockers, rear approach, intrusion, takeover and replay.
+Emergency handover, option-off fallback, natural DMS trigger and legacy motorway replay PASS.
+
+=== extended-adas-test ===
+Extended ADAS: SEA/door interlock, PMC, FDA, HBA, scripted DMS escalation, BCA driver authority and ELK PASS
+
+=== drive-input-test ===
+DRIVE-INPUT PASS — W/arrows, all brake keys, progressive steering, blur/pause/menu, form focus, blended sources and disconnect.
+
+=== record-replay-test ===
+record/replay: 180 frames, 0.05 km, exact final state restored
+neutral replay: reverse coasting direction survives reset, playback and resumed simulation
+two-way replay: oncoming flags, negative velocities and positions restored exactly
+
+RECORD-REPLAY-TEST PASS — session snapshots and replay stay synchronized.
+
+TEST SUITE PASS — 5 headless checks in 86.2s.

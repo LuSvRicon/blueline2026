@@ -1,0 +1,14 @@
+
+=== handling-traffic-test ===
+Integrated ACC/clear: max lane offset 0.035m
+Integrated ACC/rain: max lane offset 0.035m
+HANDLING-TRAFFIC PASS — shared grip, actuator, load response, ACC curves, pedestrian yielding and rear approach warning.
+
+=== record-replay-test ===
+record/replay: 180 frames, 0.05 km, exact final state restored
+neutral replay: reverse coasting direction survives reset, playback and resumed simulation
+two-way replay: oncoming flags, negative velocities and positions restored exactly
+
+RECORD-REPLAY-TEST PASS — session snapshots and replay stay synchronized.
+
+TEST SUITE PASS — 2 headless checks in 1.4s.

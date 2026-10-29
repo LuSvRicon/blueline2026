@@ -1,0 +1,322 @@
+
+=== smoke ===
+
+[highway]
+  distance         : 0.55 km
+  speed range      : 6.6 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, STOP
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[highway@fast]
+  distance         : 0.89 km
+  speed range      : 6.3 – 39.9 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, FOLLOW
+  max lateral |d|  : 3.59 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[stalled]
+  distance         : 0.44 km
+  speed range      : 5.7 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE
+  max lateral |d|  : 3.70 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[cutin]
+  distance         : 0.39 km
+  speed range      : 7.0 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[trucks]
+  distance         : 0.49 km
+  speed range      : 6.6 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, STOP
+  max lateral |d|  : 3.72 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[crossing]
+  distance         : 0.50 km
+  speed range      : 1.8 – 16.5 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[occluded]
+  distance         : 0.51 km
+  speed range      : 5.7 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, YIELD
+  max lateral |d|  : 3.72 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[jaywalker]
+  distance         : 0.51 km
+  speed range      : 6.7 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[rush]
+  distance         : 0.59 km
+  speed range      : 6.3 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, OVERTAKE
+  max lateral |d|  : 1.15 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+SMOKE PASS — all scenarios: on-road, zero collisions, pedestrians safe.
+
+=== adas-regression-test ===
+ADAS regression: order invariance, RCTA directions, stationary rear brake, ALC override/timeout/rear prediction, LDW, ACC cancel/resume and degradation PASS
+
+=== high-speed-lane-test ===
+city 60km/h: max offset=0.350m, settled=0.048m, lane departure=false
+city 100km/h: max offset=0.350m, settled=0.082m, lane departure=false
+city 140km/h: max offset=0.350m, settled=0.132m, lane departure=false
+boulevard 60km/h: max offset=0.350m, settled=0.030m, lane departure=false
+boulevard 100km/h: max offset=0.350m, settled=0.051m, lane departure=false
+boulevard 140km/h: max offset=0.350m, settled=0.083m, lane departure=false
+ring-road 60km/h: max offset=0.350m, settled=0.004m, lane departure=false
+ring-road 100km/h: max offset=0.350m, settled=0.008m, lane departure=false
+ring-road 140km/h: max offset=0.350m, settled=0.020m, lane departure=false
+motorway 60km/h: max offset=0.350m, settled=0.009m, lane departure=false
+motorway 100km/h: max offset=0.350m, settled=0.015m, lane departure=false
+motorway 140km/h: max offset=0.350m, settled=0.024m, lane departure=false
+national 60km/h: max offset=0.350m, settled=0.018m, lane departure=false
+national 100km/h: max offset=0.350m, settled=0.030m, lane departure=false
+national 140km/h: max offset=0.350m, settled=0.048m, lane departure=false
+18 lane/step-size stress runs at 140km/h: maximum offset=0.361m, no lane boundary crossed
+ACC/grip city/mu=1: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=49.4km/h
+ACC/grip city/mu=0.6: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=40.7km/h
+ACC/grip motorway/mu=1: max offset=0.005m, curve cap=true, tyre saturation=false, bend speed=101.4km/h
+ACC/grip motorway/mu=0.6: max offset=0.005m, curve cap=true, tyre saturation=false, bend speed=78.7km/h
+ACC/grip national/mu=1: max offset=0.010m, curve cap=true, tyre saturation=false, bend speed=73.7km/h
+ACC/grip national/mu=0.6: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=58.3km/h
+Simulation motorway: speed=151km/h, max offset=0.007m, no contact or departure
+Simulation ring-road: speed=151km/h, max offset=0.002m, no contact or departure
+HIGH-SPEED-LANE PASS
+
+=== handling-traffic-test ===
+Integrated ACC/clear: max lane offset 0.035m
+Integrated ACC/rain: max lane offset 0.035m
+HANDLING-TRAFFIC PASS — shared grip, actuator, load response, ACC curves, pedestrian yielding and rear approach warning.
+
+=== adas-runtime-audit-test ===
+replay: ACC cancellation, set speed and headway survive reset/playback/resume
+replay controller memory: mid-ALC, AEB hold and yellow-stop decision restored
+LKA: disable/re-enable and lost/re-acquired markings acquire the correct lane
+Rear AEB: departing traffic is clear; stationary rear obstacle still brakes
+ambient contacts: pedestrian cannot walk through a stopped vehicle
+ambient contacts: high-speed swept vehicle/pedestrian contact stops before crossing
+ADAS-RUNTIME-AUDIT PASS
+
+=== adas-brake-test ===
+AEB stop (ground-truth test, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 22.3 m clearance, 0 collisions
+AEB stop (sensor tracks, fog): 0.00 m/s, 23.4 m clearance, 0 collisions
+Vietnam stalled scenario: 0.00 m/s, 13.8 m clearance, 0 collisions
+traffic behavior: a stable lead vehicle holds its lane during an ego-only approach
+
+ADAS-BRAKE-TEST PASS — simulated AEB stops before the obstacle; lead traffic does not evade the brake test.
+
+=== aeb-following-test ===
+{
+  cancelled: false,
+  throttle: 0,
+  perception: false,
+  minGap: 11.17,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 0,
+  perception: true,
+  minGap: 9.52,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: false,
+  minGap: 11.35,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: true,
+  minGap: 9.45,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+clear: real scenario, 7.85m clearance, 100% brake hold, no contact
+rain: real scenario, 6.76m clearance, 100% brake hold, no contact
+{
+  profile: 'international',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+{
+  profile: 'vietnam',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+AEB-FOLLOWING PASS — moving lead emergency braking, noisy perception, held throttle and five-minute shortest-headway runs.
+
+=== driving-systems-test ===
+PRND / engine / EPB: interlocks hold; reverse moves backward while the vehicle remains forward-facing
+AEB pressure boost: driver 30%, assistance 77%, total 77%
+RCTA / Rear AEB: left-side crossing motorcycle detected and reverse motion inhibited
+Collision response: body contact detected, vehicles stopped and separated without persistent mesh overlap
+Pedal priority: manual and ADAS without ACC preserve 50% braking while accelerator is held; human resets start at rest
+
+DRIVING-SYSTEMS-TEST PASS — PRND/EPB, reverse, brake-pressure boost, RCTA/Rear AEB and collision response.
+
+=== dynamics-collision-test ===
+DYNAMICS-COLLISION PASS — continuous/rotated contact, neutral in both directions, braking, crossing tunneling and wet grip.
+
+=== maps-traffic-test ===
+file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/maps-traffic-test.mjs:657
+    if (cached && cached.mu === this.surfaceMu && cached.desired === car.desiredSpeed && Math.abs(wrapDiff(car.s, cached.s, this.road.path.length)) < 5 && Math.abs(car.d - cached.d) < 0.25 && Math.abs(car.v - cached.v) < 2) return cached.cap;
+                                                                                              ^
+
+ReferenceError: wrapDiff is not defined
+    at TrafficManager.curveSpeed (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/maps-traffic-test.mjs:657:95)
+    at TrafficManager.update (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/maps-traffic-test.mjs:1028:74)
+    at Simulation.step (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/maps-traffic-test.mjs:4669:18)
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/maps-traffic-test.mjs:4982:38
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
+!!! maps-traffic-test FAILED
+
+=== road-profiles-test ===
+file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/road-profiles-test.mjs:657
+    if (cached && cached.mu === this.surfaceMu && cached.desired === car.desiredSpeed && Math.abs(wrapDiff(car.s, cached.s, this.road.path.length)) < 5 && Math.abs(car.d - cached.d) < 0.25 && Math.abs(car.v - cached.v) < 2) return cached.cap;
+                                                                                              ^
+
+ReferenceError: wrapDiff is not defined
+    at TrafficManager.curveSpeed (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/road-profiles-test.mjs:657:95)
+    at TrafficManager.update (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/road-profiles-test.mjs:1028:73)
+    at Simulation.step (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/road-profiles-test.mjs:4669:18)
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/road-profiles-test.mjs:5000:43
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
+!!! road-profiles-test FAILED
+
+=== scenario-matrix-test ===
+file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/scenario-matrix-test.mjs:654
+    if (cached && cached.mu === this.surfaceMu && cached.desired === car.desiredSpeed && Math.abs(wrapDiff(car.s, cached.s, this.road.path.length)) < 5 && Math.abs(car.d - cached.d) < 0.25 && Math.abs(car.v - cached.v) < 2) return cached.cap;
+                                                                                              ^
+
+ReferenceError: wrapDiff is not defined
+    at TrafficManager.curveSpeed (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/scenario-matrix-test.mjs:654:95)
+    at TrafficManager.update (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/scenario-matrix-test.mjs:1025:73)
+    at Simulation.step (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/scenario-matrix-test.mjs:4666:18)
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/scenario-matrix-test.mjs:5012:13
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
+!!! scenario-matrix-test FAILED
+
+=== record-replay-test ===
+record/replay: 180 frames, 0.05 km, exact final state restored
+neutral replay: reverse coasting direction survives reset, playback and resumed simulation
+file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/record-replay-test.mjs:654
+    if (cached && cached.mu === this.surfaceMu && cached.desired === car.desiredSpeed && Math.abs(wrapDiff(car.s, cached.s, this.road.path.length)) < 5 && Math.abs(car.d - cached.d) < 0.25 && Math.abs(car.v - cached.v) < 2) return cached.cap;
+                                                                                              ^
+
+ReferenceError: wrapDiff is not defined
+    at TrafficManager.curveSpeed (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/record-replay-test.mjs:654:95)
+    at TrafficManager.update (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/record-replay-test.mjs:1025:73)
+    at Simulation.step (file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/record-replay-test.mjs:4666:18)
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-HjfrRH/record-replay-test.mjs:5024:38
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
+!!! record-replay-test FAILED
+
+TEST SUITE FAILED (4/13) in 39.4s: maps-traffic-test, road-profiles-test, scenario-matrix-test, record-replay-test

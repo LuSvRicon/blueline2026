@@ -1,0 +1,229 @@
+
+=== smoke ===
+
+[highway]
+  distance         : 0.55 km
+  speed range      : 6.6 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, STOP
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[highway@fast]
+  distance         : 0.89 km
+  speed range      : 6.3 – 40.0 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, FOLLOW
+  max lateral |d|  : 3.59 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[stalled]
+  distance         : 0.44 km
+  speed range      : 5.7 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE
+  max lateral |d|  : 3.70 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[cutin]
+  distance         : 0.39 km
+  speed range      : 7.0 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[trucks]
+  distance         : 0.49 km
+  speed range      : 6.6 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, STOP
+  max lateral |d|  : 3.72 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[crossing]
+  distance         : 0.50 km
+  speed range      : 1.8 – 16.5 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[occluded]
+  distance         : 0.51 km
+  speed range      : 5.7 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, YIELD
+  max lateral |d|  : 3.72 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[jaywalker]
+  distance         : 0.51 km
+  speed range      : 6.7 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[rush]
+  distance         : 0.59 km
+  speed range      : 6.6 – 16.3 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, OVERTAKE, STOP
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+SMOKE PASS — all scenarios: on-road, zero collisions, pedestrians safe.
+
+=== vietnam-scenarios-test ===
+Vietnam scenarios: motorcycle weaving, bus boarding, queued congestion, disabled truck, and mixed rush hour verified
+
+VIETNAM-SCENARIOS-TEST PASS — added scenario actors behave as configured.
+
+=== adas-runtime-audit-test ===
+replay: ACC cancellation, set speed and headway survive reset/playback/resume
+replay controller memory: mid-ALC, AEB hold and yellow-stop decision restored
+LKA: disable/re-enable and lost/re-acquired markings acquire the correct lane
+Rear AEB: departing traffic is clear; stationary rear obstacle still brakes
+ambient contacts: pedestrian cannot walk through a stopped vehicle
+ambient contacts: high-speed swept vehicle/pedestrian contact stops before crossing
+ADAS-RUNTIME-AUDIT PASS
+
+=== adas-brake-test ===
+AEB stop (ground-truth test, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 22.3 m clearance, 0 collisions
+AEB stop (sensor tracks, fog): 0.00 m/s, 23.4 m clearance, 0 collisions
+Vietnam stalled scenario: 0.00 m/s, 13.8 m clearance, 0 collisions
+traffic behavior: a stable lead vehicle holds its lane during an ego-only approach
+
+ADAS-BRAKE-TEST PASS — simulated AEB stops before the obstacle; lead traffic does not evade the brake test.
+
+=== aeb-following-test ===
+{
+  cancelled: false,
+  throttle: 0,
+  perception: false,
+  minGap: 11.17,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 0,
+  perception: true,
+  minGap: 9.52,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: false,
+  minGap: 11.35,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: true,
+  minGap: 9.45,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+clear: real scenario, 7.85m clearance, 100% brake hold, no contact
+rain: real scenario, 6.76m clearance, 100% brake hold, no contact
+{
+  profile: 'international',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+{
+  profile: 'vietnam',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+AEB-FOLLOWING PASS — moving lead emergency braking, noisy perception, held throttle and five-minute shortest-headway runs.
+
+=== dynamics-collision-test ===
+DYNAMICS-COLLISION PASS — continuous/rotated contact, neutral in both directions, braking, crossing tunneling and wet grip.
+
+=== traffic-flow-test ===
+District seed=20261028/clear: 300 seconds, 48 NPCs, no ambient impacts
+District seed=20261028/rain: 300 seconds, 48 NPCs, no ambient impacts
+District seed=1/clear: 300 seconds, 48 NPCs, no ambient impacts
+District seed=1/rain: 300 seconds, 48 NPCs, no ambient impacts
+District seed=9/clear: 300 seconds, 48 NPCs, no ambient impacts
+District seed=9/rain: 300 seconds, 48 NPCs, no ambient impacts
+TRAFFIC-FLOW PASS
+
+=== record-replay-test ===
+record/replay: 180 frames, 0.05 km, exact final state restored
+neutral replay: reverse coasting direction survives reset, playback and resumed simulation
+two-way replay: oncoming flags, negative velocities and positions restored exactly
+
+RECORD-REPLAY-TEST PASS — session snapshots and replay stay synchronized.
+
+TEST SUITE PASS — 8 headless checks in 102.0s.

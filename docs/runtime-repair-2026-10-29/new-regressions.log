@@ -1,0 +1,16 @@
+
+=== render-motion-test ===
+30 Hz: constant-velocity render step error 4.8e-15m
+60 Hz: constant-velocity render step error 2.4e-15m
+75 Hz: constant-velocity render step error 6.2e-15m
+120 Hz: constant-velocity render step error 4.7e-15m
+144 Hz: constant-velocity render step error 3.9e-15m
+165 Hz: constant-velocity render step error 3.7e-15m
+RENDER-MOTION PASS — matched actor/camera presentation, angle wrap, pause/reset, no physics mutation
+
+=== runtime-recovery-test ===
+Actual rear-end: impact retained, 3-second pause, lead drives away, no new collision
+Untriggered R crossing: no phantom braking in D
+RUNTIME-RECOVERY PASS
+
+TEST SUITE PASS — 2 headless checks in 0.7s.

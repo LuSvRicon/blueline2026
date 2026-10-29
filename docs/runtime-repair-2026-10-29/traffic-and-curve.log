@@ -1,0 +1,179 @@
+
+=== vietnam-scenarios-test ===
+Vietnam scenarios: motorcycle weaving, bus boarding, queued congestion, disabled truck, and mixed rush hour verified
+
+VIETNAM-SCENARIOS-TEST PASS — added scenario actors behave as configured.
+
+=== acc-curve-recovery-test ===
+city/100km/h/mu=1: max offset=0.029m, max requested decel=2.82m/s²
+city/100km/h/mu=0.72: max offset=0.029m, max requested decel=2.84m/s²
+city/120km/h/mu=1: max offset=0.030m, max requested decel=2.82m/s²
+city/120km/h/mu=0.72: max offset=0.028m, max requested decel=2.84m/s²
+city/140km/h/mu=1: max offset=0.029m, max requested decel=2.82m/s²
+city/140km/h/mu=0.72: max offset=0.029m, max requested decel=2.83m/s²
+neighborhood/100km/h/mu=1: max offset=0.033m, max requested decel=2.85m/s²
+neighborhood/100km/h/mu=0.72: max offset=0.033m, max requested decel=2.80m/s²
+neighborhood/120km/h/mu=1: max offset=0.033m, max requested decel=2.90m/s²
+neighborhood/120km/h/mu=0.72: max offset=0.033m, max requested decel=2.99m/s²
+neighborhood/140km/h/mu=1: max offset=0.033m, max requested decel=4.11m/s²
+neighborhood/140km/h/mu=0.72: max offset=0.033m, max requested decel=4.22m/s²
+ACC-CURVE-RECOVERY PASS — late engagement, dry/wet, shared grip, early warning, pedal priority
+
+=== adas-brake-test ===
+AEB stop (ground-truth test, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 22.3 m clearance, 0 collisions
+AEB stop (sensor tracks, fog): 0.00 m/s, 23.4 m clearance, 0 collisions
+Vietnam stalled scenario: 0.00 m/s, 13.8 m clearance, 0 collisions
+traffic behavior: a stable lead vehicle holds its lane during an ego-only approach
+
+ADAS-BRAKE-TEST PASS — simulated AEB stops before the obstacle; lead traffic does not evade the brake test.
+
+=== aeb-following-test ===
+{
+  cancelled: false,
+  throttle: 0,
+  perception: false,
+  minGap: 11.17,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 0,
+  perception: true,
+  minGap: 9.52,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: false,
+  minGap: 11.35,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: true,
+  minGap: 9.45,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+clear: real scenario, 7.85m clearance, 100% brake hold, no contact
+rain: real scenario, 6.76m clearance, 100% brake hold, no contact
+{
+  profile: 'international',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+{
+  profile: 'vietnam',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+AEB-FOLLOWING PASS — moving lead emergency braking, noisy perception, held throttle and five-minute shortest-headway runs.
+
+=== maps-traffic-test ===
+Phố đô thị/classical: 2371m loop, 239m driven
+Phố đô thị/adas: 2371m loop, 223m driven
+Đại lộ ngoại ô/classical: 3288m loop, 267m driven
+Đại lộ ngoại ô/adas: 3288m loop, 239m driven
+Đường vành đai/classical: 3292m loop, 318m driven
+Đường vành đai/adas: 3292m loop, 250m driven
+Cao tốc · 3 làn mỗi chiều/classical: 6422m loop, 318m driven
+Cao tốc · 3 làn mỗi chiều/adas: 6422m loop, 250m driven
+Quốc lộ · 2 làn mỗi chiều/classical: 4371m loop, 257m driven
+Quốc lộ · 2 làn mỗi chiều/adas: 4371m loop, 250m driven
+Đường hai chiều · 1 làn mỗi chiều/classical: 2617m loop, 210m driven
+Đường hai chiều · 1 làn mỗi chiều/adas: 2617m loop, 235m driven
+Đường nhỏ khu dân cư/classical: 1585m loop, 125m driven
+Đường nhỏ khu dân cư/adas: 1585m loop, 208m driven
+MAPS-TRAFFIC PASS — 7 maps, controllers, safe pedestrian gap, signal-controlled crossing, RCTA challenge and scenario cleanup.
+
+=== drive-input-test ===
+DRIVE-INPUT PASS — W/arrows, all brake keys, progressive steering, blur/pause/menu, form focus, blended sources and disconnect.
+
+=== traffic-flow-test ===
+Contact at 244.25s [
+  { id: 85, kind: 'car', s: 1182.2, d: 0.99, lane: 2, yaw: 0 },
+  { id: 123, kind: 'truck', s: 1191.5, d: 3.7, lane: 2, yaw: 0 }
+]
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: ordinary district traffic crashed and permanently blocked the road
+
+1 !== 0
+
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-xuoNmV/traffic-flow-test.mjs:5092:10
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+!!! traffic-flow-test FAILED
+
+TEST SUITE FAILED (1/7) in 70.5s: traffic-flow-test

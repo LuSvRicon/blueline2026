@@ -1,0 +1,591 @@
+
+=== adas-reference-test ===
+ADAS REFERENCE PASS: ACC interlocks, independent faults, LFA/LKA, ALC domain, signal confirmation, ISA, HBA hysteresis, driver stop/override/replay, RCTA, Rear AEB and parking.
+
+=== adas-motorway-domain-test ===
+{
+  perception: false,
+  start: 1,
+  lane: 2,
+  active: true,
+  completed: true,
+  reasons: [],
+  collisions: 0
+}
+{
+  perception: true,
+  start: 1,
+  lane: 2,
+  active: true,
+  completed: true,
+  reasons: [],
+  collisions: 0
+}
+MOTORWAY DOMAIN PASS: clear lane with noisy perception, construction rejection and median braking.
+
+=== alc-all-speeds-test ===
+0.5km/h, left, mu=1, s=500: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=1, s=500: completed, max lateral=0.00m/s2
+1km/h, left, mu=1, s=500: completed, max lateral=0.01m/s2
+1km/h, right, mu=1, s=500: completed, max lateral=0.01m/s2
+3km/h, left, mu=1, s=500: completed, max lateral=0.05m/s2
+3km/h, right, mu=1, s=500: completed, max lateral=0.05m/s2
+5km/h, left, mu=1, s=500: completed, max lateral=0.15m/s2
+5km/h, right, mu=1, s=500: completed, max lateral=0.15m/s2
+10km/h, left, mu=1, s=500: completed, max lateral=0.59m/s2
+10km/h, right, mu=1, s=500: completed, max lateral=0.59m/s2
+15km/h, left, mu=1, s=500: completed, max lateral=1.28m/s2
+15km/h, right, mu=1, s=500: completed, max lateral=1.28m/s2
+30km/h, left, mu=1, s=500: completed, max lateral=1.74m/s2
+30km/h, right, mu=1, s=500: completed, max lateral=1.74m/s2
+50km/h, left, mu=1, s=500: completed, max lateral=1.69m/s2
+50km/h, right, mu=1, s=500: completed, max lateral=1.69m/s2
+79km/h, left, mu=1, s=500: completed, max lateral=1.68m/s2
+79km/h, right, mu=1, s=500: completed, max lateral=1.68m/s2
+80km/h, left, mu=1, s=500: completed, max lateral=1.68m/s2
+80km/h, right, mu=1, s=500: completed, max lateral=1.68m/s2
+100km/h, left, mu=1, s=500: completed, max lateral=1.68m/s2
+100km/h, right, mu=1, s=500: completed, max lateral=1.68m/s2
+130km/h, left, mu=1, s=500: completed, max lateral=1.98m/s2
+130km/h, right, mu=1, s=500: completed, max lateral=1.98m/s2
+160km/h, left, mu=1, s=500: completed, max lateral=2.43m/s2
+160km/h, right, mu=1, s=500: completed, max lateral=2.43m/s2
+180km/h, left, mu=1, s=500: completed, max lateral=2.73m/s2
+180km/h, right, mu=1, s=500: completed, max lateral=2.73m/s2
+198km/h, left, mu=1, s=500: completed, max lateral=3.00m/s2
+198km/h, right, mu=1, s=500: completed, max lateral=3.00m/s2
+0.5km/h, left, mu=0.72, s=500: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=0.72, s=500: completed, max lateral=0.00m/s2
+1km/h, left, mu=0.72, s=500: completed, max lateral=0.01m/s2
+1km/h, right, mu=0.72, s=500: completed, max lateral=0.01m/s2
+3km/h, left, mu=0.72, s=500: completed, max lateral=0.05m/s2
+3km/h, right, mu=0.72, s=500: completed, max lateral=0.05m/s2
+5km/h, left, mu=0.72, s=500: completed, max lateral=0.15m/s2
+5km/h, right, mu=0.72, s=500: completed, max lateral=0.15m/s2
+10km/h, left, mu=0.72, s=500: completed, max lateral=0.59m/s2
+10km/h, right, mu=0.72, s=500: completed, max lateral=0.59m/s2
+15km/h, left, mu=0.72, s=500: completed, max lateral=1.28m/s2
+15km/h, right, mu=0.72, s=500: completed, max lateral=1.28m/s2
+30km/h, left, mu=0.72, s=500: completed, max lateral=1.74m/s2
+30km/h, right, mu=0.72, s=500: completed, max lateral=1.74m/s2
+50km/h, left, mu=0.72, s=500: completed, max lateral=1.69m/s2
+50km/h, right, mu=0.72, s=500: completed, max lateral=1.69m/s2
+79km/h, left, mu=0.72, s=500: completed, max lateral=1.68m/s2
+79km/h, right, mu=0.72, s=500: completed, max lateral=1.68m/s2
+80km/h, left, mu=0.72, s=500: completed, max lateral=1.68m/s2
+80km/h, right, mu=0.72, s=500: completed, max lateral=1.68m/s2
+100km/h, left, mu=0.72, s=500: completed, max lateral=1.68m/s2
+100km/h, right, mu=0.72, s=500: completed, max lateral=1.68m/s2
+130km/h, left, mu=0.72, s=500: completed, max lateral=1.98m/s2
+130km/h, right, mu=0.72, s=500: completed, max lateral=1.98m/s2
+160km/h, left, mu=0.72, s=500: completed, max lateral=2.43m/s2
+160km/h, right, mu=0.72, s=500: completed, max lateral=2.43m/s2
+180km/h, left, mu=0.72, s=500: completed, max lateral=2.73m/s2
+180km/h, right, mu=0.72, s=500: completed, max lateral=2.73m/s2
+198km/h, left, mu=0.72, s=500: completed, max lateral=3.00m/s2
+198km/h, right, mu=0.72, s=500: completed, max lateral=3.00m/s2
+0.5km/h, left, mu=1, s=150: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=1, s=150: completed, max lateral=0.00m/s2
+1km/h, left, mu=1, s=150: completed, max lateral=0.01m/s2
+1km/h, right, mu=1, s=150: completed, max lateral=0.01m/s2
+3km/h, left, mu=1, s=150: completed, max lateral=0.06m/s2
+3km/h, right, mu=1, s=150: completed, max lateral=0.05m/s2
+5km/h, left, mu=1, s=150: completed, max lateral=0.16m/s2
+5km/h, right, mu=1, s=150: completed, max lateral=0.14m/s2
+10km/h, left, mu=1, s=150: completed, max lateral=0.63m/s2
+10km/h, right, mu=1, s=150: completed, max lateral=0.56m/s2
+15km/h, left, mu=1, s=150: completed, max lateral=1.36m/s2
+15km/h, right, mu=1, s=150: completed, max lateral=1.22m/s2
+30km/h, left, mu=1, s=150: completed, max lateral=2.05m/s2
+30km/h, right, mu=1, s=150: completed, max lateral=1.99m/s2
+50km/h, left, mu=1, s=150: completed, max lateral=2.58m/s2
+50km/h, right, mu=1, s=150: completed, max lateral=2.58m/s2
+0.5km/h, left, mu=0.72, s=150: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=0.72, s=150: completed, max lateral=0.00m/s2
+1km/h, left, mu=0.72, s=150: completed, max lateral=0.01m/s2
+1km/h, right, mu=0.72, s=150: completed, max lateral=0.01m/s2
+3km/h, left, mu=0.72, s=150: completed, max lateral=0.06m/s2
+3km/h, right, mu=0.72, s=150: completed, max lateral=0.05m/s2
+5km/h, left, mu=0.72, s=150: completed, max lateral=0.16m/s2
+5km/h, right, mu=0.72, s=150: completed, max lateral=0.14m/s2
+10km/h, left, mu=0.72, s=150: completed, max lateral=0.63m/s2
+10km/h, right, mu=0.72, s=150: completed, max lateral=0.56m/s2
+15km/h, left, mu=0.72, s=150: completed, max lateral=1.36m/s2
+15km/h, right, mu=0.72, s=150: completed, max lateral=1.22m/s2
+30km/h, left, mu=0.72, s=150: completed, max lateral=2.05m/s2
+30km/h, right, mu=0.72, s=150: completed, max lateral=1.99m/s2
+50km/h, left, mu=0.72, s=150: completed, max lateral=2.58m/s2
+50km/h, right, mu=0.72, s=150: completed, max lateral=2.58m/s2
+ACC integration from 0km/h: ALC began at 1.1km/h, completed without contact
+ACC integration from 1km/h: ALC began at 1.7km/h, completed without contact
+ACC integration from 5km/h: ALC began at 5.7km/h, completed without contact
+ACC integration from 15km/h: ALC began at 15.7km/h, completed without contact
+ACC integration from 30km/h: ALC began at 30.7km/h, completed without contact
+ACC integration from 60km/h: ALC began at 59.0km/h, completed without contact
+ALL-SPEED ALC PASS: 92 physical speed/direction/grip/curve runs, standing wait, replay, six ACC integrations and slow/fast traffic gap checks.
+
+=== alc-indicator-repeat-test ===
+REPEAT SIGNAL: 96 physical baseline/repeated-click pairs, both directions, four phases, two roads, three initial speeds and dry/wet.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(ego.tractionLimited)
+
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-5XyxCN/alc-indicator-repeat-test.mjs:5891:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+!!! alc-indicator-repeat-test FAILED
+
+=== emergency-shoulder-test ===
+{
+  perception: false,
+  weather: 'clear',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'clear',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.00000043280238,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'clear',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.000000415930117,
+  maxLateral: 0.844671979497545,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999482092335,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 13.999999610378154,
+  maxLateral: 0.8463737609043873,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.00000043280238,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.000000415930117,
+  maxLateral: 0.844671979497545,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999482092335,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 13.999999610378154,
+  maxLateral: 0.8463737609043873,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+curve clear {
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 3.540664468617026,
+  maxMove: 0.46240740740748276,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo'
+}
+curve rain {
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 3.540664468617026,
+  maxMove: 0.46240740740748276,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo'
+}
+blocked shoulder {
+  states: [ 'preparing', 'changing-lane', 'assessing', 'fallback', 'hold' ],
+  d: 10.375000000002274,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trong làn · số P, phanh đỗ và đèn cảnh báo'
+}
+EMERGENCY SHOULDER PASS — road geometry, all lanes/weather/sensing, curves, blockers, rear approach, intrusion, takeover and replay.
+Emergency handover, option-off fallback, natural DMS trigger and legacy motorway replay PASS.
+
+=== adas-regression-test ===
+ADAS regression: order invariance, RCTA directions, stationary rear brake, ALC override/timeout/rear prediction, LDW, ACC cancel/resume and degradation PASS
+
+=== high-speed-lane-test ===
+city 60km/h: max offset=0.350m, settled=0.048m, lane departure=false
+city 100km/h: max offset=0.350m, settled=0.082m, lane departure=false
+city 140km/h: max offset=0.350m, settled=0.132m, lane departure=false
+boulevard 60km/h: max offset=0.350m, settled=0.030m, lane departure=false
+boulevard 100km/h: max offset=0.350m, settled=0.051m, lane departure=false
+boulevard 140km/h: max offset=0.350m, settled=0.083m, lane departure=false
+ring-road 60km/h: max offset=0.350m, settled=0.004m, lane departure=false
+ring-road 100km/h: max offset=0.350m, settled=0.008m, lane departure=false
+ring-road 140km/h: max offset=0.350m, settled=0.020m, lane departure=false
+motorway 60km/h: max offset=0.350m, settled=0.009m, lane departure=false
+motorway 100km/h: max offset=0.350m, settled=0.015m, lane departure=false
+motorway 140km/h: max offset=0.350m, settled=0.025m, lane departure=false
+national 60km/h: max offset=0.350m, settled=0.018m, lane departure=false
+national 100km/h: max offset=0.350m, settled=0.030m, lane departure=false
+national 140km/h: max offset=0.350m, settled=0.048m, lane departure=false
+18 lane/step-size stress runs at 140km/h: maximum offset=0.361m, no lane boundary crossed
+ACC/grip city/mu=1: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=48.8km/h
+ACC/grip city/mu=0.6: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=40.3km/h
+ACC/grip motorway/mu=1: max offset=0.005m, curve cap=true, tyre saturation=false, bend speed=98.4km/h
+ACC/grip motorway/mu=0.6: max offset=0.006m, curve cap=true, tyre saturation=false, bend speed=76.2km/h
+ACC/grip national/mu=1: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=71.7km/h
+ACC/grip national/mu=0.6: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=57.1km/h
+Simulation motorway: speed=151km/h, max offset=0.008m, no contact or departure
+Simulation ring-road: speed=151km/h, max offset=0.002m, no contact or departure
+HIGH-SPEED-LANE PASS
+
+=== acc-curve-recovery-test ===
+city/100km/h/mu=1: max offset=0.029m, max requested decel=2.82m/s²
+city/100km/h/mu=0.72: max offset=0.029m, max requested decel=2.84m/s²
+city/120km/h/mu=1: max offset=0.030m, max requested decel=2.82m/s²
+city/120km/h/mu=0.72: max offset=0.028m, max requested decel=2.84m/s²
+city/140km/h/mu=1: max offset=0.029m, max requested decel=2.82m/s²
+city/140km/h/mu=0.72: max offset=0.029m, max requested decel=2.83m/s²
+neighborhood/100km/h/mu=1: max offset=0.033m, max requested decel=2.85m/s²
+neighborhood/100km/h/mu=0.72: max offset=0.033m, max requested decel=2.80m/s²
+neighborhood/120km/h/mu=1: max offset=0.033m, max requested decel=2.90m/s²
+neighborhood/120km/h/mu=0.72: max offset=0.033m, max requested decel=2.99m/s²
+neighborhood/140km/h/mu=1: max offset=0.033m, max requested decel=4.11m/s²
+neighborhood/140km/h/mu=0.72: max offset=0.033m, max requested decel=4.22m/s²
+ACC-CURVE-RECOVERY PASS — late engagement, dry/wet, shared grip, early warning, pedal priority
+
+=== driver-feedback-test ===
+red stop: 0.00m/s, bumper 1.02m before paint
+ACC slow lead: peak decel 2.35m/s², jerk 2.50m/s³, AEB=false
+ACC gaps near/far: 13.0 / 33.0m
+DRIVER-FEEDBACK PASS — light reset/render, red/green/yellow, brake cancellation, speed/gap, smooth ACC, radar velocity and signals
+
+=== adas-runtime-audit-test ===
+replay: ACC cancellation, set speed and headway survive reset/playback/resume
+replay controller memory: mid-ALC, AEB hold and yellow-stop decision restored
+LKA: disable/re-enable and lost/re-acquired markings acquire the correct lane
+Rear AEB: departing traffic is clear; stationary rear obstacle still brakes
+ambient contacts: pedestrian cannot walk through a stopped vehicle
+ambient contacts: high-speed swept vehicle/pedestrian contact stops before crossing
+ADAS-RUNTIME-AUDIT PASS
+
+=== adas-brake-test ===
+AEB stop (ground-truth test, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 22.3 m clearance, 0 collisions
+AEB stop (sensor tracks, fog): 0.00 m/s, 23.4 m clearance, 0 collisions
+Vietnam stalled scenario: 0.00 m/s, 13.8 m clearance, 0 collisions
+traffic behavior: a stable lead vehicle holds its lane during an ego-only approach
+
+ADAS-BRAKE-TEST PASS — simulated AEB stops before the obstacle; lead traffic does not evade the brake test.
+
+=== aeb-following-test ===
+{
+  cancelled: false,
+  throttle: 0,
+  perception: false,
+  minGap: 11.17,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 0,
+  perception: true,
+  minGap: 9.52,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: false,
+  minGap: 11.35,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: true,
+  minGap: 9.45,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+clear: real scenario, 7.85m clearance, 100% brake hold, no contact
+rain: real scenario, 6.76m clearance, 100% brake hold, no contact
+{
+  profile: 'international',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+{
+  profile: 'vietnam',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+AEB-FOLLOWING PASS — moving lead emergency braking, noisy perception, held throttle and five-minute shortest-headway runs.
+
+=== driving-systems-test ===
+PRND / engine / EPB: interlocks hold; reverse moves backward while the vehicle remains forward-facing
+AEB pressure boost: driver 30%, assistance 77%, total 77%
+RCTA / Rear AEB: left-side crossing motorcycle detected and reverse motion inhibited
+Collision response: body contact detected, vehicles stopped and separated without persistent mesh overlap
+Pedal priority: manual and ADAS without ACC preserve 50% braking while accelerator is held; human resets start at rest
+
+DRIVING-SYSTEMS-TEST PASS — PRND/EPB, reverse, brake-pressure boost, RCTA/Rear AEB and collision response.
+
+=== drive-input-test ===
+DRIVE-INPUT PASS — W/arrows, all brake keys, progressive steering, blur/pause/menu, form focus, blended sources and disconnect.
+
+=== adas-features-test ===
+ALC clear: lane 1 -> 2, signal self-cancelled
+ALC blocked: occupied target lane kept the car in its lane
+TSR/ISA: limit 50 km/h, target capped at 11.4 m/s
+LDW: warned about a right departure
+Parking: front sensor reads 1.8 m
+
+ADAS-FEATURES-TEST PASS — lane change, TSR/ISA, LDW and parking checks passed.
+
+=== record-replay-test ===
+record/replay: 180 frames, 0.05 km, exact final state restored
+neutral replay: reverse coasting direction survives reset, playback and resumed simulation
+two-way replay: oncoming flags, negative velocities and positions restored exactly
+
+RECORD-REPLAY-TEST PASS — session snapshots and replay stay synchronized.
+
+TEST SUITE FAILED (1/16) in 158.1s: alc-indicator-repeat-test

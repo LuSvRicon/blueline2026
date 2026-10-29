@@ -1,0 +1,54 @@
+import { ExtendedAssistance } from "../src/sim/ExtendedAssistance.ts";
+import { ADASFrame, DEFAULT_ADAS_CONFIG } from "../src/sim/ADAS.ts";
+import { Simulation } from "../src/sim/Simulation.ts";
+function check(ok: boolean, text: string) { if (!ok) throw new Error(text); }
+const sim = new Simulation({ trafficCount: 0 }); sim.traffic.clear(); sim.pedestrians.clear();
+const f = sim.path.toFrenet(sim.ego.x, sim.ego.y);
+const config = { ...DEFAULT_ADAS_CONFIG };
+const base: ADASFrame = { ego: sim.ego, egoS: f.s, egoD: f.d, path: sim.path, road: sim.road, obstacles: [], desiredSpeed: 20,
+  input: { steer: 0, throttle: 0, brake: 0 }, dt: .1, speedControl: e => e };
+const options = { gear: "D", night: true, weather: "clear", attentive: true, handsOn: true, fatigued: false };
+const obstacle = (s: number, d: number, v = 0) => ({ s: f.s + s, d: f.d + d, v, vd: 0, length: 4.6, width: 1.9, kind: "car" as const });
+let a = new ExtendedAssistance();
+sim.ego.v = 0;
+check(a.update({ ...base, obstacles: [obstacle(-25, -3.7, 12)] }, config, 0, 0, options).status.safeExitLeft, "SEA missed approaching left traffic");
+check(!a.update({ ...base, obstacles: [obstacle(-55, 3.7, 2)] }, config, 0, 0, options).status.safeExitRight, "SEA warned for distant slow car");
+const pmc = a.update({ ...base, obstacles: [obstacle(6, 0)], input: { steer: 0, throttle: 1, brake: 0 } }, config, 0, 3.5, options);
+check(pmc.status.pedalMitigation && pmc.accel === -sim.ego.maxDecel, "PMC failed held full throttle near obstacle");
+config.pedalMitigation = false;
+check(!a.update({ ...base, obstacles: [obstacle(6, 0)], input: { steer: 0, throttle: 1, brake: 0 } }, config, 0, 3.5, options).status.pedalMitigation, "PMC toggle ineffective");
+let departed = false;
+for (let i = 0; i < 25; i++) a.update({ ...base, obstacles: [obstacle(10, 0)] }, config, 0, 0, options);
+for (let i = 0; i < 20; i++) departed ||= a.update({ ...base, obstacles: [obstacle(10 + i * .2, 0, 2)] }, config, 0, 0, options).status.leadDeparture;
+check(departed, "FDA missed departure after wait");
+sim.ego.v = 15;
+let high = false;
+for (let i = 0; i < 25; i++) high = a.update(base, config, 0, 0, options).status.highBeam;
+check(high, "HBA failed to select high beam");
+check(!a.update({ ...base, obstacles: [obstacle(100, 0, -15)] }, config, 0, 0, options).status.highBeam, "HBA failed to dip immediately for oncoming car");
+let last = a.update(base, config, 0, 0, options);
+for (let i = 0; i < 165; i++) last = a.update(base, config, 0, 1, { ...options, attentive: false });
+check(last.status.driverWarning === "takeover" && last.status.minimalRiskBraking && last.accel <= -2, "DMS scripted attention did not escalate/brake");
+sim.ego.v = 0;
+for (let i = 0; i < 30; i++) last = a.update(base, config, 0, 3.5, { ...options, attentive: false });
+check(last.status.minimalRiskBraking && last.accel <= -2, "driver-monitor stop released at standstill while still inattentive");
+check(a.update(base, config, 0, 0, options).status.driverWarning === "none", "DMS did not clear after attentive input");
+sim.ego.v = 15;
+const bca = a.update({ ...base, obstacles: [obstacle(-3, 2.3, 18)], input: { steer: .3, throttle: 0, brake: 0 } }, config, .3, 0, options);
+check(bca.status.blindSpotIntervention && bca.steer < 0, "BCA failed inward correction");
+const strong = a.update({ ...base, obstacles: [obstacle(-3, 2.3, 18)], input: { steer: 1, throttle: 0, brake: 0 } }, config, sim.ego.maxSteer, 0, options);
+check(strong.steer === sim.ego.maxSteer, "BCA defeated full driver takeover");
+const s = 150, edge = sim.road.totalWidth / 2 - sim.ego.dims.width / 2;
+const w = sim.path.toCartesian(s, edge - .1); sim.ego.x = w.x; sim.ego.y = w.y; sim.ego.yaw = w.heading + .1;
+check(a.update({ ...base, egoS: s, egoD: edge - .1 }, config, 0, 0, options).status.emergencyLaneKeeping, "ELK missed predicted road-edge departure");
+// Door interlock is exercised through the integrated simulation, including P.
+sim.setControlMode("adas"); sim.ego.v = 0; sim.setGear("P"); sim.usePerception = false;
+sim.traffic.addTestVehicle("car", 0, s - 15, 14, 14);
+sim.step(.1);
+// Simulate an explicit unsafe side result, independent of the chosen lane in this geometry.
+sim.adas.status.extra.safeExitLeft = true;
+check(!sim.requestDoor("left"), "SEA did not inhibit unsafe opening");
+sim.adas.status.extra.safeExitLeft = false;
+check(sim.requestDoor("left") && !sim.setGear("D"), "open door did not lock drive selection");
+check(sim.requestDoor("left") && sim.setGear("D"), "door close did not restore shift");
+console.log("Extended ADAS: SEA/door interlock, PMC, FDA, HBA, scripted DMS escalation, BCA driver authority and ELK PASS");

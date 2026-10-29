@@ -1,0 +1,28 @@
+
+=== adas-reference-test ===
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: initial speed rejection stayed latched after conditions recovered
++ actual - expected
+
++ 'blocked'
+- 'active'
+
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-wCaHfD/adas-reference-test.mjs:5855:10
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'blocked',
+  expected: 'active',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+!!! adas-reference-test FAILED
+
+TEST SUITE FAILED (1/1) in 0.2s: adas-reference-test

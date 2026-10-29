@@ -1,0 +1,98 @@
+[
+  {
+    "id": "ola",
+    "file": "ola.glb",
+    "author": "neshallads (https://sketchfab.com/neshallads)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/ola-electric-scooter-black-color-7b0cac285c654c248cecec50f97d459a",
+    "title": "OLA Electric Scooter (Black Color)",
+    "originalBytes": 31685088,
+    "bytes": 684004,
+    "originalSHA256": "b03e08452d93414b632f126b5c7ec56253d1fada73d0732c6df0f74ed2638d1a",
+    "changes": "Textures resized to 1024/WebP, mesh simplified and meshopt compressed; runtime transforms/rigs described in project docs."
+  },
+  {
+    "id": "motorcycle",
+    "file": "motorcycle.glb",
+    "author": "Sidra (https://sketchfab.com/Sidramax)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/low-poly-motorcycle-2-9e79295e99654e2a9fa930b5139a7d84",
+    "title": "Low-Poly Motorcycle # 2",
+    "originalBytes": 2832400,
+    "bytes": 253448,
+    "originalSHA256": "62da1a7b46715613d56d977690caacdcddd61f322d8ee414ba376af1f342f1ce",
+    "changes": "Textures resized to 1024/WebP, mesh simplified and meshopt compressed; runtime transforms/rigs described in project docs."
+  },
+  {
+    "id": "hanoi",
+    "file": "hanoi.glb",
+    "author": "RimiChama (https://sketchfab.com/ducthangdev2k3)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/low-poly-hanoi-vietnamese-tube-houses-block-e900c122f3b3491d98349385e04c700c",
+    "title": "Low Poly Hanoi Vietnamese Tube Houses Block",
+    "originalBytes": 2344844,
+    "bytes": 292256,
+    "originalSHA256": "ba13b07065562830aa79890784562e823d285a46c24c8115b7a08d0efbb698d0",
+    "changes": "Textures resized to 1024/WebP, mesh simplified and meshopt compressed; runtime transforms/rigs described in project docs."
+  },
+  {
+    "id": "roads_pbr",
+    "file": "roads_pbr.glb",
+    "author": "intfloat (https://sketchfab.com/intfloat)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/modular-road-pack-free-4k-textures-b84f5cc449ff49e38d853ea393e35885",
+    "title": "Modular Road Pack (FREE) + 4K Textures",
+    "originalBytes": 129544548,
+    "bytes": 1273452,
+    "originalSHA256": "063f5797606422679be859ff8e5538768a9321347a64c45ab0078deeea512913",
+    "changes": "Textures resized to 1024/WebP, mesh simplified and meshopt compressed; runtime transforms/rigs described in project docs."
+  },
+  {
+    "id": "roads_city",
+    "file": "roads_city.glb",
+    "author": "Salah3D (https://sketchfab.com/abbasyounis214)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/modular-city-road-pack-game-ready-d9df5cfa079f4da8a18ef1372c00d01c",
+    "title": "Modular City Road Pack – Game Ready",
+    "originalBytes": 3100500,
+    "bytes": 831908,
+    "originalSHA256": "d8949bfab02b1afc5777e5042ba7e0cebf9925d0450f59d8c96136a5c425109c",
+    "changes": "Textures resized to 1024/WebP, mesh simplified and meshopt compressed; runtime transforms/rigs described in project docs."
+  },
+  {
+    "id": "roads_modular",
+    "file": "roads_modular.glb",
+    "author": "Mini Loft Games (https://sketchfab.com/SquadCell)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/modular-roads-pack-99023ee0b2564395b47b40d22f51f7c2",
+    "title": "Modular Roads Pack",
+    "originalBytes": 1636292,
+    "bytes": 344268,
+    "originalSHA256": "4c81a2c19e9e804b33bf6939492a4e53720d90e397e4aefd570c591745e29094",
+    "changes": "Textures resized to 1024/WebP, mesh simplified and meshopt compressed; runtime transforms/rigs described in project docs."
+  },
+  {
+    "id": "tata",
+    "file": "tata.glb",
+    "author": "kevin_k_5124 (https://sketchfab.com/kevin_k_5124)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/tata-signa-cargo-truck-low-poly-game-ready-pbr-a5c03c1a1c2c4b21b7db6192b1ef8718",
+    "title": "Tata Signa Cargo Truck | Low Poly Game Ready PBR",
+    "originalBytes": 21950580,
+    "bytes": 656020,
+    "originalSHA256": "6163d5b9b288d8dc4a13fc7c89ba0c3c95105b5d81d6d12cf983db9d6c6a8a8b",
+    "changes": "Textures resized to 1024/WebP, mesh simplified and meshopt compressed; runtime transforms/rigs described in project docs."
+  },
+  {
+    "id": "bus",
+    "file": "bus.glb",
+    "author": "PolyLabs (https://sketchfab.com/polylabs1)",
+    "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+    "source": "https://sketchfab.com/3d-models/city-bus-dd99ebfc07e54d4fa674fd07b4bbef92",
+    "title": "City Bus",
+    "originalBytes": 357448,
+    "bytes": 71616,
+    "originalSHA256": "b451b4fcd2ad807ff07f06e3aead97f826cba2ff3adca90ede6033d724931293",
+    "changes": "Textures resized to 1024/WebP, mesh simplified and meshopt compressed; runtime transforms/rigs described in project docs."
+  }
+]

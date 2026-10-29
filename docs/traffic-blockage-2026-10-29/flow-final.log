@@ -1,0 +1,11 @@
+
+=== traffic-flow-test ===
+District seed=20261028/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3615m
+District seed=20261028/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3253m
+District seed=1/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3359m
+District seed=1/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3265m
+District seed=9/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3594m
+District seed=9/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3505m
+TRAFFIC-FLOW PASS
+
+TEST SUITE PASS — 1 headless checks in 92.1s.

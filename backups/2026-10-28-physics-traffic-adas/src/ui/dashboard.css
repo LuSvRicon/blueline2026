@@ -1,0 +1,227 @@
+/* Game-style driving station. Keep fixed settings drawers outside clipping or
+   transformed ancestors; all readings still come from the simulation. */
+#ui.game-ui.dashboard-ui {
+  --dashboard-height: 238px;
+  --dashboard-bottom: 38px;
+  --dock-height: calc(var(--dashboard-height) + var(--dashboard-bottom));
+  --bl-blue: #75e6c4;
+}
+#ui.game-ui.dashboard-ui .game-dock {
+  position: absolute;
+  inset: auto 20px var(--dashboard-bottom);
+  width: auto;
+  max-width: 1600px;
+  height: var(--dashboard-height);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(156px,.9fr) minmax(160px,.95fr) minmax(340px,2fr) minmax(210px,1.15fr);
+  gap: 12px;
+  align-items: stretch;
+  padding: 21px 12px 12px;
+  border: 1px solid #8aa8be40;
+  border-top-color: #a9c5d45a;
+  border-radius: 22px;
+  background: radial-gradient(ellipse at 48% 0,#283c4c88,transparent 62%),linear-gradient(170deg,#192630f5,#0c151efb 65%);
+  box-shadow: 0 -12px 50px #0005,0 14px 25px #0006,inset 0 1px 0 #e0f4ff10,inset 0 -1px 0 #000c;
+  pointer-events: auto;
+  overflow: visible;
+  transform: none;
+  backdrop-filter: none;
+}
+#ui.game-ui.dashboard-ui.surround-docked .game-dock {
+  grid-template-columns: minmax(156px,.9fr) minmax(160px,.95fr) minmax(340px,2fr) minmax(210px,1.15fr) minmax(180px,1.05fr);
+}
+#ui.game-ui.dashboard-ui .dashboard-ribbon {
+  position: absolute;
+  inset: -10px 24px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+  color: #8faaba;
+  font: 600 8px/1.4 "Segoe UI",sans-serif;
+  letter-spacing: 1.7px;
+}
+#ui.game-ui.dashboard-ui .dashboard-ribbon > span { display: flex; align-items: center; gap: 7px; border: 1px solid #8ba8b82b; border-radius: 7px; padding: 4px 10px; background: #14212b; }
+#ui.game-ui.dashboard-ui .dashboard-ribbon b { color: #486777; font-weight: 400; }
+#ui.game-ui.dashboard-ui .dashboard-ribbon i { width: 4px; height: 4px; border-radius: 50%; background: #8be8c6; box-shadow: 0 0 8px #75e4be66; }
+#ui.game-ui.dashboard-ui .dashboard-ribbon > span:last-child { color: #a6c5cc; letter-spacing: 1px; }
+#ui.game-ui.dashboard-ui .game-dock > .panel {
+  position: relative;
+  inset: auto;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  padding: 11px 12px;
+  border: 1px solid #8aa3b522;
+  border-top-color: #a8becb32;
+  border-radius: 13px;
+  background: linear-gradient(150deg,#20303b80,#101c26b3 70%);
+  box-shadow: inset 0 1px 0 #d2e8f707,0 3px 12px #0002;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transform: none;
+  overflow: visible;
+  align-self: stretch;
+}
+#ui.game-ui.dashboard-ui .game-dock > .center-console { grid-column: 1; grid-row: 1; border-right: 1px solid #8aa3b522; }
+#ui.game-ui.dashboard-ui .game-dock > .speedo { grid-column: 2; grid-row: 1; }
+#ui.game-ui.dashboard-ui .game-dock > #adas-panel { grid-column: 3; grid-row: 1; }
+#ui.game-ui.dashboard-ui .game-dock > .pedal-controls { grid-column: 4; grid-row: 1; }
+#ui.game-ui.dashboard-ui .game-dock > .camera-360-widget { grid-column: 5; grid-row: 1; }
+
+/* Primary instrument: high-contrast speed, a real speed arc, RPM and gear. */
+#ui.game-ui.dashboard-ui .game-dock > .speedo {
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+  width: auto;
+  transform: none;
+  padding: 2px 6px 0;
+}
+#ui.game-ui.dashboard-ui .dashboard-cluster-label { color: #7998a9; font: 600 8px/1 "Segoe UI",sans-serif; letter-spacing: 2px; margin-bottom: 0; }
+#ui.game-ui.dashboard-ui .game-dock .speed-ring { width: 164px; height: 164px; flex: 0 0 164px; }
+#ui.game-ui.dashboard-ui .game-dock .speed-ring::before { content: ""; position: absolute; inset: 22px; border: 1px solid #85a7b413; border-radius: 50%; background: radial-gradient(circle at 50% 42%,#30495722,#07131b66 85%); box-shadow: inset 0 0 22px #0003; }
+#ui.game-ui.dashboard-ui .game-dock .speed-ring svg { overflow: visible; }
+#ui.game-ui.dashboard-ui .game-dock .ring-track { stroke: #3f576b62; stroke-width: 4; stroke-dasharray: 330 440; }
+#ui.game-ui.dashboard-ui .game-dock .ring-value { stroke-width: 4; filter: drop-shadow(0 0 4px #8ae9c14d); }
+#ui.game-ui.dashboard-ui .dashboard-gauge-ticks { stroke: #7b97a15a; stroke-width: .65; }
+#ui.game-ui.dashboard-ui .dashboard-gauge-ticks .major { stroke: #b4cbd28a; stroke-width: 1; }
+#ui.game-ui.dashboard-ui .game-dock .speed-core { position: relative; margin-top: 3px; }
+#ui.game-ui.dashboard-ui .game-dock .speed-num { color: #eff9fc; font: 500 62px/.95 "Bahnschrift","Segoe UI",sans-serif; letter-spacing: -3px; text-shadow: 0 2px 6px #0004; }
+#ui.game-ui.dashboard-ui .game-dock .speed-unit { margin-top: 7px; color: #96afbd; font: 500 9px/1 "Segoe UI",sans-serif; letter-spacing: 2.4px; }
+#ui.game-ui.dashboard-ui .game-dock .cluster-rpm { display: flex; align-items: center; gap: 4px; margin-top: 9px; color: #d4e7ee; font-size: 8px; }
+#ui.game-ui.dashboard-ui .game-dock .cluster-rpm > span:last-child { color: #6e8a9b; font-size: 5px; letter-spacing: .15px; }
+#ui.game-ui.dashboard-ui .dashboard-rpm-bars { display: flex; gap: 2px; align-items: flex-end; height: 8px; }
+#ui.game-ui.dashboard-ui .dashboard-rpm-bars i { display: block; width: 2px; height: 5px; transform: skew(-18deg); background: #345366; }
+#ui.game-ui.dashboard-ui .dashboard-rpm-bars i.lit { background: #80dbbf; }
+#ui.game-ui.dashboard-ui .game-dock .speed-tags { position: absolute; top: 16px; right: 6px; bottom: auto; left: auto; display: flex; flex-direction: column; gap: 2px; margin: 0; }
+#ui.game-ui.dashboard-ui .dashboard-gear-label { color: #7394a6; font: 500 5px/1 "Segoe UI",sans-serif; letter-spacing: 1px; }
+#ui.game-ui.dashboard-ui .game-dock .gear { min-width: 25px; padding: 4px 6px; background: #6dcfb20c; border: 1px solid #8edcc02b; border-radius: 6px; color: #a3e4cd; font: 600 16px/1 "Bahnschrift","Segoe UI",sans-serif; }
+#ui.game-ui.dashboard-ui .game-dock .limit { margin-top: 7px; width: 24px; height: 24px; font-size: 10px; border-width: 2px; background: #e7eeed; color: #223544; }
+#ui.game-ui.dashboard-ui .game-dock .turn-led { top: 22px; font-size: 13px; color: #efc77e; }
+#ui.game-ui.dashboard-ui .game-dock .turn-led.left { left: 13px; }
+#ui.game-ui.dashboard-ui .game-dock .turn-led.right { right: 13px; }
+#ui.game-ui.dashboard-ui .game-dock .autopill { width: calc(100% - 10px); min-height: 21px; max-height: 28px; overflow: hidden; margin: -8px 0 0; padding: 4px 6px; border: 1px solid #76bea826; border-radius: 5px; background: #13312a55; color: #91d6c1; font: 600 6px/1.3 "Segoe UI",sans-serif; letter-spacing: .25px; text-align: center; white-space: normal; }
+#ui.game-ui.dashboard-ui .game-dock .autopill.warn { background: #5540204a; border-color: #d9af5b3d; color: #f0cb89; }
+#ui.game-ui.dashboard-ui .game-dock .autopill.alert { background: #6f262955; border-color: #ed75635c; color: #ffb5a8; }
+#ui.game-ui.dashboard-ui .game-dock .pulse { width: 4px; height: 4px; }
+#ui.game-ui.dashboard-ui .game-dock .cluster-telltales { position: absolute; bottom: -8px; font-size: 6px; gap: 4px; }
+
+/* The live surround image is part of the station, never a windshield overlay
+   at desktop widths. Keep collapse and rear-camera warnings accessible. */
+#ui.game-ui.dashboard-ui.surround-docked .game-dock > .camera-360-widget { display: flex; flex-direction: column; justify-content: center; align-self: stretch; width: auto; padding: 10px; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-head { min-height: 24px; margin: 0 0 7px; gap: 4px; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-head b { color: #b3cbd5; font-size: 9px; letter-spacing: .8px; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-actions { gap: 3px; }
+#ui.game-ui.dashboard-ui.surround-docked #camera360-status:not(.warn):not(.danger) { display: none; }
+#ui.game-ui.dashboard-ui.surround-docked #camera360-status.warn, #ui.game-ui.dashboard-ui.surround-docked #camera360-status.danger { display: inline; max-width: 90px; font-size: 6px; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-collapse { width: 23px; height: 23px; min-width: 23px; border-radius: 6px; background: #829bab0c; border-color: #8aa5b532; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-screen { aspect-ratio: 1.85; border: 1px solid #8caaba33; border-radius: 8px; background: #070e15; overflow: hidden; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-tag { right: 4px; bottom: 4px; font-size: 5px; padding: 2px 4px; background: #071018a6; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-modes { display: flex; gap: 3px; margin: 7px 0 0; padding: 0; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-modes button { flex: 1; min-width: 0; min-height: 25px; border: 1px solid #8aa5b529; border-radius: 5px; background: #40556515; color: #879fb0; font-size: 7px; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-modes button.active { color: #b5f3db; background: #35645465; border-color: #83d4b767; box-shadow: inset 0 1px #b3eeda11; }
+#ui.game-ui.dashboard-ui.surround-docked .camera-360-widget.collapsed::after { content: "Camera đã thu gọn"; padding: 24px 3px; color: #668493; font-size: 10px; text-align: center; }
+#ui.game-ui.dashboard-ui .game-keybar { height: 25px; border-top: 0; background: linear-gradient(0deg,#071018c9,transparent); padding: 0 26px; font-size: 8px; }
+#ui.game-ui.dashboard-ui .game-keybar kbd { background: #11233088; border-color: #8aa5b52b; }
+#ui.game-ui.dashboard-ui .adas-config-menu { border-radius: 14px; border-color: #8daebe44; box-shadow: 0 15px 60px #0008; }
+
+@media (min-width:1550px) {
+  #ui.game-ui.dashboard-ui .game-dock { gap: 16px; padding-left: 14px; padding-right: 14px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-ring { width: 174px; height: 174px; flex-basis: 174px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-num { font-size: 69px; }
+}
+@media (min-width:840px) and (max-width:1179px) {
+  #ui.game-ui.dashboard-ui .game-dock { inset-inline: 12px; grid-template-columns: minmax(130px,.8fr) 128px minmax(330px,2fr) minmax(170px,1fr); gap: 9px; padding-inline: 9px; }
+  #ui.game-ui.dashboard-ui.cockpit-mode.surround-docked .game-dock { grid-template-columns: minmax(130px,.8fr) minmax(330px,1.5fr) minmax(170px,1fr) minmax(135px,.9fr); }
+  #ui.game-ui.dashboard-ui.cockpit-mode .game-dock > .speedo { display: none; }
+  #ui.game-ui.dashboard-ui.cockpit-mode .game-dock > #adas-panel { grid-column: 2; }
+  #ui.game-ui.dashboard-ui.cockpit-mode .game-dock > .pedal-controls { grid-column: 3; }
+  #ui.game-ui.dashboard-ui.cockpit-mode .game-dock > .camera-360-widget { grid-column: 4; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-ring { width: 138px; height: 138px; flex-basis: 138px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-num { font-size: 52px; }
+  #ui.game-ui.dashboard-ui .game-dock > .panel { padding-inline: 9px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-tags { right: -2px; }
+}
+@media (max-height:780px) and (min-width:840px) {
+  #ui.game-ui.dashboard-ui { --dashboard-height: 220px; --dashboard-bottom: 34px; }
+  #ui.game-ui.dashboard-ui .game-dock { padding-top: 18px; padding-bottom: 10px; }
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel { padding-block: 8px; grid-template-rows: 19px minmax(0,1fr) 21px; gap-block: 6px; }
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel > .adas-command-zone { grid-template-rows: 31px minmax(0,1fr); gap: 5px; }
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-controls { grid-template-rows: 42px 26px; gap-block: 4px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-ring { width: 150px; height: 150px; flex-basis: 150px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-num { font-size: 58px; }
+}
+@media (min-width:840px) and (max-width:1179px) {
+  #ui.game-ui.dashboard-ui .game-dock .speed-ring { width: 108px; height: 108px; flex-basis: 108px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-num { font-size: 43px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-unit { font-size: 7px; }
+  #ui.game-ui.dashboard-ui .game-dock .cluster-rpm { margin-top: 6px; font-size: 7px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-tags { top: 7px; right: 0; }
+  #ui.game-ui.dashboard-ui .game-dock .autopill { margin-top: 8px; }
+}
+@media (min-width:620px) and (max-width:839px) {
+  #ui.game-ui.dashboard-ui { --dashboard-height: 386px; --dashboard-bottom: 30px; }
+  #ui.game-ui.dashboard-ui .game-dock { inset-inline: 10px; grid-template-columns: minmax(150px,1fr) minmax(120px,.8fr) minmax(200px,1.2fr); grid-template-rows: 154px 188px; padding: 20px 10px 10px; gap: 10px; }
+  #ui.game-ui.dashboard-ui .game-dock > .center-console { grid-column: 1; grid-row: 1; }
+  #ui.game-ui.dashboard-ui .game-dock > .speedo { grid-column: 2; grid-row: 1; display: flex; }
+  #ui.game-ui.dashboard-ui .game-dock > .pedal-controls { grid-column: 3; grid-row: 1; }
+  #ui.game-ui.dashboard-ui .game-dock > #adas-panel { grid-column: 1 / -1; grid-row: 2; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-ring { width: 124px; height: 124px; flex-basis: 124px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-num { font-size: 48px; }
+  #ui.game-ui.dashboard-ui .game-dock .console-state { display: none; }
+}
+@media (max-width:619px) {
+  /* Keep the phone's small windshield usable while retaining a live camera. */
+  #ui.game-ui.dashboard-ui > .camera-360-widget { width: 150px; right: 8px; top: 76px; }
+  #ui.game-ui.dashboard-ui > .camera-360-widget .camera-360-head { padding: 5px; }
+  #ui.game-ui.dashboard-ui > .camera-360-widget .camera-360-head b { font-size: 8px; }
+  #ui.game-ui.dashboard-ui > .camera-360-widget .camera-360-screen { height: 88px; }
+  #ui.game-ui.dashboard-ui > .camera-360-widget .camera-360-modes { gap: 2px; padding: 4px; }
+  #ui.game-ui.dashboard-ui > .camera-360-widget .camera-360-modes button { min-width: 0; padding: 5px 1px; font-size: 7px; }
+  #ui.game-ui.dashboard-ui > .camera-360-widget .camera-360-tag { font-size: 5px; }
+  #ui.game-ui.dashboard-ui { --dashboard-height: 520px; --dashboard-bottom: 27px; }
+  #ui.game-ui.dashboard-ui .game-dock { inset-inline: 8px; grid-template-columns: minmax(0,1fr) minmax(0,1fr); grid-template-rows: 150px 155px 175px; padding: 19px 8px 8px; gap: 6px; border-radius: 15px; }
+  #ui.game-ui.dashboard-ui .dashboard-ribbon { inset-inline: 12px; font-size: 6px; letter-spacing: .5px; }
+  #ui.game-ui.dashboard-ui .dashboard-ribbon > span:last-child { display: none; }
+  #ui.game-ui.dashboard-ui .game-dock > .center-console { grid-column: 1; grid-row: 1; }
+  #ui.game-ui.dashboard-ui .game-dock > .speedo { grid-column: 2; grid-row: 1; display: flex; }
+  #ui.game-ui.dashboard-ui .game-dock > .pedal-controls { grid-column: 1 / -1; grid-row: 2; }
+  #ui.game-ui.dashboard-ui .game-dock > #adas-panel { grid-column: 1 / -1; grid-row: 3; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-ring { width: 125px; height: 125px; flex-basis: 125px; }
+  #ui.game-ui.dashboard-ui .game-dock .speed-num { font-size: 47px; }
+  #ui.game-ui.dashboard-ui .game-dock .console-state { display: none; }
+  #ui.game-ui.dashboard-ui .game-dock .pedal-head { margin-bottom: 5px; }
+  #ui.game-ui.dashboard-ui .game-dock .pedal { min-height: 55px; }
+  #ui.game-ui.dashboard-ui .game-dock .steering-controls { margin-bottom: 5px; }
+}
+@media (max-width:839px) {
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel { padding-block: 8px; grid-template-rows: 19px minmax(0,1fr) 18px; gap-block: 4px; }
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel > .adas-command-zone { grid-template-rows: 29px minmax(0,1fr); gap: 4px; }
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-controls { grid-template-rows: 38px 25px; gap-block: 4px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-speed-control,
+  #ui.game-ui.dashboard-ui .game-dock .adas-cruise-controls { grid-template-rows: 7px 28px; }
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel > .adas-status-strip { padding-top: 3px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-limit-readout { flex-basis: 18px; height: 18px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-limit-readout b { font-size: 8px; }
+}
+
+/* Keep the existing explicit focus mode, including the live speed cluster. */
+#ui.game-ui.dashboard-ui.focus-mode { --dock-height: 0px; }
+#ui.game-ui.dashboard-ui.focus-mode .game-dock { left: auto; right: 18px; bottom: 34px; width: 154px; max-width: none; height: 155px; display: grid; grid-template-columns: 1fr; grid-template-rows: 1fr; padding: 4px; gap: 0; border-radius: 14px; background: #09131bd9; pointer-events: none; }
+#ui.game-ui.dashboard-ui.focus-mode .game-dock > .panel, #ui.game-ui.dashboard-ui.focus-mode .dashboard-ribbon { display: none !important; }
+#ui.game-ui.dashboard-ui.focus-mode .game-dock > #adas-panel { display: none !important; }
+#ui.game-ui.dashboard-ui.focus-mode .game-dock > .speedo { display: flex !important; grid-column: 1; grid-row: 1; padding: 0; }
+#ui.game-ui.dashboard-ui.focus-mode .dashboard-cluster-label, #ui.game-ui.dashboard-ui.focus-mode .game-dock .autopill { display: none; }
+#ui.game-ui.dashboard-ui.focus-mode .game-dock .speed-ring { width: 134px; height: 134px; flex-basis: 134px; }
+#ui.game-ui.dashboard-ui.focus-mode .game-dock .speed-num { font-size: 49px; }

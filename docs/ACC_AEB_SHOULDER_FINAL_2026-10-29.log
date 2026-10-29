@@ -1,0 +1,326 @@
+
+=== adas-motorway-domain-test ===
+{
+  perception: false,
+  start: 1,
+  lane: 2,
+  active: true,
+  completed: true,
+  reasons: [],
+  collisions: 0
+}
+{
+  perception: true,
+  start: 1,
+  lane: 2,
+  active: true,
+  completed: true,
+  reasons: [],
+  collisions: 0
+}
+MOTORWAY DOMAIN PASS: clear lane with noisy perception, construction rejection and median braking.
+
+=== alc-indicator-repeat-test ===
+REPEAT SIGNAL: 96 physical baseline/repeated-click pairs, both directions, four phases, two roads, three initial speeds and dry/wet.
+ALC REPEAT SIGNAL PASS — trajectory unchanged by duplicate commands; genuine takeover and ordinary signal cancellation remain available.
+
+=== emergency-shoulder-test ===
+{
+  perception: false,
+  weather: 'clear',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'clear',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.00000043280238,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'clear',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.000000415930117,
+  maxLateral: 0.844671979497545,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999482092335,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 13.999999610378154,
+  maxLateral: 0.8463737609043873,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.00000043280238,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.000000415930117,
+  maxLateral: 0.844671979497545,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999482092335,
+  maxLateral: 0.8755127840188978,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 13.999999610378154,
+  maxLateral: 0.8463737609043873,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+curve clear {
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000433297373,
+  maxLateral: 3.540664468617026,
+  maxMove: 0.46240740740748276,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo'
+}
+curve rain {
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 13.999999478300651,
+  maxLateral: 3.540664468617026,
+  maxMove: 0.46240740740748276,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo'
+}
+blocked shoulder {
+  states: [ 'preparing', 'changing-lane', 'assessing', 'fallback', 'hold' ],
+  d: 10.375000000002274,
+  maxLateral: 0.8737638942008474,
+  maxMove: 0.4624074074073974,
+  status: 'hold',
+  reason: 'Đã dừng trong làn · số P, phanh đỗ và đèn cảnh báo'
+}
+EMERGENCY SHOULDER PASS — road geometry, all lanes/weather/sensing, curves, blockers, rear approach, intrusion, takeover and replay.
+Emergency handover, option-off fallback, natural DMS trigger and legacy motorway replay PASS.
+
+=== adas-regression-test ===
+ADAS regression: order invariance, RCTA directions, stationary rear brake, ALC override/timeout/rear prediction, LDW, ACC cancel/resume and degradation PASS
+
+=== high-speed-lane-test ===
+city 60km/h: max offset=0.350m, settled=0.048m, lane departure=false
+city 100km/h: max offset=0.350m, settled=0.082m, lane departure=false
+city 140km/h: max offset=0.350m, settled=0.132m, lane departure=false
+boulevard 60km/h: max offset=0.350m, settled=0.030m, lane departure=false
+boulevard 100km/h: max offset=0.350m, settled=0.051m, lane departure=false
+boulevard 140km/h: max offset=0.350m, settled=0.083m, lane departure=false
+ring-road 60km/h: max offset=0.350m, settled=0.004m, lane departure=false
+ring-road 100km/h: max offset=0.350m, settled=0.008m, lane departure=false
+ring-road 140km/h: max offset=0.350m, settled=0.020m, lane departure=false
+motorway 60km/h: max offset=0.350m, settled=0.009m, lane departure=false
+motorway 100km/h: max offset=0.350m, settled=0.015m, lane departure=false
+motorway 140km/h: max offset=0.350m, settled=0.025m, lane departure=false
+national 60km/h: max offset=0.350m, settled=0.018m, lane departure=false
+national 100km/h: max offset=0.350m, settled=0.030m, lane departure=false
+national 140km/h: max offset=0.350m, settled=0.048m, lane departure=false
+18 lane/step-size stress runs at 140km/h: maximum offset=0.361m, no lane boundary crossed
+ACC/grip city/mu=1: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=48.8km/h
+ACC/grip city/mu=0.6: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=40.3km/h
+ACC/grip motorway/mu=1: max offset=0.005m, curve cap=true, tyre saturation=false, bend speed=98.4km/h
+ACC/grip motorway/mu=0.6: max offset=0.006m, curve cap=true, tyre saturation=false, bend speed=76.2km/h
+ACC/grip national/mu=1: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=71.7km/h
+ACC/grip national/mu=0.6: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=57.1km/h
+Simulation motorway: speed=151km/h, max offset=0.008m, no contact or departure
+Simulation ring-road: speed=151km/h, max offset=0.002m, no contact or departure
+HIGH-SPEED-LANE PASS
+
+=== acc-curve-recovery-test ===
+city/100km/h/mu=1: max offset=0.029m, max requested decel=2.82m/s²
+city/100km/h/mu=0.72: max offset=0.029m, max requested decel=2.84m/s²
+city/120km/h/mu=1: max offset=0.030m, max requested decel=2.82m/s²
+city/120km/h/mu=0.72: max offset=0.028m, max requested decel=2.84m/s²
+city/140km/h/mu=1: max offset=0.029m, max requested decel=2.82m/s²
+city/140km/h/mu=0.72: max offset=0.029m, max requested decel=2.83m/s²
+neighborhood/100km/h/mu=1: max offset=0.033m, max requested decel=2.85m/s²
+neighborhood/100km/h/mu=0.72: max offset=0.033m, max requested decel=2.80m/s²
+neighborhood/120km/h/mu=1: max offset=0.033m, max requested decel=2.90m/s²
+neighborhood/120km/h/mu=0.72: max offset=0.033m, max requested decel=2.99m/s²
+neighborhood/140km/h/mu=1: max offset=0.033m, max requested decel=4.11m/s²
+neighborhood/140km/h/mu=0.72: max offset=0.033m, max requested decel=4.22m/s²
+ACC-CURVE-RECOVERY PASS — late engagement, dry/wet, shared grip, early warning, pedal priority
+
+=== driving-systems-test ===
+PRND / engine / EPB: interlocks hold; reverse moves backward while the vehicle remains forward-facing
+AEB pressure boost: driver 30%, assistance 77%, total 77%
+RCTA / Rear AEB: left-side crossing motorcycle detected and reverse motion inhibited
+Collision response: body contact detected, vehicles stopped and separated without persistent mesh overlap
+Pedal priority: manual and ADAS without ACC preserve 50% braking while accelerator is held; human resets start at rest
+
+DRIVING-SYSTEMS-TEST PASS — PRND/EPB, reverse, brake-pressure boost, RCTA/Rear AEB and collision response.
+
+=== drive-input-test ===
+DRIVE-INPUT PASS — W/arrows, all brake keys, progressive steering, blur/pause/menu, form focus, blended sources and disconnect.
+
+TEST SUITE PASS — 8 headless checks in 95.0s.

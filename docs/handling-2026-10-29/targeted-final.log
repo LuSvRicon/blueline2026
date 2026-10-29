@@ -1,0 +1,10 @@
+
+=== handling-traffic-test ===
+Integrated ACC/clear: max lane offset 0.035m
+Integrated ACC/rain: max lane offset 0.035m
+HANDLING-TRAFFIC PASS — shared grip, actuator, load response, ACC curves, pedestrian yielding and rear approach warning.
+
+=== render-geometry-test ===
+RENDER-GEOMETRY PASS — dashboard volume/winding, wheel scale, road lighting normals, map projection and resource disposal. Visual appearance still needs browser verification.
+
+TEST SUITE PASS — 2 headless checks in 1.7s.

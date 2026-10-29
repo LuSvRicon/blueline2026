@@ -1,0 +1,38 @@
+
+=== learn-test ===
+collected 18200 expert samples
+initial train: loss 0.0458 -> 0.0196
+  DAgger 0: samples 28000, loss 0.0167
+  DAgger 1: samples 37800, loss 0.0149
+  DAgger 2: samples 47600, loss 0.0174
+  DAgger 3: samples 57400, loss 0.0156
+  DAgger 4: samples 60000, loss 0.0144
+network now driving:
+  [NN drives highway] dist 0.66 km | speed 3.2-26.6 | max|d| 0.88 (half 5.55) | crash 0
+  [NN drives trucks] dist 0.41 km | speed 0.0-23.4 | max|d| 3.87 (half 5.55) | crash 0
+
+LEARN-TEST PASS — the from-scratch neural network learned to drive.
+
+=== evo-test ===
+  gen 1/16: best 27.7, avg -0.2
+  gen 2/16: best 51.4, avg 8.2
+  gen 3/16: best 58.9, avg 7.3
+  gen 4/16: best 58.9, avg 14.7
+  gen 5/16: best 58.9, avg 11.3
+  gen 6/16: best 88.9, avg 17.3
+  gen 7/16: best 88.9, avg 18.6
+  gen 8/16: best 169.2, avg 27.5
+  gen 9/16: best 169.2, avg 35.2
+  gen 10/16: best 169.2, avg 41.2
+  gen 11/16: best 169.2, avg 28.3
+  gen 12/16: best 169.2, avg 32.7
+  gen 13/16: best 169.2, avg 32.2
+  gen 14/16: best 169.2, avg 36.3
+  gen 15/16: best 169.2, avg 50.5
+  gen 16/16: best 179.5, avg 52.8
+fitness: 27.7 -> 179.5
+champion drives: dist 0.41 km | max|d| 5.25 (half 5.55) | crash 0
+
+EVO-TEST PASS — neuroevolution discovered a driving policy from scratch.
+
+TEST SUITE PASS — 2 headless checks in 263.7s.

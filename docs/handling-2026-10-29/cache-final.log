@@ -1,0 +1,92 @@
+
+=== smoke ===
+
+[highway]
+  distance         : 0.55 km
+  speed range      : 6.6 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, STOP
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[highway@fast]
+  distance         : 0.88 km
+  speed range      : 6.3 – 39.8 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, FOLLOW
+  max lateral |d|  : 3.61 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[stalled]
+  distance         : 0.44 km
+  speed range      : 5.7 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE
+  max lateral |d|  : 3.70 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[cutin]
+  distance         : 0.39 km
+  speed range      : 7.0 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[trucks]
+  distance         : 0.49 km
+  speed range      : 6.6 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, STOP
+  max lateral |d|  : 3.72 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[crossing]
+  distance         : 0.50 km
+  speed range      : 1.8 – 16.5 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[occluded]
+  distance         : 0.51 km
+  speed range      : 5.7 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, YIELD
+  max lateral |d|  : 3.72 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[jaywalker]
+  distance         : 0.51 km
+  speed range      : 6.7 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[rush]
+  distance         : 0.59 km
+  speed range      : 6.3 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, OVERTAKE
+  max lateral |d|  : 1.15 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+SMOKE PASS — all scenarios: on-road, zero collisions, pedestrians safe.
+
+=== handling-traffic-test ===
+Integrated ACC/clear: max lane offset 0.035m
+Integrated ACC/rain: max lane offset 0.035m
+HANDLING-TRAFFIC PASS — shared grip, actuator, load response, ACC curves, pedestrian yielding and rear approach warning.
+
+TEST SUITE PASS — 2 headless checks in 5.1s.

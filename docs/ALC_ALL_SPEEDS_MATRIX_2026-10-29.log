@@ -1,0 +1,103 @@
+
+=== alc-all-speeds-test ===
+0.5km/h, left, mu=1, s=500: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=1, s=500: completed, max lateral=0.00m/s2
+1km/h, left, mu=1, s=500: completed, max lateral=0.01m/s2
+1km/h, right, mu=1, s=500: completed, max lateral=0.01m/s2
+3km/h, left, mu=1, s=500: completed, max lateral=0.05m/s2
+3km/h, right, mu=1, s=500: completed, max lateral=0.05m/s2
+5km/h, left, mu=1, s=500: completed, max lateral=0.15m/s2
+5km/h, right, mu=1, s=500: completed, max lateral=0.15m/s2
+10km/h, left, mu=1, s=500: completed, max lateral=0.59m/s2
+10km/h, right, mu=1, s=500: completed, max lateral=0.59m/s2
+15km/h, left, mu=1, s=500: completed, max lateral=1.28m/s2
+15km/h, right, mu=1, s=500: completed, max lateral=1.28m/s2
+30km/h, left, mu=1, s=500: completed, max lateral=1.74m/s2
+30km/h, right, mu=1, s=500: completed, max lateral=1.74m/s2
+50km/h, left, mu=1, s=500: completed, max lateral=1.69m/s2
+50km/h, right, mu=1, s=500: completed, max lateral=1.69m/s2
+79km/h, left, mu=1, s=500: completed, max lateral=1.68m/s2
+79km/h, right, mu=1, s=500: completed, max lateral=1.68m/s2
+80km/h, left, mu=1, s=500: completed, max lateral=1.68m/s2
+80km/h, right, mu=1, s=500: completed, max lateral=1.68m/s2
+100km/h, left, mu=1, s=500: completed, max lateral=1.68m/s2
+100km/h, right, mu=1, s=500: completed, max lateral=1.68m/s2
+130km/h, left, mu=1, s=500: completed, max lateral=1.98m/s2
+130km/h, right, mu=1, s=500: completed, max lateral=1.98m/s2
+160km/h, left, mu=1, s=500: completed, max lateral=2.43m/s2
+160km/h, right, mu=1, s=500: completed, max lateral=2.43m/s2
+180km/h, left, mu=1, s=500: completed, max lateral=2.73m/s2
+180km/h, right, mu=1, s=500: completed, max lateral=2.73m/s2
+198km/h, left, mu=1, s=500: completed, max lateral=3.00m/s2
+198km/h, right, mu=1, s=500: completed, max lateral=3.00m/s2
+0.5km/h, left, mu=0.72, s=500: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=0.72, s=500: completed, max lateral=0.00m/s2
+1km/h, left, mu=0.72, s=500: completed, max lateral=0.01m/s2
+1km/h, right, mu=0.72, s=500: completed, max lateral=0.01m/s2
+3km/h, left, mu=0.72, s=500: completed, max lateral=0.05m/s2
+3km/h, right, mu=0.72, s=500: completed, max lateral=0.05m/s2
+5km/h, left, mu=0.72, s=500: completed, max lateral=0.15m/s2
+5km/h, right, mu=0.72, s=500: completed, max lateral=0.15m/s2
+10km/h, left, mu=0.72, s=500: completed, max lateral=0.59m/s2
+10km/h, right, mu=0.72, s=500: completed, max lateral=0.59m/s2
+15km/h, left, mu=0.72, s=500: completed, max lateral=1.28m/s2
+15km/h, right, mu=0.72, s=500: completed, max lateral=1.28m/s2
+30km/h, left, mu=0.72, s=500: completed, max lateral=1.74m/s2
+30km/h, right, mu=0.72, s=500: completed, max lateral=1.74m/s2
+50km/h, left, mu=0.72, s=500: completed, max lateral=1.69m/s2
+50km/h, right, mu=0.72, s=500: completed, max lateral=1.69m/s2
+79km/h, left, mu=0.72, s=500: completed, max lateral=1.68m/s2
+79km/h, right, mu=0.72, s=500: completed, max lateral=1.68m/s2
+80km/h, left, mu=0.72, s=500: completed, max lateral=1.68m/s2
+80km/h, right, mu=0.72, s=500: completed, max lateral=1.68m/s2
+100km/h, left, mu=0.72, s=500: completed, max lateral=1.68m/s2
+100km/h, right, mu=0.72, s=500: completed, max lateral=1.68m/s2
+130km/h, left, mu=0.72, s=500: completed, max lateral=1.98m/s2
+130km/h, right, mu=0.72, s=500: completed, max lateral=1.98m/s2
+160km/h, left, mu=0.72, s=500: completed, max lateral=2.43m/s2
+160km/h, right, mu=0.72, s=500: completed, max lateral=2.43m/s2
+180km/h, left, mu=0.72, s=500: completed, max lateral=2.73m/s2
+180km/h, right, mu=0.72, s=500: completed, max lateral=2.73m/s2
+198km/h, left, mu=0.72, s=500: completed, max lateral=3.00m/s2
+198km/h, right, mu=0.72, s=500: completed, max lateral=3.00m/s2
+0.5km/h, left, mu=1, s=150: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=1, s=150: completed, max lateral=0.00m/s2
+1km/h, left, mu=1, s=150: completed, max lateral=0.01m/s2
+1km/h, right, mu=1, s=150: completed, max lateral=0.01m/s2
+3km/h, left, mu=1, s=150: completed, max lateral=0.06m/s2
+3km/h, right, mu=1, s=150: completed, max lateral=0.05m/s2
+5km/h, left, mu=1, s=150: completed, max lateral=0.16m/s2
+5km/h, right, mu=1, s=150: completed, max lateral=0.14m/s2
+10km/h, left, mu=1, s=150: completed, max lateral=0.63m/s2
+10km/h, right, mu=1, s=150: completed, max lateral=0.56m/s2
+15km/h, left, mu=1, s=150: completed, max lateral=1.36m/s2
+15km/h, right, mu=1, s=150: completed, max lateral=1.22m/s2
+30km/h, left, mu=1, s=150: completed, max lateral=2.05m/s2
+30km/h, right, mu=1, s=150: completed, max lateral=1.99m/s2
+50km/h, left, mu=1, s=150: completed, max lateral=2.58m/s2
+50km/h, right, mu=1, s=150: completed, max lateral=2.58m/s2
+0.5km/h, left, mu=0.72, s=150: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=0.72, s=150: completed, max lateral=0.00m/s2
+1km/h, left, mu=0.72, s=150: completed, max lateral=0.01m/s2
+1km/h, right, mu=0.72, s=150: completed, max lateral=0.01m/s2
+3km/h, left, mu=0.72, s=150: completed, max lateral=0.06m/s2
+3km/h, right, mu=0.72, s=150: completed, max lateral=0.05m/s2
+5km/h, left, mu=0.72, s=150: completed, max lateral=0.16m/s2
+5km/h, right, mu=0.72, s=150: completed, max lateral=0.14m/s2
+10km/h, left, mu=0.72, s=150: completed, max lateral=0.63m/s2
+10km/h, right, mu=0.72, s=150: completed, max lateral=0.56m/s2
+15km/h, left, mu=0.72, s=150: completed, max lateral=1.36m/s2
+15km/h, right, mu=0.72, s=150: completed, max lateral=1.22m/s2
+30km/h, left, mu=0.72, s=150: completed, max lateral=2.05m/s2
+30km/h, right, mu=0.72, s=150: completed, max lateral=1.99m/s2
+50km/h, left, mu=0.72, s=150: completed, max lateral=2.58m/s2
+50km/h, right, mu=0.72, s=150: completed, max lateral=2.58m/s2
+ACC integration from 0km/h: ALC began at 1.1km/h, completed without contact
+ACC integration from 1km/h: ALC began at 1.7km/h, completed without contact
+ACC integration from 5km/h: ALC began at 5.7km/h, completed without contact
+ACC integration from 15km/h: ALC began at 15.7km/h, completed without contact
+ACC integration from 30km/h: ALC began at 30.7km/h, completed without contact
+ACC integration from 60km/h: ALC began at 59.0km/h, completed without contact
+ALL-SPEED ALC PASS: 92 physical speed/direction/grip/curve runs, standing wait, replay, six ACC integrations and slow/fast traffic gap checks.
+
+TEST SUITE PASS — 1 headless checks in 3.4s.

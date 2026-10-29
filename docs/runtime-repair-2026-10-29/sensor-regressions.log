@@ -1,0 +1,30 @@
+
+=== driver-feedback-test ===
+red stop: 0.00m/s, bumper 1.02m before paint
+ACC slow lead: peak decel 2.35m/s², jerk 2.50m/s³, AEB=false
+ACC gaps near/far: 13.0 / 33.0m
+DRIVER-FEEDBACK PASS — light reset/render, red/green/yellow, brake cancellation, speed/gap, smooth ACC, radar velocity and signals
+
+=== adas-runtime-audit-test ===
+replay: ACC cancellation, set speed and headway survive reset/playback/resume
+replay controller memory: mid-ALC, AEB hold and yellow-stop decision restored
+LKA: disable/re-enable and lost/re-acquired markings acquire the correct lane
+Rear AEB: departing traffic is clear; stationary rear obstacle still brakes
+ambient contacts: pedestrian cannot walk through a stopped vehicle
+ambient contacts: high-speed swept vehicle/pedestrian contact stops before crossing
+ADAS-RUNTIME-AUDIT PASS
+
+=== adas-brake-test ===
+AEB stop (ground-truth test, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 22.3 m clearance, 0 collisions
+AEB stop (sensor tracks, fog): 0.00 m/s, 23.4 m clearance, 0 collisions
+Vietnam stalled scenario: 0.00 m/s, 13.8 m clearance, 0 collisions
+traffic behavior: a stable lead vehicle holds its lane during an ego-only approach
+
+ADAS-BRAKE-TEST PASS — simulated AEB stops before the obstacle; lead traffic does not evade the brake test.
+
+=== sensor-visibility-test ===
+SENSOR-VISIBILITY PASS — adjacent lead visible, full/partial occlusion, rotated bodies, range and occlusion switch
+
+TEST SUITE PASS — 4 headless checks in 3.9s.

@@ -1,0 +1,589 @@
+
+=== smoke ===
+
+[highway]
+  distance         : 0.55 km
+  speed range      : 6.6 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, STOP
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[highway@fast]
+  distance         : 0.89 km
+  speed range      : 6.3 – 40.0 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, FOLLOW
+  max lateral |d|  : 3.59 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[stalled]
+  distance         : 0.44 km
+  speed range      : 5.7 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE
+  max lateral |d|  : 3.70 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[cutin]
+  distance         : 0.39 km
+  speed range      : 7.0 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[trucks]
+  distance         : 0.49 km
+  speed range      : 6.6 – 16.4 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, STOP
+  max lateral |d|  : 3.72 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[crossing]
+  distance         : 0.50 km
+  speed range      : 1.8 – 16.5 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[occluded]
+  distance         : 0.51 km
+  speed range      : 4.9 – 16.5 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, YIELD
+  max lateral |d|  : 3.78 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[jaywalker]
+  distance         : 0.51 km
+  speed range      : 6.7 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[rush]
+  distance         : 0.59 km
+  speed range      : 6.6 – 16.3 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, OVERTAKE, STOP
+  max lateral |d|  : 0.12 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+SMOKE PASS — all scenarios: on-road, zero collisions, pedestrians safe.
+
+=== all-scenarios-smoke ===
+international/highway: 393 m, 0 collisions, on-road
+international/dense: 393 m, 0 collisions, on-road
+international/trucks: 393 m, 0 collisions, on-road
+international/stalled: 385 m, 0 collisions, on-road
+international/cutin: 393 m, 0 collisions, on-road
+international/crossing: 348 m, 0 collisions, on-road
+international/occluded: 368 m, 0 collisions, on-road
+international/jaywalker: 370 m, 0 collisions, on-road
+vietnam/blindspot: 392 m, 0 collisions, on-road
+international/lights: 386 m, 0 collisions, on-road
+international/rush: 392 m, 0 collisions, on-road
+vietnam/motorcycle-weave: 390 m, 0 collisions, on-road
+vietnam/bus-stop: 305 m, 0 collisions, on-road
+vietnam/traffic-jam: 43 m, 0 collisions, on-road
+vietnam/truck-breakdown: 388 m, 0 collisions, on-road
+vietnam/vietnam-rush: 200 m, 0 collisions, on-road
+
+ALL-SCENARIOS-SMOKE PASS — 16 named scenarios checked.
+
+=== vietnam-scenario-smoke ===
+motorcycle-weave: 0 va chạm · lệch đường 0.0 giây · đi 471 m
+bus-stop: 0 va chạm · lệch đường 0.0 giây · đi 439 m
+traffic-jam: 0 va chạm · lệch đường 0.0 giây · đi 105 m
+truck-breakdown: 0 va chạm · lệch đường 0.0 giây · đi 477 m
+vietnam-rush: 0 va chạm · lệch đường 0.0 giây · đi 237 m
+
+VIETNAM-SCENARIO-SMOKE PASS — all added cases remained on-road without collisions.
+
+=== vietnam-scenarios-test ===
+Vietnam scenarios: motorcycle weaving, bus boarding, queued congestion, disabled truck, and mixed rush hour verified
+
+VIETNAM-SCENARIOS-TEST PASS — added scenario actors behave as configured.
+
+=== adas-test ===
+manual: speed 14.0 -> 17.5 m/s, steering applied
+lane centering: applies a correction toward the lane center
+ACC: target 10.3 m/s behind a slower lead vehicle
+FCW/AEB: warning and emergency brake triggered for an imminent conflict
+BSM: left rear blind-spot vehicle detected
+simulation integration: ADAS mode applied AEB against a stopped vehicle
+
+ADAS-TEST PASS — manual inputs and simulated assistance checks passed.
+
+=== adas-regression-test ===
+ADAS regression: order invariance, RCTA directions, stationary rear brake, ALC override/timeout/rear prediction, LDW, ACC cancel/resume and degradation PASS
+
+=== high-speed-lane-test ===
+city 60km/h: max offset=0.350m, settled=0.048m, lane departure=false
+city 100km/h: max offset=0.350m, settled=0.082m, lane departure=false
+city 140km/h: max offset=0.350m, settled=0.132m, lane departure=false
+boulevard 60km/h: max offset=0.350m, settled=0.030m, lane departure=false
+boulevard 100km/h: max offset=0.350m, settled=0.051m, lane departure=false
+boulevard 140km/h: max offset=0.350m, settled=0.083m, lane departure=false
+ring-road 60km/h: max offset=0.350m, settled=0.004m, lane departure=false
+ring-road 100km/h: max offset=0.350m, settled=0.008m, lane departure=false
+ring-road 140km/h: max offset=0.350m, settled=0.020m, lane departure=false
+motorway 60km/h: max offset=0.350m, settled=0.009m, lane departure=false
+motorway 100km/h: max offset=0.350m, settled=0.015m, lane departure=false
+motorway 140km/h: max offset=0.350m, settled=0.024m, lane departure=false
+national 60km/h: max offset=0.350m, settled=0.018m, lane departure=false
+national 100km/h: max offset=0.350m, settled=0.030m, lane departure=false
+national 140km/h: max offset=0.350m, settled=0.048m, lane departure=false
+18 lane/step-size stress runs at 140km/h: maximum offset=0.361m, no lane boundary crossed
+ACC/grip city/mu=1: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=48.8km/h
+ACC/grip city/mu=0.6: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=40.3km/h
+ACC/grip motorway/mu=1: max offset=0.006m, curve cap=true, tyre saturation=false, bend speed=101.4km/h
+ACC/grip motorway/mu=0.6: max offset=0.005m, curve cap=true, tyre saturation=false, bend speed=78.5km/h
+ACC/grip national/mu=1: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=71.7km/h
+ACC/grip national/mu=0.6: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=57.1km/h
+Simulation motorway: speed=151km/h, max offset=0.007m, no contact or departure
+Simulation ring-road: speed=151km/h, max offset=0.002m, no contact or departure
+HIGH-SPEED-LANE PASS
+
+=== acc-curve-recovery-test ===
+city/100km/h/mu=1: max offset=0.029m, max requested decel=2.82m/s²
+city/100km/h/mu=0.72: max offset=0.029m, max requested decel=2.84m/s²
+city/120km/h/mu=1: max offset=0.030m, max requested decel=2.82m/s²
+city/120km/h/mu=0.72: max offset=0.028m, max requested decel=2.84m/s²
+city/140km/h/mu=1: max offset=0.029m, max requested decel=2.82m/s²
+city/140km/h/mu=0.72: max offset=0.029m, max requested decel=2.83m/s²
+neighborhood/100km/h/mu=1: max offset=0.033m, max requested decel=2.85m/s²
+neighborhood/100km/h/mu=0.72: max offset=0.033m, max requested decel=2.80m/s²
+neighborhood/120km/h/mu=1: max offset=0.033m, max requested decel=2.90m/s²
+neighborhood/120km/h/mu=0.72: max offset=0.033m, max requested decel=2.99m/s²
+neighborhood/140km/h/mu=1: max offset=0.033m, max requested decel=4.11m/s²
+neighborhood/140km/h/mu=0.72: max offset=0.033m, max requested decel=4.22m/s²
+ACC-CURVE-RECOVERY PASS — late engagement, dry/wet, shared grip, early warning, pedal priority
+
+=== handling-traffic-test ===
+Integrated ACC/clear: max lane offset 0.035m
+Integrated ACC/rain: max lane offset 0.036m
+HANDLING-TRAFFIC PASS — shared grip, actuator, load response, ACC curves, pedestrian yielding and rear approach warning.
+
+=== driver-feedback-test ===
+red stop: 0.00m/s, bumper 1.02m before paint
+ACC slow lead: peak decel 2.35m/s², jerk 2.50m/s³, AEB=false
+ACC gaps near/far: 13.0 / 33.0m
+DRIVER-FEEDBACK PASS — light reset/render, red/green/yellow, brake cancellation, speed/gap, smooth ACC, radar velocity and signals
+
+=== audio-runtime-test ===
+AUDIO-RUNTIME PASS — disabled gain, saved volume, non-finite input and simulation-clock relay synchronization.
+
+=== adas-runtime-audit-test ===
+replay: ACC cancellation, set speed and headway survive reset/playback/resume
+replay controller memory: mid-ALC, AEB hold and yellow-stop decision restored
+LKA: disable/re-enable and lost/re-acquired markings acquire the correct lane
+Rear AEB: departing traffic is clear; stationary rear obstacle still brakes
+ambient contacts: pedestrian cannot walk through a stopped vehicle
+ambient contacts: high-speed swept vehicle/pedestrian contact stops before crossing
+ADAS-RUNTIME-AUDIT PASS
+
+=== pedal-console-input-test ===
+PEDAL-CONSOLE-INPUT PASS — form-to-pedal focus, multi-pointer cancellation, independent pedals, reset revisions and replay PRND/ignition/EPB guards.
+
+=== parking-assist-test ===
+APA city/reference: complete, error=0.20, gear=P, collisions=0
+APA city/tracks: complete, error=0.20, gear=P, collisions=0
+APA boulevard/reference: complete, error=0.20, gear=P, collisions=0
+APA boulevard/tracks: complete, error=0.20, gear=P, collisions=0
+APA ring-road/reference: complete, error=0.21, gear=P, collisions=0
+APA ring-road/tracks: complete, error=0.21, gear=P, collisions=0
+Parking assist: actual D/R trajectory, sensors, remote start, hold/release/link loss and sensor-fault stop PASS
+
+=== extended-adas-test ===
+Extended ADAS: SEA/door interlock, PMC, FDA, HBA, scripted DMS escalation, BCA driver authority and ELK PASS
+
+=== adas-brake-test ===
+AEB stop (ground-truth test, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 22.3 m clearance, 0 collisions
+AEB stop (sensor tracks, fog): 0.00 m/s, 23.4 m clearance, 0 collisions
+Vietnam stalled scenario: 0.00 m/s, 13.8 m clearance, 0 collisions
+traffic behavior: a stable lead vehicle holds its lane during an ego-only approach
+
+ADAS-BRAKE-TEST PASS — simulated AEB stops before the obstacle; lead traffic does not evade the brake test.
+
+=== aeb-following-test ===
+{
+  cancelled: false,
+  throttle: 0,
+  perception: false,
+  minGap: 11.17,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 0,
+  perception: true,
+  minGap: 9.52,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: false,
+  minGap: 11.35,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: true,
+  minGap: 9.45,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+clear: real scenario, 7.85m clearance, 100% brake hold, no contact
+rain: real scenario, 6.76m clearance, 100% brake hold, no contact
+{
+  profile: 'international',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+{
+  profile: 'vietnam',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+AEB-FOLLOWING PASS — moving lead emergency braking, noisy perception, held throttle and five-minute shortest-headway runs.
+
+=== driving-systems-test ===
+PRND / engine / EPB: interlocks hold; reverse moves backward while the vehicle remains forward-facing
+AEB pressure boost: driver 30%, assistance 77%, total 77%
+RCTA / Rear AEB: left-side crossing motorcycle detected and reverse motion inhibited
+Collision response: body contact detected, vehicles stopped and separated without persistent mesh overlap
+Pedal priority: manual and ADAS without ACC preserve 50% braking while accelerator is held; human resets start at rest
+
+DRIVING-SYSTEMS-TEST PASS — PRND/EPB, reverse, brake-pressure boost, RCTA/Rear AEB and collision response.
+
+=== dynamics-collision-test ===
+DYNAMICS-COLLISION PASS — continuous/rotated contact, neutral in both directions, braking, crossing tunneling and wet grip.
+
+=== render-geometry-test ===
+RENDER-GEOMETRY PASS — dashboard volume/winding, wheel scale, road lighting normals, map projection and resource disposal. Visual appearance still needs browser verification.
+
+=== render-runtime-test ===
+RENDER-RUNTIME PASS — short viewport/DPR crops fit canvas, preserve aspect, and surround/mirrors restore GPU state after successful/failed secondary rendering.
+
+=== render-motion-test ===
+30 Hz: constant-velocity render step error 4.8e-15m
+60 Hz: constant-velocity render step error 2.4e-15m
+75 Hz: constant-velocity render step error 6.2e-15m
+120 Hz: constant-velocity render step error 4.7e-15m
+144 Hz: constant-velocity render step error 3.9e-15m
+165 Hz: constant-velocity render step error 3.7e-15m
+RENDER-MOTION PASS — matched actor/camera presentation, angle wrap, pause/reset, no physics mutation
+
+=== sensor-visibility-test ===
+SENSOR-VISIBILITY PASS — adjacent lead visible, full/partial occlusion, rotated bodies, range and occlusion switch
+
+=== projection-cache-test ===
+city: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+boulevard: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+ring-road: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+motorway: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+national: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+two-way: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+neighborhood: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+Projection-only CPU: 92.4ms full scan vs 2.3ms cache (9600 static observations)
+PROJECTION-CACHE PASS — 56000 moving observations exactly match full search
+
+=== runtime-recovery-test ===
+Actual rear-end: impact retained, 3-second pause, lead drives away, no new collision
+NPC pair: both resume in order after actual swept contact
+Untriggered R crossing: no phantom braking in D
+RUNTIME-RECOVERY PASS
+
+=== detailed-vehicle-test ===
+DETAILED-VEHICLE PASS — orientation/scale, draw groups, wheel refs, independent paint/signals and shared-geometry lifetime.
+
+=== imported-vehicles-test ===
+VinFast VF 9: 36 batches, 4 wheels, geometry/ground/replace PASS
+Hyundai Santa Fe 2023: 60 batches, 4 wheels, geometry/ground/replace PASS
+Ford Everest Sport 2023: 32 batches, 4 wheels, geometry/ground/replace PASS
+Honda Civic Type R 2023: 44 batches, 4 wheels, geometry/ground/replace PASS
+IMPORTED-VEHICLES PASS — all four actual optimized GLBs, float decoding, axis/size, wheels and switching.
+
+=== imported-cabin-test ===
+santafe: real interior, steering rig, clear horizon, live displays, mirrors, glass restore PASS
+civic: real interior, steering rig, clear horizon, live displays, mirrors, glass restore PASS
+IMPORTED-CABIN PASS
+
+=== view-quality-test ===
+VIEW-QUALITY PASS — close follow at speed, real rear/side views, moving actors, render-state restoration and mirror disposal.
+
+=== cockpit-view-test ===
+COCKPIT-VIEW PASS — screen/mirror/BSM visibility, clear horizon, wide-screen FOV, driver anchoring, steering axis and all four surround-camera directions. Geometry verification is not visual approval.
+
+=== cabin-look-test ===
+CABIN-LOOK PASS — held glances, right-drag directions, recenter, form focus, pause/menu/blur and camera isolation.
+
+=== maps-traffic-test ===
+Phố đô thị/classical: 2371m loop, 239m driven
+Phố đô thị/adas: 2371m loop, 223m driven
+Đại lộ ngoại ô/classical: 3288m loop, 267m driven
+Đại lộ ngoại ô/adas: 3288m loop, 239m driven
+Đường vành đai/classical: 3292m loop, 318m driven
+Đường vành đai/adas: 3292m loop, 250m driven
+Cao tốc · 3 làn mỗi chiều/classical: 6422m loop, 318m driven
+Cao tốc · 3 làn mỗi chiều/adas: 6422m loop, 250m driven
+Quốc lộ · 2 làn mỗi chiều/classical: 4371m loop, 256m driven
+Quốc lộ · 2 làn mỗi chiều/adas: 4371m loop, 250m driven
+Đường hai chiều · 1 làn mỗi chiều/classical: 2617m loop, 210m driven
+Đường hai chiều · 1 làn mỗi chiều/adas: 2617m loop, 235m driven
+Đường nhỏ khu dân cư/classical: 1585m loop, 124m driven
+Đường nhỏ khu dân cư/adas: 1585m loop, 208m driven
+MAPS-TRAFFIC PASS — 7 maps, controllers, safe pedestrian gap, signal-controlled crossing, RCTA challenge and scenario cleanup.
+
+=== world-assets-test ===
+ola: 1.90 x 1.30 x 0.82m, wheels + lights PASS
+motorcycle: 1.90 x 1.18 x 0.82m, wheels + lights PASS
+motorcycle_alt: 1.90 x 1.18 x 0.82m, wheels + lights PASS
+tata: 15.30 x 3.75 x 2.50m, wheels + lights PASS
+bus: 12.00 x 3.63 x 2.55m, wheels + lights PASS
+hanoi: 11 real source meshes PASS
+roads_pbr: 12 real source meshes PASS
+roads_city: 42 real source meshes PASS
+roads_modular: 12 real source meshes PASS
+WORLD-ASSETS PASS — all eight supplied files, five traffic rigs, transforms, ground contact and event lamps.
+
+=== road-profiles-test ===
+Cao tốc · 3 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Quốc lộ · 2 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Đường hai chiều · 1 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Đường nhỏ khu dân cư: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+ROAD-PROFILES PASS — four new road layouts, 24 deterministic 30-second rollouts and denser city distribution.
+
+=== planner-rear-clearance-test ===
+PLANNER-REAR-CLEARANCE PASS — pull away from a stopped rear bike, retain physical/front constraints, three-minute two-way flow without contact.
+
+=== drive-input-test ===
+DRIVE-INPUT PASS — W/arrows, all brake keys, progressive steering, blur/pause/menu, form focus, blended sources and disconnect.
+
+=== scenario-matrix-test ===
+highway: 2 controllers × 3 weather conditions checked
+trucks: 2 controllers × 3 weather conditions checked
+stalled: 2 controllers × 3 weather conditions checked
+cutin: 2 controllers × 3 weather conditions checked
+dense: 2 controllers × 3 weather conditions checked
+crossing: 2 controllers × 3 weather conditions checked
+occluded: 2 controllers × 3 weather conditions checked
+jaywalker: 2 controllers × 3 weather conditions checked
+blindspot: 2 controllers × 3 weather conditions checked
+lights: 2 controllers × 3 weather conditions checked
+rush: 2 controllers × 3 weather conditions checked
+motorcycle-weave: 2 controllers × 3 weather conditions checked
+bus-stop: 2 controllers × 3 weather conditions checked
+traffic-jam: 2 controllers × 3 weather conditions checked
+truck-breakdown: 2 controllers × 3 weather conditions checked
+vietnam-rush: 2 controllers × 3 weather conditions checked
+school-zone: 2 controllers × 3 weather conditions checked
+market-street: 2 controllers × 3 weather conditions checked
+roadworks: 2 controllers × 3 weather conditions checked
+reverse-crossing: 2 controllers × 3 weather conditions checked
+SCENARIO-MATRIX PASS — 120 deterministic 20-second rollouts, finite state, no ego collisions or road departures.
+
+=== network-matrix-test ===
+city: compatible scenarios checked
+boulevard: compatible scenarios checked
+ring-road: compatible scenarios checked
+motorway: compatible scenarios checked
+national: compatible scenarios checked
+two-way: compatible scenarios checked
+neighborhood: compatible scenarios checked
+NETWORK-MATRIX PASS — 690 compatible map/scenario/controller/weather combinations, 20 simulated seconds each.
+
+=== static-traffic-adas-test ===
+static wall forward: high-speed sweep blocks penetration
+static wall reverse: high-speed sweep blocks penetration
+STATIC-TRAFFIC-ADAS PASS — thin barriers, reverse, physical NPC contacts, static perception/AEB in rain and steering-path discrimination.
+
+=== adas-features-test ===
+ALC clear: lane 1 -> 2, signal self-cancelled
+ALC blocked: occupied target lane kept the car in its lane
+TSR/ISA: limit 50 km/h, target capped at 11.4 m/s
+LDW: warned about a right departure
+Parking: front sensor reads 1.8 m
+
+ADAS-FEATURES-TEST PASS — lane change, TSR/ISA, LDW and parking checks passed.
+
+=== traffic-profile-test ===
+Vietnam traffic: 21 motorcycles, 6 buses, 7 cars, 6 trucks
+blind-spot scenario: a motorcycle starts beside and behind the ego
+
+TRAFFIC-PROFILE-TEST PASS — international and Vietnam actor profiles are distinct.
+
+=== traffic-flow-test ===
+District seed=20261028/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3611m
+District seed=20261028/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3527m
+District seed=1/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3404m
+Contact at 237.90s [
+  { id: 84, kind: 'truck', s: 1193.2, d: 1.2, lane: 1, yaw: 0 },
+  { id: 120, kind: 'bus', s: 1182, d: 3.71, lane: 2, yaw: 0 }
+]
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: ordinary district traffic crashed and permanently blocked the road
+
+1 !== 0
+
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-wviHXo/traffic-flow-test.mjs:5146:10
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+!!! traffic-flow-test FAILED
+
+=== scenario-lab-test ===
+scenario lab: stopped lead, cut-ins, crossing traffic, weaving motorcycles, and bus-stop pedestrians were created
+
+SCENARIO-LAB-TEST PASS — event tools modify the live simulation.
+
+=== record-replay-test ===
+record/replay: 180 frames, 0.05 km, exact final state restored
+neutral replay: reverse coasting direction survives reset, playback and resumed simulation
+two-way replay: oncoming flags, negative velocities and positions restored exactly
+
+RECORD-REPLAY-TEST PASS — session snapshots and replay stay synchronized.
+
+=== session-timeline-test ===
+SESSION-TIMELINE PASS — timestamp-based replay, atomic import, monotonic/finite/size validation and invalid delta guards.
+
+=== lights-test ===
+distance 0.52 km | stopped at red: true | ran red: 0 | min speed near red line: 0.0
+
+LIGHTS-TEST PASS — ego obeys the traffic light (stops on red, goes on green).
+
+=== weather-test ===
+[clear] sensor 95m | mean speed 11.2 m/s | max|d| 2.41 | crashes 0
+[rain] sensor 68m | mean speed 11.2 m/s | max|d| 0.12 | crashes 0
+[fog] sensor 46m | mean speed 11.3 m/s | max|d| 0.12 | crashes 0
+[visibility target] clear 3.0 m/s | rain 2.4 m/s | fog 1.9 m/s
+
+WEATHER-TEST PASS — safe in rain and fog; low visibility lowers the planner target.
+
+=== road-sign-test ===
+road sign: 50 km/h posted limit applied to the planner target
+
+ROAD-SIGN-TEST PASS — speed limit signs affect AI Auto planning.
+
+=== learn-test ===
+collected 18200 expert samples
+initial train: loss 0.0457 -> 0.0201
+  DAgger 0: samples 28000, loss 0.0179
+  DAgger 1: samples 37800, loss 0.0152
+  DAgger 2: samples 47600, loss 0.0145
+  DAgger 3: samples 57400, loss 0.0153
+  DAgger 4: samples 60000, loss 0.0143
+network now driving:
+  [NN drives highway] dist 0.64 km | speed 2.6-27.0 | max|d| 1.47 (half 5.55) | crash 0
+  [NN drives trucks] dist 0.52 km | speed 0.0-20.8 | max|d| 4.29 (half 5.55) | crash 0
+
+LEARN-TEST PASS — the from-scratch neural network learned to drive.
+
+=== evo-test ===
+  gen 1/16: best 27.7, avg -0.2
+  gen 2/16: best 51.4, avg 8.2
+  gen 3/16: best 58.9, avg 7.3
+  gen 4/16: best 58.9, avg 14.7
+  gen 5/16: best 58.9, avg 11.3
+  gen 6/16: best 88.9, avg 17.3
+  gen 7/16: best 88.9, avg 18.6
+  gen 8/16: best 169.2, avg 27.5
+  gen 9/16: best 169.2, avg 35.2
+  gen 10/16: best 169.2, avg 41.2
+  gen 11/16: best 169.2, avg 28.3
+  gen 12/16: best 169.2, avg 32.7
+  gen 13/16: best 169.2, avg 32.2
+  gen 14/16: best 169.2, avg 36.3
+  gen 15/16: best 169.2, avg 50.5
+  gen 16/16: best 179.5, avg 52.8
+fitness: 27.7 -> 179.5
+champion drives: dist 0.41 km | max|d| 5.25 (half 5.55) | crash 0
+
+EVO-TEST PASS — neuroevolution discovered a driving policy from scratch.
+
+TEST SUITE FAILED (1/50) in 1002.0s: traffic-flow-test

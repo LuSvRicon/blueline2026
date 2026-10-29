@@ -1,0 +1,58 @@
+[
+  {
+    "id": "vf9",
+    "metadata": {
+      "author": "Giang Trần (https://sketchfab.com/giangtnh2206)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/vinfast-vf9-model-no-interior-cac6cb95b9084d0abee37dccb46fa10b",
+      "title": "Vinfast VF9 model (no interior)"
+    },
+    "originalBytes": 42494828,
+    "optimizedBytes": 1656448,
+    "originalSha256": "ecead38edaa5fbe26a2792f5e1912e26cfda1eed570c6d8dc14984bd7ff910b1",
+    "optimizedSha256": "4561cdbd269e16cb1c1dcef20bea3b681da0031be19ae4deb41c2b81f1758ed3",
+    "changes": "glTF Transform 4.5.1: weld, simplify ratio .35/error .0007, WebP 1024, Meshopt; runtime axis/size calibration, material batching, wheel hubs, lamps"
+  },
+  {
+    "id": "santafe",
+    "metadata": {
+      "author": "dannzjs (https://sketchfab.com/dannzjs)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/huyndai-santafe-2023-728a76b5184e47b3bdbf3849b561dcef",
+      "title": "Huyndai Santafe 2023"
+    },
+    "originalBytes": 64901688,
+    "optimizedBytes": 5419032,
+    "originalSha256": "18e411b29ed985ef4cb7f60ae918e2d9ddbce8a52feefb57569d535185adf78b",
+    "optimizedSha256": "a3dbece1e24f7c052045433f0342a1751f5604b4973b06f520311c89333fbe8a",
+    "changes": "glTF Transform 4.5.1: weld, simplify ratio .35/error .0007, WebP 1024, Meshopt; runtime axis/size calibration, material batching, wheel hubs, lamps"
+  },
+  {
+    "id": "everest",
+    "metadata": {
+      "author": "Asadawut.Kaewma (https://sketchfab.com/Asadawut.Kaewma)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/ford-everest-sport-2023-c37bec0353a94f90a3acbe09ceb3aecf",
+      "title": "Ford Everest Sport 2023"
+    },
+    "originalBytes": 15607124,
+    "optimizedBytes": 977724,
+    "originalSha256": "1611dc5a5ed59a88f8d9ae6a912d8eb26be083dce80e3ff021bac0586004f8be",
+    "optimizedSha256": "553ee8f6b19533002adce8c1f19c0371978581f2277e32f6f4ae0d999c9992da",
+    "changes": "glTF Transform 4.5.1: weld, simplify ratio .35/error .0007, WebP 1024, Meshopt; runtime axis/size calibration, material batching, wheel hubs, lamps"
+  },
+  {
+    "id": "civic",
+    "metadata": {
+      "author": "Ddiaz Design (https://sketchfab.com/ddiaz-design)",
+      "license": "CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)",
+      "source": "https://sketchfab.com/3d-models/2023-honda-civic-type-r-8c9484184a2b4254aafd67418b8c18db",
+      "title": "2023 Honda Civic Type R"
+    },
+    "originalBytes": 17663716,
+    "optimizedBytes": 4011096,
+    "originalSha256": "5ebf9080a1823c57538c376a1f57258d01cacc5667cdc51fa3b3bc5f05a4d3f1",
+    "optimizedSha256": "4e290998d72f38b0375aaeeec8796048eb42348ae2aee52be0824fbf3c363de8",
+    "changes": "glTF Transform 4.5.1: simplify ratio .75/error .0002, WebP up to 2048, Meshopt; native interior albedo is 512x512 (not upscaled), runtime steering articulation, calibrated displays and mirrors"
+  }
+]

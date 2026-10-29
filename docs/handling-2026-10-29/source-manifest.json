@@ -1,0 +1,586 @@
+[
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\main.ts",
+    "SHA256": "08B708067219019BF0E8505F026163DEA0F1D3B1352A483A8CF62A7270FD0A7E"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\vite-env.d.ts",
+    "SHA256": "67BA1F5B1F143FC83AAAE9454C491D181061A1E1FEFF96966887DC45C117D694"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\audio\\SimulationAudio.ts",
+    "SHA256": "4951BB2C1145623822E0ABA3F8FC35D53A5351A17A8B231D0D7B512597960F42"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\behavior\\BehaviorPlanner.ts",
+    "SHA256": "9621E7BC23CF692293EDE4028726D747C306A17A325220828FD015561B8EF730"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\control\\PID.ts",
+    "SHA256": "C4E9DDEDDA6F9F2FD8196E0387E85A793B036C6A3835BDD3AE280D7E3DB3B823"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\control\\PurePursuit.ts",
+    "SHA256": "30EB28AF1C9C16B0C68889F2CD363F0C4F140CD8611BA144618C4C7A277FEA6C"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\control\\Stanley.ts",
+    "SHA256": "51A45571F8848EB5D707E7B2AD55940FAF4E054D04B940673615FAD9F60CBEF6"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\core\\collision.ts",
+    "SHA256": "EDA2DFDE35F0ED7DB737079454944492DCD78F8941F90E8C61833675F8D4BF15"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\core\\linalg.ts",
+    "SHA256": "20A0D5FD35B7BAB91323BD8411D58BE9699230C5FF50F094ECBAB24AAA4F8F3D"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\core\\mat.ts",
+    "SHA256": "4EAC7891C3F1CED618C44035D411D2C0E11C136E9D1486057C30288D2DCA0E27"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\core\\math.ts",
+    "SHA256": "92081E6AF1D057A7EAA6CF263A91479C76D0E843BFC9F9790898D086B56DC806"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\core\\poly.ts",
+    "SHA256": "7E05DCAD5026A6C6453DEA2A1FD2ED60C5ACDAE74167343F5117519AB647FBC6"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\core\\rng.ts",
+    "SHA256": "CA6CB8C7891D6F73595145CCD82890992D979EFFBE1609AE212DB6A4475F8685"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\core\\viewProjection.ts",
+    "SHA256": "B2A9CBFE74E24B78C3B90E29BF50AA05CBA5902179AA52EEC355BF5301201954"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\learn\\Benchmark.ts",
+    "SHA256": "D8F018639D18BF6C7BB63ADE410E348F59BA615B7FC71A8DAFE0AAA9240C9DAC"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\learn\\Evolution.ts",
+    "SHA256": "FA45467BE41716A6F2C68D4BD069217058C627F49B17CE4AF42C7FE1726AD05C"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\learn\\features.ts",
+    "SHA256": "F287EB2278D92E889BC4DA50AA9CD0FEDEFD141D75887588B0732DFC4B1E38E2"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\learn\\ImitationAgent.ts",
+    "SHA256": "F172C767282AACF2B5647D44552283F67C55246ACE9B80F278426262B7589427"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\learn\\NN.ts",
+    "SHA256": "A1FA98C4CE2CFFD33A861B5D8EE3C2330121770686FFEF8A17A41AEB36E85EFA"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\learn\\Trainer.ts",
+    "SHA256": "8D77CDC00EE3CDF79DA61A4176F87552BBB997C4AE884613143C3E988525DE32"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\pedestrian\\PedestrianManager.ts",
+    "SHA256": "ED9E30021D3FEE574F97B91598A2B35B308B5B9EF479935385C7ECBBC424B096"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\perception\\OccupancyGrid.ts",
+    "SHA256": "91EB618587F6E2F08EEC6C728E96DAE9AA4F864E9505F0E5460323DCE2935672"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\perception\\Sensor.ts",
+    "SHA256": "2085B0915E22C4A713FB162B26C201C9099F920484A7732B2D1CCDD40C83F09C"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\perception\\Tracker.ts",
+    "SHA256": "42157053C6C17B8397B3F1FB19BFE6B95AA5EAFE5A339A2F09490F0283AD4E66"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\planner\\FrenetPlanner.ts",
+    "SHA256": "8FC578F5C31E403328621BC110253F97E0D8BAFC15017EDFE1E5801138E7A49C"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\planner\\Trajectory.ts",
+    "SHA256": "24D4F569E9655415148EDCA6E78E2897B44DEC89DC65996B53DD24C3EC90A590"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\BuildingsView.ts",
+    "SHA256": "FE55EE95B40BF47E9BB485DAEAA8D6B36E56593EF3DC4A0A2EAEBB720DC018AF"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\CandidatesView.ts",
+    "SHA256": "7D67F672EFEA2C818B6534C931C2B129E0711944F80FD957069E429608C2710A"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\CarFleet.ts",
+    "SHA256": "167BA64336DBDBD9D89AD67FFD7EC9436479E4C7D0C7D62011F55A4810849B6F"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\CarInterior.ts",
+    "SHA256": "9C3BE35C1B3436EA6D0B2981D2879BAB164B4B5276532B3169A54E9744942834"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\CockpitGeometry.ts",
+    "SHA256": "DCF2F2F69CB9E6AB73788F1660FCDB9DEDAED4B9BF64E7323BB6DFAA69DA9700"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\CockpitInstruments.ts",
+    "SHA256": "D16A05E359BD8D815AD132A66EBEB3C01B72CFDB855C05FBD02B35AE22842D55"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\CockpitRig.ts",
+    "SHA256": "2A010EAF5616DD6AD8E4BB6A99476266ADBBCEFF214AFA7CBE8543203708A224"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\CrossStreetView.ts",
+    "SHA256": "3299CFF3428A966849F110D812B95CD78E3955453D3795D2029330477E720A6A"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\DetailedVehicle.ts",
+    "SHA256": "7284E72F6B809738C10170E5404A1B11A3B7E54BDFEA411BE02F466CC66D45B2"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\DrivingMirror.ts",
+    "SHA256": "B54939D6B69B4EF1B35527C10D49CEF5875CEE361B822D94A22F5E7814972109"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\ImportedCabin.ts",
+    "SHA256": "4160CEF9BE627FD99B551D52739BB292E7A2089343CC9F28BB27B6CFE4058A65"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\ImportedVehicles.ts",
+    "SHA256": "771CD435B18AAC01E91806BB7FD5BAEF5940190D7D0D1BD5BD5CB63AA25A35A9"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\OccupancyView.ts",
+    "SHA256": "0241A67276691393FA17C739676F759003168AD3EF5010B2AD10E94A2079BBFF"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\ParkingView.ts",
+    "SHA256": "23A298894F3BC0DF263F31BA47189261A3ED2BED1D006E6CA8C98CBBFDB45193"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\PathRibbon.ts",
+    "SHA256": "E9C180C34C652DE21F30730A058C4D2CCDC4D43E370F4F1D257418553A785044"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\PedestrianView.ts",
+    "SHA256": "F5C521924BCBE9B47CC9A4BC74A2A7CC47683673E3308E32FCD9A1F8324B78E6"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\RoadSignsView.ts",
+    "SHA256": "79C44B3E8FDA01AEA26FDDE1A4DD1569283CB8FC65B6F9A46333DA92DBE75F66"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\RoadView.ts",
+    "SHA256": "7B75F286E0157ED55779C332D9E43C419D608794DD9EE6A364039AA77FC52CEE"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\Scene.ts",
+    "SHA256": "980E547643EA6251DBC499CB2BEBB76BDFEF4549F04F9A9B1AF35D6DF003BC43"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\SensorView.ts",
+    "SHA256": "9068D253F7F0BCDA932C5B9BACBAEB0E15986F5613F839ED86EB19602F5AC002"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\theme.ts",
+    "SHA256": "C594D2E04181098EEC25FADE83BB9FD81B7949BA670114417B7AC42B941EABC2"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\TracksView.ts",
+    "SHA256": "0280B9983DC0717F15747F1E18472A3BA41737D88C65D2E4A28CEFF42F892DED"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\TrafficLightView.ts",
+    "SHA256": "DA13F4D21096A1B5F23017571B95EE886D4CFE0CAB9DC47397FBFC6B0F3FF9ED"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\TrailView.ts",
+    "SHA256": "4B66AB4D03AD9A8B8F76E72B83DF08599ACC8A3BF2D8CAD4EE79ABB18D5E7872"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\VehicleCatalog.ts",
+    "SHA256": "C2527A35892214544EB324FE0F8C3F56830175825D5DC5A1FED8BFD3827BD8A8"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\WorldAssets.ts",
+    "SHA256": "9A5BA67E876E374A40CE001B5914A5DCA27752B5B7975560F39BF7E70BC55916"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\render\\WorldSceneryView.ts",
+    "SHA256": "ADDC83C1CB8FBC40B4EF379BF2E51171F464FD95CF3D342D7782084F7EBE51E2"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\ADAS.ts",
+    "SHA256": "4E65732D1C7273DE1B40E6C217F721EC58DB6CC24BD4886AFEE497874504ED35"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\config.ts",
+    "SHA256": "C39593FBD0FDFB31FEB6F65CC869D6B9808C52476088AC3E08071F7522F22317"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\ExtendedAssistance.ts",
+    "SHA256": "B38493C9FAA6E3A2F53CFDCDBDA06D4BFD21FBD950E398A677DFEC693422E3B6"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\Metrics.ts",
+    "SHA256": "4D7EA214ACAF0DAA83F61EE0A69CBCACE49F44C9C6418DE5F5262E42D4362225"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\ParkingAssist.ts",
+    "SHA256": "8750650F55F034CD9DFD275E313F70E0BB71ACE29169809F3F7F0E9E59737DB6"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\ProximitySafety.ts",
+    "SHA256": "5C29A338C6B27E1A65FBD4F78F5DEEE8FED50EE0A677C5882E127B3C6A83073A"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\SessionRecorder.ts",
+    "SHA256": "C54DAB012ACC410F2342A04592AA61B856C8A704130C7278AA46E0BB5C343310"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\Simulation.ts",
+    "SHA256": "7F19BC299640E429325489FE509BFC7311E92F6D38439AB9A18D2AFDC05E7B17"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\traffic\\IDM.ts",
+    "SHA256": "230D6CA7375DB540C8056DA6B6936D40FBD51F67FBC48061F1EE87A9434A8883"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\traffic\\MOBIL.ts",
+    "SHA256": "EB261344F3049D79EC5CA193A0B8AC093F9B54E3E100A26FF4536A4A35FFA113"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\traffic\\TrafficContacts.ts",
+    "SHA256": "48CCDB1D8ADE220CD5A6ACA27627E7481C3E907F8ED111467A2114ACD9083B88"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\traffic\\TrafficManager.ts",
+    "SHA256": "84373228D96626180E03C47716A0473CF33E705D73A2422FA2AA63B1BB98FE66"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\ADASPanel.ts",
+    "SHA256": "8AB9D85B0F91564C8436C418873207FF004EAC49C38273FE1829553F654607C2"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\CabinLookControls.ts",
+    "SHA256": "3EC08DD4B6CB622219617A32DA07AAAD8B03EB41377A4D7984A87DE9F969BC9D"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\Camera360Widget.ts",
+    "SHA256": "4F2BCE3A6D3E0618FEEF66AAEB09C2FD17C87D06C22AB2B3D4305EE100E41CE8"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\CenterConsoleControls.ts",
+    "SHA256": "482FA74E610B29883AD9BB7719F6722F9DC8627B9763A3156BA2DE6F6380CD94"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\CockpitLayout.ts",
+    "SHA256": "A1B606EC2C89FA93953329110BDA924A197DE94B5FC230CDF4BE8830E496016C"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\ControlPanel.ts",
+    "SHA256": "E2C197CAA25566CA16DDBEDAA17C964069549E5E0C0D91578B2CACA71CA60D91"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\dashboard-adas.css",
+    "SHA256": "89DED1F260D6DE4F507FC70BF8C778FA78A113777B69C6A59E46993C0B0CDC6E"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\dashboard-controls.css",
+    "SHA256": "DDC491B8F3A26785D8A044408A549F505EF7885106721A9CBAC1045C302C17F0"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\dashboard.css",
+    "SHA256": "62A26AF10DBCE6A1C30171FCC2AD9680DE266E27F4F243B9EBC4B416CD00FBB6"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\DriveControls.ts",
+    "SHA256": "BDEB7387F6E10CF996CDF249FCE68076A5C42E77418A77836D7273FD29B79B2E"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\game.css",
+    "SHA256": "6FDBDCF773BDE9DD8ECC24AA7C14584842940CD79EC0CEA9A3B12DB21558894B"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\HUD.ts",
+    "SHA256": "C04039DA0966928A7ED4F71CC9FB8A84724788748649269D8ABDAB671A3DAF12"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\input.ts",
+    "SHA256": "EE899871E80B22C21632DA1578EA6E8BB2C72D0018437906EEBAF1F925D1E08F"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\IntroOverlay.ts",
+    "SHA256": "59D85D5498809E4058D756116750854A26F28AE7DF73A1758B038ACDDC666DCC"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\LearningPanel.ts",
+    "SHA256": "BE6C15FFA94372D7630336F3355D1396B909B84CF57F296B2A74D686E2079FA4"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\Minimap.ts",
+    "SHA256": "9E62033EE25E8103B067263987ED8C8FE66A30E6B2D7CF0FC5F41C8BEC791702"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\PedalControls.ts",
+    "SHA256": "CA347C5C63ADF35668A4DACB7A86047420D7368503452512BFB0106358D2A721"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\scenarios.ts",
+    "SHA256": "CB46C54173C267581F1BB59D7DC2419533BB6C4B6F1E1D879E923A609149510A"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\Scorecard.ts",
+    "SHA256": "EB598DA83F0D9CAA28FACD014CB3222FB548CDAFEF5DBF5C0C0AE41225BB318F"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\Shortcuts.ts",
+    "SHA256": "2780AFD380208D06642C7331DEEE6EFA9023477354A9B54DE9C687A7A48B0044"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\styles.css",
+    "SHA256": "D0216069FE97C293E6F8DB3462DB1B4E18D1CC1D84798DA7CC4E8F8244565F07"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\TelemetryPanel.ts",
+    "SHA256": "6901FB304E23BF4C41A260FC15631535BABB68FB0C758370675D170F2E63EAE9"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\vehicle\\Powertrain.ts",
+    "SHA256": "4120E8BF7C8D1558612E09E2797943578A6594A7BEFE6F8D50CDD2A1EF4476BA"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\vehicle\\Signals.ts",
+    "SHA256": "887B123DEB9889F460451A4322D535E902908B9931C97A570492FD1E536C7313"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\vehicle\\Vehicle.ts",
+    "SHA256": "91F5CFC5BF664E2A30516D2D47CD7D6830DE53EF917F3BBE45821AC56E45B623"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\world\\ReferencePath.ts",
+    "SHA256": "2E6D3D129AF9AA0EFA06FADA2BD09C0B8DB2423371DA9CA716F354CC85F7D62A"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\world\\Road.ts",
+    "SHA256": "1ADA87B4278A1F15B2068AF682DB1117BB7B3C47514537908B2010973B24F0AC"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\world\\RoadSign.ts",
+    "SHA256": "954285B745971C206074C5CC47636F058C3BD8B6CC39969FE7382AEF722B0DA4"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\world\\StaticWorld.ts",
+    "SHA256": "890E766761C5DFC9B0AD10CBE4F82DC36A64215F958DCDC20234D65BF37AAC2A"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\world\\track.ts",
+    "SHA256": "D4B50FD5041AF454928D49C60F92B474ADBDB5AA25C71FD447734E3DF5C109AF"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\world\\TrafficLight.ts",
+    "SHA256": "3D2065FFF9ECAD1E83ABEAC9E8876D27206F2835256D61EF35FA191B2FD6DF4D"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\adas-brake-test.ts",
+    "SHA256": "4D708074B80A6C5A06E53102B2196AD65848FCBE0CE16958977DDA0B82C4377C"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\adas-features-test.ts",
+    "SHA256": "865A51F8D696A8910A9FD0C3520BB1527A2F3371E7EC3337E84272371EC9E796"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\adas-regression-test.ts",
+    "SHA256": "4E61709393C467DF35FF4643B3438BE5DB69D34915878FE62B15BAE32B9DD8BE"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\adas-runtime-audit-test.ts",
+    "SHA256": "5A9100F02061F157E404FEE39D5A533B851843E43095F3653A243D92400CB84F"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\adas-test.ts",
+    "SHA256": "3346FE75489C2789FEB557567B7CCCB53DCBE03270F350B0D0B661865476DFBD"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\aeb-following-test.ts",
+    "SHA256": "524F459D751B3F1BFA4FD1D9738A824468453273F274E2BCE3E1F4AFF086905B"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\all-scenarios-smoke.ts",
+    "SHA256": "BDD214FF74175D7B3F12A8E1C4237DF2BC5F520BA1D02916A9C1EA8564D09902"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\audio-runtime-test.ts",
+    "SHA256": "84C27D18B2F0C8BEDA89A81D65A84355DCA5F9E27E930108EA367D1B3818BB02"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\cabin-look-test.ts",
+    "SHA256": "BBC0DD1AD26F596C4CE539E8D7337E462CE3D59046155055B7E9085B2F44D81E"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\cockpit-view-test.ts",
+    "SHA256": "4148AE16472F0853E2BD40FF8661D6C8362C216226B1B1524AFC59CE705A31F4"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\detailed-vehicle-test.ts",
+    "SHA256": "9C5A5699014B30729805A090F13327B9F9FA2A0A6A2FB63E14DDC9CEB5977C62"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\drive-input-test.ts",
+    "SHA256": "F33CC00C7A798464282A3D6CF352770C1D6AADF4B0E1B63AAC12019F7948C45C"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\driver-feedback-test.ts",
+    "SHA256": "3ACCFA94BC96034716EB1F244C0FC7A17BAA8E068F9A2542CA5B1C212CFD99B6"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\driving-systems-test.ts",
+    "SHA256": "D9E6D2E536EE03C0681673DB4C9F9E344CC71D9644B7533FCEB067826D46E758"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\dynamics-collision-test.ts",
+    "SHA256": "D272C700D8FABA8B96D9BBC95FEDF155F7F5EFE26DFEA2050B0F1673F2B53C40"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\evo-test.ts",
+    "SHA256": "31AE10E2BB8818A18BD3995EB8A44F89AE481217F6EA56E1FE2272138E7044FA"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\extended-adas-test.ts",
+    "SHA256": "0493855850A6DA1CF2FFA736980C7C8CF07D2A06B52A3AA212471EA2A019C93E"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\handling-traffic-test.ts",
+    "SHA256": "654D508E3CE2C89E1AA6981372C306A15E9BEB2319F094B9C4FE181F0E3181AA"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\high-speed-lane-test.ts",
+    "SHA256": "707FD4AE840F21065E581C4A64D8A1F53035E6D69F80F72D1FAB3316A6F2ED05"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\imported-cabin-test.ts",
+    "SHA256": "EB36993D5AD18A5C83213476F84C3A7B9EB27A23E89A03AD9DF9BCDBEE00AC1E"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\imported-vehicles-test.ts",
+    "SHA256": "E1C25AA97EE7A53861118531155B7268B0D2E04EF250F0EB0B356F4578832ADD"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\inspect-cabin.mjs",
+    "SHA256": "7E0224A663D0DA509AF37FB164A2A65127420A89FF3D483A8C29D102C52CFD45"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\inspect-vehicle-assets.mjs",
+    "SHA256": "4E663BF0BD5EBFCF3AAD08551914D2A9AA6623898CB5A3DF3DA51C4C6F1B466B"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\inspect-world-assets.mjs",
+    "SHA256": "D20525C3243C67F1041524745FFA2211970B59FFCEDC74281C0E8FE8931CEE90"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\learn-test.ts",
+    "SHA256": "33FAE1387061AE47A71EFDE0551E28D00A79DE1E05232F05B1F48F4258CDA518"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\lights-test.ts",
+    "SHA256": "B5DE9D3C8C138E9BAD4BBE658F83B4D4A78523090D106D0ACF33D570C4878115"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\maps-traffic-test.ts",
+    "SHA256": "D992ECD5E557288C243E3202B322531B3296BB9D6E665C3E2DA1F6D6444FD7DE"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\network-matrix-test.ts",
+    "SHA256": "CB9E8BE63E791D5E87450E96E7E2890E5169DB33D5B074142427CE4F855DA592"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\optimize-world-assets.mjs",
+    "SHA256": "F30986493A584EDDBCBFE0E5AB9B3726F1B3A8098F62D8F45518561F9D19B998"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\parking-assist-test.ts",
+    "SHA256": "7EDF68E0566A80CD3CF15E16A57195FA95538BF60148D2DECAC4F38C112E63E4"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\pedal-console-input-test.ts",
+    "SHA256": "4F2925DB99B9FF515CBC1FCA66CA65D793A8FF2ECD5203941570C238778BF286"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\planner-rear-clearance-test.ts",
+    "SHA256": "DE362365D8152E1026E2763426CB0C0C4223D2B74D7F4B78C71590911571A168"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\probe.mjs",
+    "SHA256": "E3E1683A7F218FE098B7D8F2E5D10E9921A9AE740CFF86F2FCB655A6894CA38B"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\record-replay-test.ts",
+    "SHA256": "8B8D9FCB7B4DBDFC0D01AEA5E82F2BA28FAE851A81078E0C115A1E53E3BB2BDF"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\render-geometry-test.ts",
+    "SHA256": "A68E997AD32553B28B0F13BEE83DCA4027E1617A68A346359BCFCE4CE8E8CFD8"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\render-runtime-test.ts",
+    "SHA256": "D1C46DDB44F6E9216F58BF34450A52C50AC095022748D198EE9DFC778BF7121C"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\road-profiles-test.ts",
+    "SHA256": "6B1E828EE3D3F213693AB72E392A588D22E9ADE1BFFB92F82BA04073E66F0211"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\road-sign-test.ts",
+    "SHA256": "AF4F734792B9AC310F29E908B995CCB31345AD5C51A705C0B6AA34D96236FC11"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\scenario-lab-test.ts",
+    "SHA256": "69182FA4FF374F61DE952E9445B33E29E46C172B7C9C2837CCD5C2B2772B7F61"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\scenario-matrix-test.ts",
+    "SHA256": "553FDEB30C1A7050E18FD90DEC495C541C1C0789140F7FE97767A5411FF7A62A"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\session-timeline-test.ts",
+    "SHA256": "5908743122C1836FAA834F74B8F2EA6AAA8E4253948059CCEE23CA80F361DAC2"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\smoke.ts",
+    "SHA256": "FD81C39A8D4E204956492280714701B48F83CF9FB9251F06EAB2E94CA4980A31"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\static-traffic-adas-test.ts",
+    "SHA256": "F766B6D3C905DE8CB62641BD7812A42024FD8F9A9AF11429424C3B9B8F9009E3"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\test.mjs",
+    "SHA256": "CDEE65430D72824C7E2B97B879B94032FA95C45FEE348B95E7F04E903ECC26AD"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\traffic-profile-test.ts",
+    "SHA256": "048B6BB9FA281D91AAEE277E7B8C61134F7CFB18AC9B57915ED80766D845E030"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\vietnam-scenario-smoke.ts",
+    "SHA256": "77F5CD79A61A6964CC4FF4995A87434F92325DAAE5A7016F84020B84C1395B98"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\vietnam-scenarios-test.ts",
+    "SHA256": "90C0F1DE259860F3A5F346384FAF5FEEF0D9E75D37473D5AF7FAAF63AE734ECF"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\view-quality-test.ts",
+    "SHA256": "042B9D8EB87B94607979435EF634ECEC850C1B80F5476574DCBA198BFCF732B8"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\weather-test.ts",
+    "SHA256": "C40AD3CD4C37A5BDD3B09031CA34AB5E588E41BD51CDE0094CAE0C7740F5FA07"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\scripts\\world-assets-test.ts",
+    "SHA256": "02628A6F4F2CC0F020B630D46802EDC297D2B3AD2788CD29B679CDD9CC551E18"
+  }
+]

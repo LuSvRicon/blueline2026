@@ -1,0 +1,18 @@
+
+=== runtime-recovery-test ===
+Actual rear-end: impact retained, 3-second pause, lead drives away, no new collision
+NPC pair: both resume in order after actual swept contact
+Untriggered R crossing: no phantom braking in D
+Wide-body occupancy: bus queues behind partially merged truck without contact
+RUNTIME-RECOVERY PASS
+
+=== traffic-flow-test ===
+District seed=20261028/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3555m
+District seed=20261028/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3553m
+District seed=1/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3340m
+District seed=1/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3354m
+District seed=9/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3556m
+District seed=9/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3449m
+TRAFFIC-FLOW PASS
+
+TEST SUITE PASS — 2 headless checks in 188.8s.

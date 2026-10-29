@@ -1,0 +1,5 @@
+
+=== audio-runtime-test ===
+AUDIO-RUNTIME PASS — disabled gain, saved volume, non-finite input and simulation-clock relay synchronization.
+
+TEST SUITE PASS — 1 headless checks in 0.2s.

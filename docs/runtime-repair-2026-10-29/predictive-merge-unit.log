@@ -1,0 +1,10 @@
+
+=== runtime-recovery-test ===
+Actual rear-end: impact retained, 3-second pause, lead drives away, no new collision
+NPC pair: both resume in order after actual swept contact
+Untriggered R crossing: no phantom braking in D
+Wide-body occupancy: bus queues behind partially merged truck without contact
+NPC anticipation: rear truck brakes progressively before bike merges on curve
+RUNTIME-RECOVERY PASS
+
+TEST SUITE PASS — 1 headless checks in 0.6s.

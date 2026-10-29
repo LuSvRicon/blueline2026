@@ -1,0 +1,198 @@
+
+=== all-scenarios-smoke ===
+international/highway: 393 m, 0 collisions, on-road
+international/dense: 393 m, 0 collisions, on-road
+international/trucks: 393 m, 0 collisions, on-road
+international/stalled: 385 m, 0 collisions, on-road
+international/cutin: 393 m, 0 collisions, on-road
+international/crossing: 348 m, 0 collisions, on-road
+international/occluded: 362 m, 0 collisions, on-road
+international/jaywalker: 370 m, 0 collisions, on-road
+vietnam/blindspot: 392 m, 0 collisions, on-road
+international/lights: 386 m, 0 collisions, on-road
+international/rush: 392 m, 0 collisions, on-road
+vietnam/motorcycle-weave: 390 m, 0 collisions, on-road
+vietnam/bus-stop: 305 m, 0 collisions, on-road
+vietnam/traffic-jam: 43 m, 0 collisions, on-road
+vietnam/truck-breakdown: 388 m, 0 collisions, on-road
+vietnam/vietnam-rush: 147 m, 0 collisions, on-road
+
+ALL-SCENARIOS-SMOKE PASS — 16 named scenarios checked.
+
+=== adas-brake-test ===
+AEB stop (ground-truth test, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 14.6 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 22.3 m clearance, 0 collisions
+AEB stop (sensor tracks, fog): 0.00 m/s, 23.4 m clearance, 0 collisions
+Vietnam stalled scenario: 0.00 m/s, 13.8 m clearance, 0 collisions
+traffic behavior: a stable lead vehicle holds its lane during an ego-only approach
+
+ADAS-BRAKE-TEST PASS — simulated AEB stops before the obstacle; lead traffic does not evade the brake test.
+
+=== aeb-following-test ===
+{
+  cancelled: false,
+  throttle: 0,
+  perception: false,
+  minGap: 11.17,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 0,
+  perception: true,
+  minGap: 9.52,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: false,
+  minGap: 11.35,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: true,
+  minGap: 9.45,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: false,
+  minGap: 11.63,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: true,
+  minGap: 9.68,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+clear: real scenario, 7.85m clearance, 100% brake hold, no contact
+rain: real scenario, 6.76m clearance, 100% brake hold, no contact
+{
+  profile: 'international',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+{
+  profile: 'vietnam',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+AEB-FOLLOWING PASS — moving lead emergency braking, noisy perception, held throttle and five-minute shortest-headway runs.
+
+=== driving-systems-test ===
+PRND / engine / EPB: interlocks hold; reverse moves backward while the vehicle remains forward-facing
+AEB pressure boost: driver 30%, assistance 77%, total 77%
+RCTA / Rear AEB: left-side crossing motorcycle detected and reverse motion inhibited
+Collision response: body contact detected, vehicles stopped and separated without persistent mesh overlap
+Pedal priority: manual and ADAS without ACC preserve 50% braking while accelerator is held; human resets start at rest
+
+DRIVING-SYSTEMS-TEST PASS — PRND/EPB, reverse, brake-pressure boost, RCTA/Rear AEB and collision response.
+
+=== dynamics-collision-test ===
+DYNAMICS-COLLISION PASS — continuous/rotated contact, neutral in both directions, braking, crossing tunneling and wet grip.
+
+=== road-profiles-test ===
+Cao tốc · 3 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Quốc lộ · 2 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Đường hai chiều · 1 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Đường nhỏ khu dân cư: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+ROAD-PROFILES PASS — four new road layouts, 24 deterministic 30-second rollouts and denser city distribution.
+
+=== static-traffic-adas-test ===
+static wall forward: high-speed sweep blocks penetration
+static wall reverse: high-speed sweep blocks penetration
+STATIC-TRAFFIC-ADAS PASS — thin barriers, reverse, physical NPC contacts, static perception/AEB in rain and steering-path discrimination.
+
+=== record-replay-test ===
+record/replay: 180 frames, 0.05 km, exact final state restored
+neutral replay: reverse coasting direction survives reset, playback and resumed simulation
+two-way replay: oncoming flags, negative velocities and positions restored exactly
+
+RECORD-REPLAY-TEST PASS — session snapshots and replay stay synchronized.
+
+=== learn-test ===
+collected 18200 expert samples
+initial train: loss 0.0458 -> 0.0196
+  DAgger 0: samples 28000, loss 0.0168
+  DAgger 1: samples 37800, loss 0.0139
+  DAgger 2: samples 47600, loss 0.0158
+  DAgger 3: samples 57400, loss 0.0149
+  DAgger 4: samples 60000, loss 0.0131
+network now driving:
+  [NN drives highway] dist 0.64 km | speed 5.7-28.9 | max|d| 4.41 (half 5.55) | crash 0
+  [NN drives trucks] dist 0.34 km | speed 0.0-19.6 | max|d| 5.25 (half 5.55) | crash 0
+
+LEARN-TEST PASS — the from-scratch neural network learned to drive.
+
+=== evo-test ===
+  gen 1/16: best 27.7, avg -0.2
+  gen 2/16: best 51.4, avg 8.2
+  gen 3/16: best 58.9, avg 7.3
+  gen 4/16: best 58.9, avg 14.7
+  gen 5/16: best 58.9, avg 11.3
+  gen 6/16: best 88.9, avg 17.3
+  gen 7/16: best 88.9, avg 18.6
+  gen 8/16: best 169.2, avg 27.5
+  gen 9/16: best 169.2, avg 35.2
+  gen 10/16: best 169.2, avg 41.2
+  gen 11/16: best 169.2, avg 28.3
+  gen 12/16: best 169.2, avg 32.7
+  gen 13/16: best 169.2, avg 32.2
+  gen 14/16: best 169.2, avg 36.3
+  gen 15/16: best 169.2, avg 50.5
+  gen 16/16: best 179.5, avg 52.8
+fitness: 27.7 -> 179.5
+champion drives: dist 0.41 km | max|d| 5.25 (half 5.55) | crash 0
+
+EVO-TEST PASS — neuroevolution discovered a driving policy from scratch.
+
+TEST SUITE PASS — 10 headless checks in 362.9s.

@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {Sensor,type SensableObject} from '../src/perception/Sensor.ts';
+const sensor=()=>new Sensor({posNoise:0,sizeNoise:0,velocityNoise:0,dropout:0,occlusion:true});
+const car=(x:number,y:number,length=4.7,width=1.9,yaw=0):SensableObject=>({x,y,length,width,yaw,kind:'car'});
+const adjacent=sensor().sense(0,0,[car(9,-3.7,15.3,2.5),car(10.2,0)]);
+assert.equal(adjacent.length,2,'long adjacent truck falsely hid the lead in the ego lane');
+const truck=car(15,0,15.3,2.5);
+assert.equal(sensor().sense(0,0,[truck,{x:30,y:0,length:.8,width:.8,kind:'ped'}]).length,1,'fully occluded pedestrian became visible');
+assert.equal(sensor().sense(0,0,[truck,car(25,4)]).length,2,'partially visible target was discarded by its centre bearing');
+assert.equal(sensor().sense(0,0,[car(15,0,15.3,2.5,Math.PI/2),car(25,5)]).length,1,'side-on truck silhouette ignored its yaw');
+const s=sensor();s.config.occlusion=false;assert.equal(s.sense(0,0,[truck,car(30,0)]).length,2);
+s.config.range=20;assert.equal(s.sense(0,0,[truck,car(30,0)]).length,1,'visibility changes bypassed range');
+console.log('SENSOR-VISIBILITY PASS — adjacent lead visible, full/partial occlusion, rotated bodies, range and occlusion switch');

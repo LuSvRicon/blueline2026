@@ -1,0 +1,256 @@
+/* Driver assistance instrument: live scene, two primary readings and tactile ACC controls. */
+#ui.game-ui.dashboard-ui .game-dock #adas-panel {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: 104px minmax(0, 1fr);
+  grid-template-rows: 21px minmax(0, 1fr) 23px;
+  gap: 8px 12px;
+  min-width: 0;
+  min-height: 0;
+  padding: 11px 13px;
+  border-left: 0;
+  align-self: stretch;
+  overflow: visible;
+}
+#ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-head {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-right: 30px;
+  margin: 0;
+  min-width: 0;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-heading-copy { display: flex; align-items: center; gap: 6px; min-width: 0; }
+#ui.game-ui.dashboard-ui .game-dock .adas-heading-mark { color: #85dcca; display: inline-flex; width: 19px; height: 19px; flex: 0 0 19px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-heading-mark svg { width: 100%; height: 100%; }
+#ui.game-ui.dashboard-ui .game-dock .adas-title { color: #b3c5d0; font-size: 8px; line-height: 1.25; letter-spacing: 1px; white-space: nowrap; }
+#ui.game-ui.dashboard-ui .game-dock .adas-title b { color: #e7f3f8; font-size: 10px; margin-left: 3px; letter-spacing: .8px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-title::after { content: none; }
+#ui.game-ui.dashboard-ui .game-dock .adas-head-actions { min-width: 0; flex: 0 1 auto; }
+#ui.game-ui.dashboard-ui .game-dock .adas-badge {
+  display: inline-block;
+  max-width: 180px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid #7c96a32b;
+  background: #07101880;
+  color: #95aebc;
+  font-size: 7px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: .25px;
+  text-align: right;
+  white-space: normal;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-badge.active { border-color: #79d6b83c; color: #80e7be; background: #3ae9a511; }
+#ui.game-ui.dashboard-ui .game-dock .adas-badge.warn { border-color: #eab75b40; color: #f2c779; background: #d6a24716; }
+#ui.game-ui.dashboard-ui .game-dock .adas-badge.danger { border-color: #ff7d6f7a; color: #ffd4cc; background: #a72c2c55; }
+
+#ui.game-ui.dashboard-ui .game-dock #adas-panel > .adas-radar-block {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 6px 5px 4px;
+  border: 1px solid #8ca6b21d;
+  border-radius: 9px;
+  background: linear-gradient(150deg, #09131a, #101f29);
+  box-shadow: inset 0 1px 9px #0008;
+  overflow: hidden;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-radar-label { display: flex; align-items: center; gap: 4px; padding: 0 2px; color: #8aa5b4; font-size: 6.5px; line-height: 1; letter-spacing: 1px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-radar-label i { display: block; width: 3px; height: 3px; border-radius: 50%; background: #66e1bd; box-shadow: 0 0 6px #66e1bd50; }
+#ui.game-ui.dashboard-ui .game-dock #adas-panel #adas-view {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  flex: 1 1 0;
+  margin: 4px 0 2px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  object-fit: contain;
+  visibility: visible;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-radar-range { color: #607e8e; text-align: center; font-size: 6px; letter-spacing: .8px; line-height: 1; }
+#ui.game-ui.dashboard-ui .game-dock #adas-panel.sensor-unavailable .adas-radar-label i { background: #ffbb6d; box-shadow: none; }
+#ui.game-ui.dashboard-ui:not(.adas-mode) .game-dock #adas-panel::after { display: none; }
+#ui.game-ui.dashboard-ui:not(.adas-mode) .game-dock #adas-panel .adas-radar-label i { background: #536b79; box-shadow: none; }
+#ui.game-ui.dashboard-ui:not(.adas-mode) .game-dock #adas-panel #adas-view { visibility: hidden; }
+
+#ui.game-ui.dashboard-ui .game-dock #adas-panel > .adas-command-zone {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: 35px minmax(0, 1fr);
+  gap: 7px;
+  min-width: 0;
+  min-height: 0;
+}
+#ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-metrics {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  grid-row: auto;
+  grid-column: auto;
+  align-items: start;
+  gap: 7px;
+  margin: 0;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-metric { display: flex !important; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 3px; min-width: 0; padding: 0; border: 0; }
+#ui.game-ui.dashboard-ui .game-dock .adas-metric > span { color: #7994a4; font-size: 6.5px; letter-spacing: .6px; line-height: 1.2; white-space: nowrap; }
+#ui.game-ui.dashboard-ui .game-dock #adas-lead-label { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+#ui.game-ui.dashboard-ui .game-dock .adas-metric b { color: #e3eff5; font-size: 14px; line-height: 1.1; font-weight: 600; white-space: nowrap; letter-spacing: -.25px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-distance-metric b { color: #f3c778; font-size: 21px; font-weight: 650; letter-spacing: -.65px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-headway-metric { padding-left: 9px; border-left: 1px solid #819daa24; }
+#ui.game-ui.dashboard-ui .game-dock .adas-headway-metric b { margin-top: 3px; font-size: 12px; }
+
+#ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-controls,
+#ui.game-ui.dashboard-ui .game-dock #adas-panel.config-open .adas-controls {
+  display: grid !important;
+  grid-template-columns: minmax(105px, 1fr) auto;
+  grid-template-rows: 45px 27px;
+  grid-column: auto;
+  grid-row: auto;
+  gap: 5px 8px;
+  align-items: end;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-control-caption { color: #7893a3; font-size: 6.5px; letter-spacing: .85px; line-height: 1; }
+#ui.game-ui.dashboard-ui .game-dock .adas-speed-control {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: 25px minmax(0, 1fr) 25px;
+  grid-template-rows: 10px 31px;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-speed-control > .adas-control-caption { grid-row: 1; grid-column: 1 / -1; }
+#ui.game-ui.dashboard-ui .game-dock .adas-speed-control > button, #ui.game-ui.dashboard-ui .game-dock .adas-speed-control > label { grid-row: 2; }
+#ui.game-ui.dashboard-ui .game-dock .adas-speed-control label {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 2px 3px 3px;
+  border-radius: 5px;
+  border: 1px solid #90c7c93c;
+  background: #0610189c;
+  box-shadow: inset 0 1px 5px #0008;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-speed-control input {
+  width: 34px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline-offset: 2px;
+  background: transparent;
+  color: #e8fff8;
+  font: 650 21px/1.05 "Segoe UI", sans-serif;
+  text-align: center;
+  appearance: textfield;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-speed-control small { display: inline; color: #7397a8; font-size: 6.5px; letter-spacing: -.1px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 25px;
+  height: 27px;
+  padding: 0 5px;
+  border: 1px solid #809eaf38;
+  border-radius: 6px;
+  background: linear-gradient(155deg, #293b47, #162630);
+  box-shadow: inset 0 1px #cfe9f414, 0 2px 3px #0003;
+  color: #d2e1e8;
+  font-size: 15px;
+  line-height: 1;
+  transition: background .14s, border-color .14s, color .14s, box-shadow .14s;
+}
+#ui.game-ui.dashboard-ui .game-dock .adas-mini:hover { border-color: #99d3ce77; background: linear-gradient(155deg, #304b57, #19343c); color: #f2fffa; }
+#ui.game-ui.dashboard-ui .game-dock .adas-mini:active { background: #11212b; box-shadow: inset 0 2px 5px #0007; }
+#ui.game-ui.dashboard-ui .game-dock .adas-mini.active { color: #f5ce84; border-color: #e9bd655f; background: #eab45f13; }
+#ui.game-ui.dashboard-ui .game-dock .adas-cruise-controls { grid-column: 2; grid-row: 1; display: grid; grid-template-columns: repeat(3, 27px); grid-template-rows: 10px 31px; gap: 3px; align-items: center; }
+#ui.game-ui.dashboard-ui .game-dock .adas-cruise-controls > .adas-control-caption { grid-column: 1 / -1; grid-row: 1; }
+#ui.game-ui.dashboard-ui .game-dock .adas-cruise-controls button { grid-row: 2; height: 27px; min-width: 0; padding: 0; font-size: 8px; font-weight: 750; border-radius: 5px; }
+#ui.game-ui.dashboard-ui .game-dock #adas-acc-resume { color: #95e9cd; border-color: #83dbb945; }
+#ui.game-ui.dashboard-ui .game-dock .adas-gapctl { grid-column: 1; grid-row: 2; display: flex; gap: 5px; align-items: center; min-width: 0; }
+#ui.game-ui.dashboard-ui .game-dock .adas-gapctl [data-adas-gap] { display: none; }
+#ui.game-ui.dashboard-ui .game-dock .adas-gap-caption { color: #7893a3; font-size: 6px; letter-spacing: .6px; line-height: 1.2; max-width: 25px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-gap-choice { width: 104px; max-width: 100%; min-width: 0; height: 26px; margin: 0; padding: 3px 4px; border: 1px solid #83a5b43e; border-radius: 5px; color: #c1e6db; background: #101f2a; font: 600 8px "Segoe UI", sans-serif; }
+#ui.game-ui.dashboard-ui .game-dock .adas-indctl { grid-column: 2; grid-row: 2; display: flex; justify-content: flex-end; gap: 4px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-indctl button { min-width: 28px; height: 26px; color: #8fa6b5; font-size: 11px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-indctl button.active { color: #f6c36d; border-color: #e8b35b61; box-shadow: inset 0 1px #ffda9920, 0 0 8px #e6b15d14; }
+
+#ui.game-ui.dashboard-ui .game-dock #adas-panel > .adas-status-strip { grid-column: 1 / -1; grid-row: 3; display: flex; align-items: center; gap: 8px; min-width: 0; padding-top: 6px; border-top: 1px solid #8da9b21c; }
+#ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-primary-chips { display: flex !important; grid-template-columns: none; grid-column: auto; grid-row: auto; flex: 1 1 auto; gap: 4px; margin: 0; min-width: 0; opacity: 1; }
+#ui.game-ui.dashboard-ui .game-dock .adas-primary-chips .adas-chip { padding: 2px 4px; border: 0; border-radius: 3px; background: #708b990b; box-shadow: none; color: #59717f; font-size: 6.5px; line-height: 1.2; font-weight: 700; letter-spacing: .1px; white-space: nowrap; }
+#ui.game-ui.dashboard-ui .game-dock .adas-primary-chips .adas-chip.on { color: #8bddbd; background: #56dba712; }
+#ui.game-ui.dashboard-ui .game-dock .adas-primary-chips .adas-chip.warn { color: #edc57b; background: #e3b45c1b; }
+#ui.game-ui.dashboard-ui .game-dock .adas-primary-chips .adas-chip.danger { color: #ffb6a7; background: #f0664a23; }
+#ui.game-ui.dashboard-ui .game-dock .adas-set-readout { display: flex; align-items: center; gap: 4px; color: #6f899a; font-size: 6px; white-space: nowrap; }
+#ui.game-ui.dashboard-ui .game-dock .adas-set-readout b { color: #b9d0dd; font-size: 8px; font-weight: 600; }
+#ui.game-ui.dashboard-ui .game-dock .adas-limit-readout { display: grid; place-items: center; flex: 0 0 22px; height: 22px; border: 2px solid #a95753; border-radius: 50%; background: #e4e9e7; }
+#ui.game-ui.dashboard-ui .game-dock .adas-limit-readout b { color: #263641; font-size: 9px; font-weight: 800; line-height: 1; }
+#ui.game-ui.dashboard-ui .game-dock .adas-limit-readout b.warn { color: #a82d26; }
+#ui.game-ui.dashboard-ui:not(.adas-mode) .game-dock .adas-primary-chips { opacity: .5; }
+
+#ui.game-ui.dashboard-ui .game-dock #adas-panel > .adas-config { position: absolute; grid-column: auto; grid-row: auto; top: 9px; right: 12px; margin: 0; }
+#ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-config > summary { display: grid; place-items: center; width: 25px; min-height: 25px; height: 25px; padding: 0; border-radius: 7px; border-color: #87a3b332; background: #a4c1d10a; color: #94afbd; }
+#ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-config > summary svg { width: 15px; height: 15px; }
+#ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-config > summary span { display: none; }
+#ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-config[open] > summary { color: #99edce; background: #70deb91b; border-color: #83ddb955; }
+#ui.game-ui.dashboard-ui .game-dock #adas-panel > .adas-log { display: none; }
+#ui.game-ui.dashboard-ui .game-dock .adas-detailed-state { padding: 0 0 12px; margin-bottom: 12px; border-bottom: 1px solid #88a9bb26; }
+#ui.game-ui.dashboard-ui .game-dock .adas-detailed-state > span { color: #7895a7; font-size: 8px; letter-spacing: 1px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-detail-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; }
+#ui.game-ui.dashboard-ui .game-dock .adas-detail-chips .adas-chip { padding: 6px; font-size: 8px; }
+
+@media (min-width: 1550px) {
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel { grid-template-columns: 124px minmax(0, 1fr); gap: 9px 14px; padding: 12px 15px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-metric > span { font-size: 7.5px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-distance-metric b { font-size: 24px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-headway-metric b { font-size: 14px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-title { font-size: 9px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-badge { font-size: 8px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-primary-chips .adas-chip { font-size: 7.5px; padding: 3px 5px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-speed-control input { font-size: 23px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-gap-choice { font-size: 9px; }
+}
+@media (max-width: 1050px) {
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel { grid-template-columns: 88px minmax(0, 1fr); gap: 7px 9px; padding: 10px 11px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-title { font-size: 0; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-title b { font-size: 9px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-badge { font-size: 6.5px; max-width: 132px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-headway-metric b { font-size: 11px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-set-readout { display: none; }
+}
+@media (max-width: 760px) {
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel { grid-template-columns: 78px minmax(0, 1fr); gap: 7px 9px; }
+  #ui.game-ui.dashboard-ui .game-dock #adas-panel .adas-head { padding-right: 29px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-radar-range { font-size: 5.5px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-metric > span { font-size: 6px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-metric b { font-size: 11px; }
+  #ui.game-ui.dashboard-ui .game-dock .adas-distance-metric b { font-size: 19px; }
+}
+.adas-reference-controls { display:grid; gap:10px; padding:12px; margin-top:12px; border:1px solid #294350; border-radius:10px; background:#0c1820; color:#c1d6de; font-size:12px; line-height:1.6; }
+.adas-reference-controls label { display:grid; gap:5px; }
+.adas-reference-controls label.adas-lab-check { display:flex; }
+.adas-reference-controls select { width:100%; min-width:0; padding:8px; border:1px solid #345363; border-radius:6px; color:#d6e8ed; background:#132631; font:inherit; }
+.adas-reference-controls small { color:#a0b9c4; }
+.adas-reference-sources summary { cursor:pointer; color:#77e3cc; }
+.adas-reference-sources a { color:#77e3cc; }
+/* Keep close/tab controls visible when long settings or fault lists scroll. */
+#ui.game-ui.dashboard-ui .adas-config-menu { display:grid; grid-template-rows:auto auto minmax(0,1fr); overflow:hidden; }
+#ui.game-ui.dashboard-ui .adas-config-menu .adas-config-heading { margin-bottom:12px; }
+#ui.game-ui.dashboard-ui .adas-config-menu .adas-lab-page { min-height:0; overflow-y:auto; scrollbar-width:thin; padding-right:3px; }

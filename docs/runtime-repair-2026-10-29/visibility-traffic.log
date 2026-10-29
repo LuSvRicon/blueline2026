@@ -1,0 +1,18 @@
+
+=== road-profiles-test ===
+Cao tốc · 3 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Quốc lộ · 2 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Đường hai chiều · 1 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Đường nhỏ khu dân cư: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+ROAD-PROFILES PASS — four new road layouts, 24 deterministic 30-second rollouts and denser city distribution.
+
+=== traffic-flow-test ===
+District seed=20261028/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3633m
+District seed=20261028/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3511m
+District seed=1/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3406m
+District seed=1/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3349m
+District seed=9/clear: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3601m
+District seed=9/rain: 300 seconds, 48 NPCs, no ambient impacts, mean travel=3511m
+TRAFFIC-FLOW PASS
+
+TEST SUITE PASS — 2 headless checks in 320.2s.

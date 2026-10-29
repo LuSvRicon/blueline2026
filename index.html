@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0a0e14" />
+    <title>BlueLine — Mô phỏng lái xe tự động</title>
+    <meta
+      name="description"
+      content="Mô phỏng lái xe tự động BlueLine: lập kế hoạch Frenet, giao thông IDM/MOBIL, điều khiển xe và các tình huống giao thông Việt Nam."
+    />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+      <div id="ui"></div>
+      <div id="loading">
+        <div class="loading-inner">
+          <div class="loading-mark">BLUELINE</div>
+          <div class="loading-sub">đang khởi tạo hệ thống mô phỏng…</div>
+        </div>
+      </div>
+      <pre id="boot-error"></pre>
+    </div>
+    <script>
+      // Surface a runtime failure instead of freezing on the loading screen.
+      (function () {
+        var show = function (message) {
+          var el = document.getElementById("boot-error");
+          if (!el) return;
+          el.style.display = "block";
+          el.textContent += message + "\n";
+        };
+        window.addEventListener("error", function (event) {
+          show((event.message || "Lỗi không xác định") + (event.error && event.error.stack ? "\n" + event.error.stack : ""));
+        });
+        window.addEventListener("unhandledrejection", function (event) {
+          show("Promise bị từ chối: " + (event.reason && event.reason.stack ? event.reason.stack : event.reason));
+        });
+      })();
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

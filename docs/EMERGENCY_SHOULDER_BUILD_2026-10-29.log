@@ -1,0 +1,20 @@
+
+> blueline@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 114 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                         1.93 kB │ gzip:   0.95 kB
+dist/assets/index-SW5ajKPK.css        106.11 kB │ gzip:  20.42 kB
+dist/assets/three-addons-BpO1vxyP.js   91.14 kB │ gzip:  25.18 kB
+dist/assets/index-6TexKSkZ.js         380.07 kB │ gzip: 124.37 kB
+dist/assets/three-core-BpSyKi1A.js    551.89 kB │ gzip: 142.16 kB
+
+(!) Some chunks are larger than 510 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.02s
