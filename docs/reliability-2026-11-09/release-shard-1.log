@@ -1,4 +1,4 @@
-SOURCE 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94 — 214 files
+SOURCE 8677870e2fc3d6d654efbb2ad9ddde105c6686f23098c3fa9bc4f8eae0893895 — 214 files
 
 === smoke ===
 
@@ -161,7 +161,7 @@ motorway: both directions, road/roadside offsets, noise, loop wrap, teleport mat
 national: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
 two-way: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
 neighborhood: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
-Projection-only CPU: 50.6ms full scan vs 1.5ms cache (9600 static observations)
+Projection-only CPU: 89.9ms full scan vs 2.1ms cache (9600 static observations)
 PROJECTION-CACHE PASS — 56000 moving observations exactly match full search
 
 === imported-cabin-test ===
@@ -234,6 +234,6 @@ SENSOR LATENCY PIPELINE PASS — 16 delivery, clock, dropout, fault, covariance 
 
 === spatial-scenery-test ===
 SPATIAL SCENERY PASS — exact matrices/colors/resources, four camera frusta, actual Hanoi triangles 1300488 → 433496 submitted in the fixture; full visible detail preserved.
-SOURCE FINAL 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94
+SOURCE FINAL 8677870e2fc3d6d654efbb2ad9ddde105c6686f23098c3fa9bc4f8eae0893895
 
-TEST SUITE PASS — 18 headless checks in 578.8s.
+TEST SUITE PASS — 18 headless checks in 514.3s.

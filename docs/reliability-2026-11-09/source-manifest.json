@@ -1,5 +1,5 @@
 {
-  "sha256": "79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94",
+  "sha256": "8677870e2fc3d6d654efbb2ad9ddde105c6686f23098c3fa9bc4f8eae0893895",
   "files": [
     {
       "path": "index.html",
@@ -7,11 +7,11 @@
     },
     {
       "path": "package-lock.json",
-      "sha256": "5f939e4075e1d15f40ae0a7428dace5db4b4a2b406385c38f7d7503c28995f9c"
+      "sha256": "51c55a378e7b525ca0ea1f4d145c5288cf0948d1c78eabb0c113a04a340ee010"
     },
     {
       "path": "package.json",
-      "sha256": "67c20ed2ddb430fdef492c419a1d55e84f6e219e1083b8d2d3e4c99dfad8ea1f"
+      "sha256": "a5156c6d10fb940117cf09edf298b537c3fa6a5c357420f8d0b2711fb49dc470"
     },
     {
       "path": "public/models/car-concept/CarConcept.glb",
@@ -723,11 +723,11 @@
     },
     {
       "path": "src/ui/dashboard-controls.css",
-      "sha256": "6ae95b52ecee3aae10f738a235c507a6cd9c13d23379ebc673d46df56aff8e41"
+      "sha256": "56ca01db147c62fc9af2130f5ee6db3589789eade339e1d58c37c8d4a92bf086"
     },
     {
       "path": "src/ui/dashboard.css",
-      "sha256": "355131662bd9267837995f457fcd6a2229bb4670c2beb741806b6704a4d8817d"
+      "sha256": "2673af01d974c04d79b699f83c641127464589d340136ee34b07a548f62afa81"
     },
     {
       "path": "src/ui/DriveControls.ts",

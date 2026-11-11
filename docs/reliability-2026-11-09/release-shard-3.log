@@ -1,4 +1,4 @@
-SOURCE 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94 — 214 files
+SOURCE 8677870e2fc3d6d654efbb2ad9ddde105c6686f23098c3fa9bc4f8eae0893895 — 214 files
 
 === vietnam-scenario-smoke ===
 motorcycle-weave: 0 va chạm · lệch đường 0.0 giây · đi 497 m
@@ -587,6 +587,6 @@ PASS apa/73/civic/fog/perpendicular {"seconds":34.6,"errorMetres":0.212,"collisi
 PASS rpa/73/civic/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
 PASS rpa/73/civic/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
 NOISY ADAS SEQUENCE PASS — 216 seeded sensed-traffic lane-change/ACC/fault and sensor-driven APA cases.
-SOURCE FINAL 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94
+SOURCE FINAL 8677870e2fc3d6d654efbb2ad9ddde105c6686f23098c3fa9bc4f8eae0893895
 
-TEST SUITE PASS — 18 headless checks in 682.3s.
+TEST SUITE PASS — 18 headless checks in 603.0s.

@@ -1,0 +1,16 @@
+2026-11-11T14:45:48.430291Z Cloning repository...
+2026-11-11T14:45:51.147609Z HEAD is now at 85c9747 Stabilize BlueLine ADAS, cockpit rendering, and release checks
+2026-11-11T14:45:53.117984Z Detected the following tools from environment: npm@10.9.9, nodejs@22.23.4
+2026-11-11T14:45:53.11848Z Installing project dependencies: npm clean-install --progress=false
+2026-11-11T14:45:54.708862Z npm error code ERESOLVE
+2026-11-11T14:45:54.709207Z npm error ERESOLVE could not resolve
+2026-11-11T14:45:54.709768Z npm error While resolving: vite@8.3.6
+2026-11-11T14:45:54.709901Z npm error Found: esbuild@0.21.5
+2026-11-11T14:45:54.710005Z npm error node_modules/esbuild
+2026-11-11T14:45:54.710091Z npm error   dev esbuild@"^0.21.5" from the root project
+2026-11-11T14:45:54.71034Z npm error peerOptional esbuild@"^0.27.0 || ^0.28.0" from vite@8.3.6
+2026-11-11T14:45:54.710633Z npm error Conflicting peer dependency: esbuild@0.28.2
+2026-11-11T14:45:54.71069Z npm error node_modules/esbuild
+2026-11-11T14:45:54.710743Z npm error   peerOptional esbuild@"^0.27.0 || ^0.28.0" from vite@8.3.6
+2026-11-11T14:45:54.761297Z Failed: build command exited with code: 1
+2026-11-11T14:45:55.559349Z Failed: error occurred while running build command

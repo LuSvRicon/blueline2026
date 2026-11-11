@@ -434,6 +434,12 @@
 @media (min-width: 840px) and (max-width: 1199px) {
   #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-toolbar {
     inset-inline: 12px;
+    padding-inline: 8px;
+    gap: 4px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-toolbar .game-tool,
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-toolbar #game-mode {
+    padding-inline: 8px;
   }
   #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-brand {
     min-width: 36px;
@@ -454,15 +460,57 @@
   #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock > .panel {
     padding: 10px;
   }
-  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .speed-ring {
-    width: 112px;
-    height: 112px;
-    flex-basis: 112px;
+  #ui.game-ui.dashboard-ui:not(.phone-landscape):not(.focus-mode) .game-dock .speed-ring {
+    width: min(112px, 100%);
+    height: auto;
+    aspect-ratio: 1;
+    flex: 0 0 auto;
   }
-  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .speed-num {
-    font-size: 46px;
+  #ui.game-ui.dashboard-ui:not(.phone-landscape):not(.focus-mode) .game-dock .speed-num {
+    font-size: clamp(34px, 4.2vw, 46px);
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape):not(.focus-mode) .game-dock .speed-tags {
+    top: 7px;
+    right: 7px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape):not(.focus-mode) .game-dock .dashboard-cluster-label {
+    align-self: flex-start;
+    margin-inline-start: 4px;
+    letter-spacing: 1px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape):not(.focus-mode) .game-dock .autopill {
+    gap: 4px;
+    padding-inline: 4px;
+    white-space: normal;
+    overflow: visible;
   }
   #ui.game-ui.dashboard-ui:not(.phone-landscape) .gauge-scale {
+    display: none;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .camera-360-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 6px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .camera-360-actions {
+    display: contents;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock #camera360-status {
+    grid-area: 2 / 1 / 3 / -1;
+    max-width: none;
+    white-space: normal;
+    font-size: 8px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .camera-360-modes {
+    grid-template-columns: minmax(0, 1.35fr) repeat(4, minmax(0, 1fr));
+    gap: 3px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .camera-360-modes button {
+    min-width: 0;
+    padding-inline: 0;
+    font-size: 9px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .camera-360-tag {
     display: none;
   }
 }

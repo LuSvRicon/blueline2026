@@ -1,4 +1,4 @@
-SOURCE 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94 — 214 files
+SOURCE 8677870e2fc3d6d654efbb2ad9ddde105c6686f23098c3fa9bc4f8eae0893895 — 214 files
 
 === vietnam-scenarios-test ===
 Vietnam scenarios: motorcycle weaving, bus boarding, queued congestion, disabled truck, and mixed rush hour verified
@@ -341,6 +341,6 @@ PASS highest detail remains enabled at 844×390, DPR3, samples4
 PASS highest detail remains enabled at 844×390, DPR1, samples0
 PASS constructor selects highest detail and registers loss/restore listeners
 GRAPHICS-RECOVERY PASS — 11 lifecycle/cleanup/retry/quality checks. Stubbed renderer verifies application behavior; real GPU context loss still requires browser testing.
-SOURCE FINAL 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94
+SOURCE FINAL 8677870e2fc3d6d654efbb2ad9ddde105c6686f23098c3fa9bc4f8eae0893895
 
-TEST SUITE PASS — 18 headless checks in 496.7s.
+TEST SUITE PASS — 18 headless checks in 435.3s.

@@ -1,0 +1,17 @@
+{
+  "capturedAt": "2026-11-11T15:05:54.041Z",
+  "input": {
+    "session": "00:12 · 0.05 km · ● ĐANG GHI",
+    "speed": "72"
+  },
+  "recorded": [
+    "175 text ● Đang ghi 00:11 · 692 khung hình",
+    "176 checkbox Đang bật âm thanh, Value: 1, ID: c-audio",
+    "178 text 100%"
+  ],
+  "played": [
+    "209 text ▶ Đang phát lại 00:00 · 1470 khung hình",
+    "212 text 00:03 · 0.00 km · PHÁT LẠI"
+  ],
+  "errors": []
+}

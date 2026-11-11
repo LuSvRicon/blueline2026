@@ -456,6 +456,30 @@
   #ui.game-ui.dashboard-ui .game-dock .console-action-copy small {
     display: none;
   }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .steering-controls {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .steering-controls button,
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .steering-controls #pedal-horn {
+    min-width: 0;
+    padding-inline: 2px;
+    white-space: nowrap;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .steering-controls kbd {
+    min-width: 14px;
+    padding-inline: 2px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .steering-readout {
+    grid-area: 2 / 1 / 3 / -1;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .pedal {
+    flex-direction: column;
+    gap: 3px;
+    padding: 4px 2px;
+    text-align: center;
+  }
   #ui.game-ui.dashboard-ui .game-dock .pedal-mechanism {
     width: 24px;
     height: 36px;
@@ -471,5 +495,26 @@
   }
   #ui.game-ui.dashboard-ui .game-dock .pedal-state {
     display: none;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .pedal .pedal-mechanism {
+    flex-basis: 36px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .pedal .pedal-arm {
+    left: 9px;
+    height: 34px;
+  }
+}
+
+@container (max-width: 115px) {
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .prnd-row {
+    gap: 2px;
+    padding: 3px;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .gear-select {
+    min-width: 0;
+    padding-inline: 0;
+  }
+  #ui.game-ui.dashboard-ui:not(.phone-landscape) .game-dock .gear-select b {
+    font-size: 17px;
   }
 }

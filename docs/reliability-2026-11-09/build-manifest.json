@@ -1,16 +1,16 @@
 {
-  "capturedAt": "2026-11-11T14:35:27.971Z",
-  "source": "79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94",
+  "capturedAt": "2026-11-11T14:59:38.860Z",
+  "source": "8677870e2fc3d6d654efbb2ad9ddde105c6686f23098c3fa9bc4f8eae0893895",
   "files": [
     {
-      "path": "assets/index-Cv4d9HLv.css",
-      "bytes": 89557,
-      "sha256": "2b976ee32433a941afc2f643db82997e85e323e5bb6233bc9bd374fb331ab3e9"
-    },
-    {
-      "path": "assets/index-CYHZBlGw.js",
+      "path": "assets/index-Bu95WS12.js",
       "bytes": 518176,
       "sha256": "599c7e76f9320f3e969f3e8ce736e5fa6fa88d3723fa2f4cf8d0635bbc618a89"
+    },
+    {
+      "path": "assets/index-CKMb0O7_.css",
+      "bytes": 92376,
+      "sha256": "f501faaef05ee155d08eb78c0d77880fe7d500741a717951b41eaebb3ae01391"
     },
     {
       "path": "assets/three-addons-VqhdXD9i.js",
@@ -20,7 +20,7 @@
     {
       "path": "index.html",
       "bytes": 1897,
-      "sha256": "817504cb82caf89d7197717806f00ee1fecf20cd989c43891ee9bf37ce0dcbc5"
+      "sha256": "f66803307cd75516822551c3a8ce287edc68cdf6511457d9255e564e64c63da3"
     },
     {
       "path": "models/car-concept/CarConcept.glb",
@@ -112,5 +112,11 @@
       "bytes": 656020,
       "sha256": "fe05dcd2d94de1822b447fcda2a5a0b875bf3811978d6454e3b42ea948936b64"
     }
+  ],
+  "previousBuild": "5a6743bd8108d85d7d87164608c3a92e119aaaec1ad5bba85aaf65c7fddd9486",
+  "changed": [
+    "assets/index-Bu95WS12.js",
+    "assets/index-CKMb0O7_.css",
+    "index.html"
   ]
 }

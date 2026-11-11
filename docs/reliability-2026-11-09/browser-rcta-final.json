@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-11-11T14:52:11.527Z",
+  "page": "http://127.0.0.1:4181/?map=city&mode=adas&scenario=reverse-crossing&weather=clear&intro=0&profile=vietnam",
+  "observed": [
+    "138 text VIỆT NAM / Phố đô thị / Lùi xe · xe máy cắt ngang",
+    "143 text R · phanh đỗ đã nhả",
+    "144 text CẢNH BÁO CẮT NGANG KHI LÙI · BÊN TRÁI",
+    "149 text CÓ XE CẮT NGANG PHÍA SAU",
+    "156 text Người lái 0% · ADAS 0%",
+    "157 text CÓ PHƯƠNG TIỆN CẮT NGANG"
+  ],
+  "errors": []
+}

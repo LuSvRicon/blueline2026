@@ -1,0 +1,183 @@
+{
+  "capturedAt": "2026-11-11T14:58:47.988Z",
+  "checks": [
+    {
+      "cameraButtons": 5,
+      "fullScreen": true,
+      "height": 768,
+      "pause": true,
+      "pedals": [
+        {
+          "height": 71,
+          "iconClear": true,
+          "inside": true,
+          "label": "PHANH",
+          "width": 54
+        },
+        {
+          "height": 71,
+          "iconClear": true,
+          "inside": true,
+          "label": "GA",
+          "width": 50
+        }
+      ],
+      "phone": false,
+      "reverseInside": true,
+      "ringInside": true,
+      "scripts": [
+        "http://127.0.0.1:4182/assets/index-Bu95WS12.js"
+      ],
+      "width": 840
+    },
+    {
+      "cameraButtons": 5,
+      "fullScreen": true,
+      "height": 768,
+      "pause": true,
+      "pedals": [
+        {
+          "height": 71,
+          "iconClear": true,
+          "inside": true,
+          "label": "PHANH",
+          "width": 54
+        },
+        {
+          "height": 71,
+          "iconClear": true,
+          "inside": true,
+          "label": "GA",
+          "width": 50
+        }
+      ],
+      "phone": false,
+      "reverseInside": true,
+      "ringInside": true,
+      "scripts": [
+        "http://127.0.0.1:4182/assets/index-Bu95WS12.js"
+      ],
+      "width": 870
+    },
+    {
+      "cameraButtons": 5,
+      "fullScreen": true,
+      "height": 768,
+      "pause": true,
+      "pedals": [
+        {
+          "height": 71,
+          "iconClear": true,
+          "inside": true,
+          "label": "PHANH",
+          "width": 54
+        },
+        {
+          "height": 71,
+          "iconClear": true,
+          "inside": true,
+          "label": "GA",
+          "width": 50
+        }
+      ],
+      "phone": false,
+      "reverseInside": true,
+      "ringInside": true,
+      "scripts": [
+        "http://127.0.0.1:4182/assets/index-Bu95WS12.js"
+      ],
+      "width": 1024
+    },
+    {
+      "cameraButtons": 5,
+      "fullScreen": true,
+      "height": 720,
+      "pause": true,
+      "pedals": [
+        {
+          "height": 71,
+          "iconClear": true,
+          "inside": true,
+          "label": "PHANH",
+          "width": 91
+        },
+        {
+          "height": 71,
+          "iconClear": true,
+          "inside": true,
+          "label": "GA",
+          "width": 84
+        }
+      ],
+      "phone": false,
+      "reverseInside": true,
+      "ringInside": true,
+      "scripts": [
+        "http://127.0.0.1:4182/assets/index-Bu95WS12.js"
+      ],
+      "width": 1280
+    },
+    {
+      "cameraButtons": 5,
+      "fullScreen": true,
+      "height": 1080,
+      "pause": true,
+      "pedals": [
+        {
+          "height": 102,
+          "iconClear": true,
+          "inside": true,
+          "label": "PHANH",
+          "width": 136
+        },
+        {
+          "height": 102,
+          "iconClear": true,
+          "inside": true,
+          "label": "GA",
+          "width": 126
+        }
+      ],
+      "phone": false,
+      "reverseInside": true,
+      "ringInside": true,
+      "scripts": [
+        "http://127.0.0.1:4182/assets/index-Bu95WS12.js"
+      ],
+      "width": 1920
+    },
+    {
+      "cameraButtons": null,
+      "fullScreen": true,
+      "height": 390,
+      "pause": true,
+      "pedals": [
+        {
+          "height": 97,
+          "iconClear": true,
+          "inside": true,
+          "label": "PHANH",
+          "width": 86
+        },
+        {
+          "height": 97,
+          "iconClear": true,
+          "inside": true,
+          "label": "GA",
+          "width": 78
+        }
+      ],
+      "phone": true,
+      "reverseInside": false,
+      "ringInside": null,
+      "scripts": [
+        "http://127.0.0.1:4182/assets/index-Bu95WS12.js"
+      ],
+      "width": 844
+    }
+  ],
+  "reverse": [
+    "219 text CAMERA LÙI · RCTA SẴN SÀNG"
+  ],
+  "errors": []
+}

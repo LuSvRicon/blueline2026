@@ -1,0 +1,24 @@
+{
+  "capturedAt": "2026-11-11T15:01:54.096Z",
+  "page": "http://127.0.0.1:4182/?map=ring-road&mode=adas&scenario=reverse-crossing&weather=rain&intro=0&profile=vietnam",
+  "input": "Chọn D, nhả phanh đỗ, hủy ACC, thêm xe dừng, giữ W 11,2 giây theo thời gian trình duyệt",
+  "telemetry": {
+    "brake": "Người lái 0% · ADAS 100%",
+    "display": "23.2 FPS · khung hình chậm P95 66.7 ms\nGiật >50 ms: 342 · nặng nhất 1183.3 ms\nBộ nhớ JS: 85 MB · lượt vẽ 461\nHình học 294 · texture 34 · khôi phục 0/0",
+    "height": 764,
+    "report": "{\"frames\":1612,\"visibleSeconds\":69.52959999999995,\"samples\":1612,\"sampleCapacity\":3600,\"fps\":23.184370397643622,\"frameP50Ms\":33.400000000001455,\"frameP95Ms\":66.70000000000073,\"frameP99Ms\":83.40000000000146,\"worstFrameMs\":1183.3,\"longFramesOver50Ms\":342,\"meanMainThreadWorkMs\":29.312903225810295,\"jsHeapBytes\":89034622,\"peakJsHeapBytes\":103922145,\"render\":{\"calls\":461,\"triangles\":2255463,\"geometries\":294,\"textures\":34},\"contextLosses\":0,\"contextRestores\":0}",
+    "scripts": [
+      "http://127.0.0.1:4182/assets/index-Bu95WS12.js"
+    ],
+    "speed": "0",
+    "width": 870
+  },
+  "observed": [
+    "146 text 0 va chạm",
+    "160 text AEB · ĐANG GIỮ DỪNG",
+    "161 text AEB · ĐANG GIỮ DỪNG",
+    "163 text 10.9 m",
+    "168 text Người lái 0% · ADAS 100%"
+  ],
+  "errors": []
+}
