@@ -13,9 +13,9 @@ export class CenterConsoleControls {
   constructor(root: HTMLElement, private sim: Simulation) {
     root.insertAdjacentHTML("beforeend", `
       <section class="center-console panel" aria-label="Cần số và phanh tay">
-        <div class="console-title"><span>TRUYỀN ĐỘNG</span><span class="console-engine-status" id="console-engine-state">ĐANG NỔ MÁY</span></div>
+        <div class="console-title"><span class="console-engine-status" id="console-engine-state">ĐANG NỔ MÁY</span></div>
         <div class="prnd-row" role="group" aria-label="Cần số PRND">
-          ${(["P", "R", "N", "D"] as Gear[]).map((gear) => `<button type="button" class="gear-select" data-gear="${gear}" aria-label="Số ${gear}"><b>${gear}</b><small>${({ P: "ĐỖ", R: "LÙI", N: "MO", D: "TIẾN" })[gear]}</small><i aria-hidden="true"></i></button>`).join("")}
+          ${(["P", "R", "N", "D"] as Gear[]).map((gear) => `<button type="button" class="gear-select" data-gear="${gear}" aria-label="Số ${gear}" title="${({ P: "Đỗ xe", R: "Số lùi", N: "Số mo", D: "Số tiến" })[gear]}"><b>${gear}</b></button>`).join("")}
         </div>
         <div class="console-actions">
           <button type="button" class="console-action console-engine-action" id="console-engine" aria-label="TẮT ĐỘNG CƠ"><span class="console-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v8M7.3 5.8a8 8 0 1 0 9.4 0"/></svg></span><span class="console-action-copy"><small>ĐỘNG CƠ</small><b id="console-engine-label">Tắt máy</b></span></button>
@@ -77,13 +77,13 @@ export class CenterConsoleControls {
     this.epbButton.setAttribute("aria-label", this.sim.epbEngaged ? "NHẢ PHANH TAY" : "KÉO PHANH TAY");
     this.epbButton.classList.toggle("engaged", this.sim.epbEngaged);
     this.epbButton.disabled = !humanMode;
-    this.state.textContent = this.notice || (this.sim.gear === "N" ? "N · ngắt truyền động · xe có thể trôi" : `${this.sim.gear} · ${this.sim.epbEngaged ? "phanh đỗ đang giữ xe" : "phanh đỗ đã nhả"}`);
+    this.state.textContent = this.notice || (this.sim.gear === "N" ? "N · xe có thể trôi" : `${this.sim.gear} · ${this.sim.epbEngaged ? "phanh đỗ đang giữ xe" : "phanh đỗ đã nhả"}`);
     this.state.classList.toggle("notice", Boolean(this.notice));
     const t = this.sim.telemetry;
-    const alert = t.adas.aeb
-      ? `AEB TỰ ĐỘNG · PHANH ${Math.round(t.adasBrakeForce * 100)}%`
-      : t.rearAeb
-        ? "PHANH TỰ ĐỘNG KHI LÙI"
+    const alert = t.rearAeb
+      ? "PHANH TỰ ĐỘNG KHI LÙI"
+      : t.adas.aeb
+        ? `AEB TỰ ĐỘNG · PHANH ${Math.round(t.adasBrakeForce * 100)}%`
         : t.rctaActive
           ? `CẢNH BÁO CẮT NGANG KHI LÙI${t.rctaLeft && t.rctaRight ? " · HAI BÊN" : t.rctaLeft ? " · BÊN TRÁI" : " · BÊN PHẢI"}`
           : this.sim.driverInput.throttle > 0 && this.sim.gear === "P"

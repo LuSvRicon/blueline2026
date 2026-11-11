@@ -1,11 +1,11 @@
 // A single fixed-step input path for keyboard, touch and standard gamepads.
 import { Simulation } from "../sim/Simulation.ts";
-import { isTypingTarget, launchMenuOpen } from "./input.ts";
+import { isTypingTarget, launchMenuOpen, drivingDrawerOpen } from "./input.ts";
 
-const KEY_ACTION: Record<string, "left" | "right" | "throttle" | "brake"> = {
+const KEY_ACTION: Record<string, "left" | "right" | "throttle" | "brake" | "horn"> = {
   KeyA: "left", ArrowLeft: "left", KeyD: "right", ArrowRight: "right",
   KeyW: "throttle", ArrowUp: "throttle", Space: "brake", KeyS: "brake",
-  KeyM: "brake", ArrowDown: "brake",
+  KeyM: "brake", ArrowDown: "brake", KeyF: "horn",
 };
 
 export class DriveControls {
@@ -13,7 +13,7 @@ export class DriveControls {
   steeringSensitivity = 1;
   gamepadDeadzone = .08;
   private held = new Set<string>();
-  private pointer = { throttle: 0, brake: 0, steer: 0 };
+  private pointer = { throttle: 0, brake: 0, steer: 0, horn: false };
   private steering = 0;
   private steeringVelocity = 0;
   private previousButtons = new Set<number>();
@@ -25,7 +25,7 @@ export class DriveControls {
   private previousCollisions = 0;
   private events = new AbortController();
 
-  constructor(private sim: Simulation, private onCameraSwitch?: () => void) {
+  constructor(private sim: Simulation, private onCameraSwitch?: () => void, private onHorn?: () => void) {
     this.lastMode = sim.controlMode;
     const options = { signal: this.events.signal };
     window.addEventListener("keydown", (event) => {
@@ -37,6 +37,7 @@ export class DriveControls {
         event.preventDefault();
         // Auto-repeat after a reset/blur is not a fresh driving command.
         if (event.repeat && !this.held.has(event.code)) return;
+        if (!event.repeat && KEY_ACTION[event.code] === "horn") this.onHorn?.();
         this.held.add(event.code);
       }
     }, options);
@@ -65,7 +66,7 @@ export class DriveControls {
 
     const pads = navigator.getGamepads?.() ?? [];
     const pad = Array.from(pads).find((candidate) => candidate?.connected && candidate.mapping === "standard");
-    let padSteer = 0, padThrottle = 0, padBrake = 0;
+    let padSteer = 0, padThrottle = 0, padBrake = 0, padHorn = false;
     if (pad) {
       const raw = pad.axes[0] ?? 0;
       const trigger = (index: number) => pad.buttons[index]?.value ?? 0;
@@ -76,6 +77,10 @@ export class DriveControls {
         padSteer = Math.abs(raw) > this.gamepadDeadzone ? Math.sign(raw) * (Math.abs(raw) - this.gamepadDeadzone) / (1 - this.gamepadDeadzone) : 0;
         padThrottle = Math.max(trigger(7), trigger(0));
         padBrake = Math.max(trigger(6), trigger(1));
+        padHorn = Boolean(pad.buttons[2]?.pressed || pad.buttons[10]?.pressed);
+        if ((pad.buttons[2]?.pressed && !this.previousButtons.has(2)) || (pad.buttons[10]?.pressed && !this.previousButtons.has(10))) {
+          this.onHorn?.();
+        }
         for (const index of [14, 15, 3]) {
           if (pad.buttons[index]?.pressed && !this.previousButtons.has(index)) {
             if (index === 3) this.onCameraSwitch?.();
@@ -108,18 +113,19 @@ export class DriveControls {
     if (Math.abs(this.steering - target) < .002 && Math.abs(this.steeringVelocity) < .02) { this.steering = target; this.steeringVelocity = 0; }
     const brake = Math.max(active.has("brake") ? 1 : 0, this.pointer.brake, padBrake);
     const throttle = Math.max(active.has("throttle") ? 1 : 0, this.pointer.throttle, padThrottle);
-    this.sim.setDriverInput({ steer: this.steering, throttle, brake, steeringOverride: Math.abs(targetSteer) > .01 });
+    const horn = active.has("horn") || this.pointer.horn || padHorn;
+    this.sim.setDriverInput({ steer: this.steering, throttle, brake, steeringOverride: Math.abs(targetSteer) > .01, horn });
   }
 
   clear(): void {
     this.revision++;
     this.held.clear();
-    this.pointer = { throttle: 0, brake: 0, steer: 0 };
+    this.pointer = { throttle: 0, brake: 0, steer: 0, horn: false };
     this.steering = 0;
     this.steeringVelocity = 0;
     this.previousButtons.clear();
     this.gamepadNeedsNeutral = true;
-    this.sim.setDriverInput({ steer: 0, throttle: 0, brake: 0 });
+    this.sim.setDriverInput({ steer: 0, throttle: 0, brake: 0, horn: false });
   }
 
   setPedalInputs(throttle: number, brake: number): void {
@@ -128,7 +134,15 @@ export class DriveControls {
     this.pointer.brake = Math.max(0, Math.min(1, brake));
   }
 
-  get canDrive(): boolean { return !this.sim.paused && this.humanMode() && !launchMenuOpen() && !this.sim.recorder.playing && !document.hidden && !this.unfocused; }
+  setHornInput(active: boolean): void {
+    if (!this.canDrive && active) return;
+    const next = Boolean(active && this.canDrive);
+    if (next && !this.pointer.horn) this.onHorn?.();
+    this.pointer.horn = next;
+    this.sim.setHorn(next);
+  }
+
+  get canDrive(): boolean { return !this.sim.paused && this.humanMode() && !launchMenuOpen() && !drivingDrawerOpen() && !this.sim.recorder.playing && !document.hidden && !this.unfocused; }
   setSteering(steer: number): void { if (this.canDrive) this.pointer.steer = Math.max(-1, Math.min(1, steer)); }
   private humanMode(): boolean { return this.sim.controlMode === "manual" || this.sim.controlMode === "adas"; }
   dispose(): void { this.events.abort(); this.clear(); }

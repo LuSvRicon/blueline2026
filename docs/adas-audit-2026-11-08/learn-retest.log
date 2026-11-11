@@ -1,0 +1,37 @@
+Command: npm test -- learn-test
+Source: corrected scripts/learn-test.ts, unchanged src/learn model/training/data.
+
+> blueline@0.1.0 test
+> node scripts/test.mjs learn-test
+
+=== learn-test ===
+collected 18200 expert samples
+initial train: fixed expert loss 0.0917 -> 0.0288; epoch loss 0.0441 -> 0.0271
+  DAgger 0: samples 28000, loss 0.0190
+  DAgger 1: samples 37800, loss 0.0195
+  DAgger 2: samples 47600, loss 0.0189
+  DAgger 3: samples 57400, loss 0.0169
+  DAgger 4: samples 60000, loss 0.0144
+network now driving:
+  [NN drives highway] dist 0.85 km | speed 6.3-28.3 | max|d| 4.17 (half 5.55) | crash 0
+  [NN drives trucks] dist 0.70 km | speed 8.1-24.6 | max|d| 4.04 (half 5.55) | crash 0
+
+LEARN-TEST PASS — the from-scratch neural network learned to drive.
+
+TEST SUITE PASS — 1 headless checks in 88.0s.
+Exit code: 0
+
+Negative control: in a temporary compiled bundle only, replace the MLP weight-update
+call with zero reported batch loss. No workspace production source was modified.
+The same test must fail because predictions did not improve:
+
+collected 18200 expert samples
+initial train: fixed expert loss 0.0917 -> 0.0917; epoch loss 0.0000 -> 0.0000
+LEARN-TEST FAIL: loss did not decrease on fixed expert examples (network isn't learning)
+Exit code: 1 (expected)
+
+Interpretation: the old assertion compared an already-trained first epoch's
+online average to a later epoch, rather than comparing the same examples before
+and after learning. The corrected assertion preserves the original 40% decrease
+threshold and every existing driving invariant. The fixed expert examples are
+a sampled subset of the training data, not an unseen holdout dataset.

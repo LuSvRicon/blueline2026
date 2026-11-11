@@ -23,8 +23,22 @@ import { ReferencePath } from "../world/ReferencePath.ts";
 import { Road } from "../world/Road.ts";
 import { Vehicle } from "../vehicle/Vehicle.ts";
 import { AssistanceStatus, emptyAssistanceStatus } from "./ExtendedAssistance.ts";
-import {bodyContact} from '../core/collision.ts';
 import { assistanceAvailability, ASSISTANCE_REFERENCE, AvailabilityFrame } from './AssistancePolicy.ts';
+import {
+  AEBAvailability,
+  AEBCalibration,
+  AEBDecisionOutput,
+  AEBState,
+  AEBStateMachine,
+  AEBStateMachineSnapshot,
+  BrakeArbiter,
+  BrakeArbiterSource,
+  CollisionPredictor,
+  DEFAULT_AEB_CALIBRATION,
+  PerceptionMode,
+  TargetRisk,
+  assessAEBAvailability,
+} from "./AEB.ts";
 
 export type LaneDeparture = "none" | "left" | "right";
 export type AlcState = "off" | "armed" | "active" | "blocked";
@@ -67,6 +81,11 @@ export interface ADASConfig {
   shoulderLaneChange:boolean;
   curveSpeedAssist: boolean;
   emergencyShoulderStop: boolean;
+  /** Optional explicit road-friction estimate override for controller [0.2..1.1];
+   *  null uses weather/wiper prior + online ABS slip adaptation (never ground-truth cheat). */
+  estimatedMu?: number | null;
+  /** Detailed AEB calibration & override policy parameters. */
+  aebCalibration?: Partial<AEBCalibration>;
 }
 
 export interface ADASStatus {
@@ -132,6 +151,22 @@ export interface ADASStatus {
   highwayAssistActive: boolean;
   trafficJamAssistActive: boolean;
   aebCause?:string;
+  /** Explicit AEB state machine state. */
+  aebState?: AEBState;
+  /** Independent AEB availability status. */
+  aebAvailability?: AEBAvailability;
+  /** Explicit reason when AEB is degraded or unavailable. */
+  aebAvailabilityReason?: string;
+  /** Selected critical target ID for AEB/FCW, if any. */
+  aebTargetId?: number | null;
+  /** Remaining Time-To-Brake margin (s) before full braking limit, if valid. */
+  aebTtb?: number | null;
+  /** Minimum predicted 2D corridor gap under full braking (m), if valid. */
+  aebMinGap?: number | null;
+  /** Winning longitudinal brake arbiter source. */
+  arbiterSource?: BrakeArbiterSource;
+  /** Active perception input mode ("sensor" vs "ground-truth-debug"). */
+  perceptionMode?: PerceptionMode;
 }
 
 export interface DriverInput {
@@ -140,6 +175,8 @@ export interface DriverInput {
   brake: number; // [0, 1]
   /** Raw driver intent before speed-dependent keyboard steering limits. */
   steeringOverride?: boolean;
+  /** True while the driver holds the vehicle horn. */
+  horn?: boolean;
 }
 
 export interface ADASFrame extends AvailabilityFrame {
@@ -161,6 +198,12 @@ export interface ADASFrame extends AvailabilityFrame {
   trafficLight?: TrafficLightSighting | null;
   sensorsAvailable?: boolean;
   laneConfidence?: number;
+  /** Controller prior for road friction (e.g. from weather/wipers), kept distinct from true world `ego.surfaceMu`. */
+  estimatedMu?: number;
+  /** True when obstacles come from sensor/tracker pipeline; false in explicit ground-truth debug mode. */
+  usePerception?: boolean;
+  /** Current simulation clock (s). */
+  simTime?: number;
 }
 
 export interface ADASOutput {
@@ -202,6 +245,8 @@ export const ADAS_GAP_NOTCHES = [1.0, 1.3, 1.6, 2.0, 2.5, 3.0] as const;
 export interface ADASRuntimeState {
   config: ADASConfig;
   aebLatched: boolean;
+  aebStateSnapshot?: AEBStateMachineSnapshot;
+  adaptedMu?: number | null;
   alcTargetLane: number | null;
   alcTimer: number;
   /** Distance-aware progress; absent in legacy time-only recordings. */
@@ -220,6 +265,8 @@ export interface ADASRuntimeState {
   steeringReleaseTime: number;
   cruiseSetSpeed: number | null;
   normalAccel: number;
+  isaDecel?: number;
+  cruiseWasActive?: boolean;
   cruisePedalOverride?:boolean;
   yellowDecision: { id: number; stop: boolean } | null;
   laneTarget: number | null;
@@ -229,7 +276,17 @@ export interface ADASRuntimeState {
 export class ADASController {
   readonly config: ADASConfig = { ...DEFAULT_ADAS_CONFIG };
   status: ADASStatus = emptyStatus();
+  readonly predictor = new CollisionPredictor();
+  readonly aebStateMachine = new AEBStateMachine();
+  readonly brakeArbiter = new BrakeArbiter();
+  lastAebDecision: AEBDecisionOutput | null = null;
+  lastAebRisk: TargetRisk | null = null;
+  lastAccDecelReq = 0;
+  lastNonAebDecelReq = 0;
+  lastDriverDecelReq = 0;
   private aebLatched = false;
+  private adaptedMu: number | null = null;
+  private brakingSaturationTimer = 0;
   private alcTargetLane: number | null = null;
   private alcTimer = 0;
   private alcProgress = 0;
@@ -247,10 +304,74 @@ export class ADASController {
   private steeringReleaseTime = 0;
   private cruiseSetSpeed: number | null = null;
   private normalAccel = 0;
+  private isaDecel = 0;
+  private cruiseWasActive = false;
   private cruisePedalOverride=false;
   private yellowDecision: { id: number; stop: boolean } | null = null;
   private laneTarget: number | null = null;
   private confirmedSignal: number | null = null;
+  private vehicleProfileOverrides: Partial<AEBCalibration> = {};
+
+  constructor(initialConfig: Partial<ADASConfig> = {}) {
+    Object.assign(this.config, initialConfig);
+  }
+
+  setVehicleProfileOverrides(overrides: Partial<AEBCalibration> = {}): void {
+    this.vehicleProfileOverrides = { ...overrides };
+  }
+
+  resolvedCalibration(): AEBCalibration {
+    const custom = this.config.aebCalibration;
+    const veh = this.vehicleProfileOverrides;
+    if (!custom && Object.keys(veh).length === 0) return DEFAULT_AEB_CALIBRATION;
+    return {
+      ...DEFAULT_AEB_CALIBRATION,
+      ...veh,
+      ...(custom ?? {}),
+      overridePolicy: {
+        ...DEFAULT_AEB_CALIBRATION.overridePolicy,
+        ...(veh.overridePolicy ?? {}),
+        ...(custom?.overridePolicy ?? {}),
+      },
+    };
+  }
+
+  private resolveEstimatedMu(frame: ADASFrame): number {
+    if (typeof this.config.estimatedMu === "number" && Number.isFinite(this.config.estimatedMu)) {
+      return clamp(this.config.estimatedMu, 0.2, 1.1);
+    }
+    const prior = clamp(frame.estimatedMu ?? frame.ego.surfaceMu, 0.2, 1.1);
+    const ego = frame.ego;
+    const prevBrakeReq = Math.max(this.lastDriverDecelReq, this.lastAebDecision?.decelDemand ?? 0);
+    if (prevBrakeReq > 2.2 && ego.v > 1.2 && ego.a < -0.5) {
+      this.brakingSaturationTimer += Math.max(0, frame.dt);
+      if (this.brakingSaturationTimer >= 0.22) {
+        const gradeEst = 9.81 * Math.sin(ego.roadGrade);
+        const achievedTireDecel = Math.max(0.5, -ego.a - gradeEst);
+        const capAtPrior = ego.enableWheelSlipDynamics
+          ? Math.min(ego.maxDecel, 9.81 * prior)
+          : ego.maxDecel * prior;
+        const expectedDecel = Math.min(prevBrakeReq, capAtPrior);
+        if (achievedTireDecel < expectedDecel * 0.88 || ego.wheelAbsActive) {
+          const measuredMu = ego.wheelAbsActive
+            ? clamp(achievedTireDecel / (9.81 * 0.94), 0.2, prior)
+            : clamp(achievedTireDecel / Math.max(ego.maxDecel, 1), 0.2, prior);
+          this.adaptedMu = this.adaptedMu === null ? measuredMu : this.adaptedMu + (measuredMu - this.adaptedMu) * 0.35;
+        }
+      }
+    } else {
+      this.brakingSaturationTimer = 0;
+      if (this.adaptedMu !== null && this.adaptedMu > prior) {
+        this.adaptedMu = prior;
+      }
+    }
+    return this.adaptedMu !== null ? Math.min(prior, this.adaptedMu) : prior;
+  }
+
+  resetFrictionAdaptation(): void {
+    this.adaptedMu = null;
+    this.brakingSaturationTimer = 0;
+  }
 
   getSetSpeed(fallback: number): number { return this.cruiseSetSpeed ?? fallback; }
   get laneChangeInProgress():boolean { return this.alcTargetLane!==null; }
@@ -259,19 +380,30 @@ export class ADASController {
   }
 
   cancelCruise(): void { this.cruiseCancelled = true; }
+  setLaneTarget(lane: number): void { this.laneTarget = lane; }
+  releaseAebLatch(): void {
+    this.aebLatched = false;
+    this.aebStateMachine.releaseLatch();
+    this.status.aeb = false;
+    this.status.aebHolding = false;
+    this.status.aebState = this.aebStateMachine.state;
+  }
   releaseLaneOwnership():void { this.laneTarget=null;this.alcTargetLane=null;this.alcRequestedDir=0;this.alcArmTimer=0;this.alcProgress=0; }
   resumeCruise(): void { this.cruiseCancelled = false; this.cruiseHoldTime = 0; }
 
   captureState(): ADASRuntimeState {
     return {
       config: { ...this.config }, aebLatched: this.aebLatched,
+      aebStateSnapshot: this.aebStateMachine.captureState(),
+      adaptedMu: this.adaptedMu,
       alcTargetLane: this.alcTargetLane, alcTimer: this.alcTimer, alcProgress:this.alcProgress, alcComplete: this.alcComplete,
       alcArmTimer: this.alcArmTimer, alcRequestedDir: this.alcRequestedDir,
       alcBlocked: this.alcBlocked, alcAborted: this.alcAborted, alcStartD: this.alcStartD,
       lastTsr: this.lastTsr, cruiseCancelled: this.cruiseCancelled, cruiseHoldTime: this.cruiseHoldTime,
       alcCancelledSignal: this.alcCancelledSignal, alcReason: this.alcReason,
       steeringReleaseTime: this.steeringReleaseTime, cruiseSetSpeed: this.cruiseSetSpeed,
-      normalAccel: this.normalAccel, yellowDecision: this.yellowDecision ? { ...this.yellowDecision } : null,
+      normalAccel: this.normalAccel, isaDecel: this.isaDecel, cruiseWasActive: this.cruiseWasActive,
+      yellowDecision: this.yellowDecision ? { ...this.yellowDecision } : null,
       cruisePedalOverride:this.cruisePedalOverride,
       laneTarget: this.laneTarget,
       confirmedSignal: this.confirmedSignal,
@@ -284,19 +416,26 @@ export class ADASController {
       // Older recordings have display telemetry only. Preserve explicit safety
       // cancellations/holds rather than inheriting another live run's memory.
       this.cruiseCancelled = status.accState === 'cancelled' || status.accState === 'off';
+      this.cruiseWasActive = status.accActive;
       this.cruiseHoldTime = status.accState === 'resume-required' ? 3 : 0;
       this.cruiseSetSpeed = status.setSpeed > 0 ? status.setSpeed : null;
       this.aebLatched = status.aeb || status.aebHolding;
+      this.aebStateMachine.restoreState(undefined, status.aeb || status.aebHolding);
       if (status.timeGap > 0) this.config.timeGap = status.timeGap;
       return;
     }
     for (const key of Object.keys(DEFAULT_ADAS_CONFIG) as (keyof ADASConfig)[]) {
+      if (key === "estimatedMu" || key === "aebCalibration") continue;
       const value = state.config[key];
       if (typeof value === typeof DEFAULT_ADAS_CONFIG[key] && (typeof value !== 'number' || Number.isFinite(value))) {
-        (this.config[key] as boolean | number | string) = value;
+        (this.config as unknown as Record<string, unknown>)[key] = value;
       }
     }
+    if (state.config.estimatedMu !== undefined) this.config.estimatedMu = state.config.estimatedMu;
+    if (state.config.aebCalibration !== undefined) this.config.aebCalibration = { ...state.config.aebCalibration };
     this.aebLatched = state.aebLatched;
+    this.aebStateMachine.restoreState(state.aebStateSnapshot, state.aebLatched);
+    this.adaptedMu = state.adaptedMu ?? null;
     this.alcTargetLane = state.alcTargetLane;
     this.alcTimer = state.alcTimer;
     this.alcProgress = state.alcProgress ?? state.alcTimer / ASSISTANCE_REFERENCE.alcNominalSeconds;
@@ -314,6 +453,8 @@ export class ADASController {
     this.steeringReleaseTime = state.steeringReleaseTime;
     this.cruiseSetSpeed = state.cruiseSetSpeed;
     this.normalAccel = state.normalAccel;
+    this.isaDecel = state.isaDecel ?? 0;
+    this.cruiseWasActive = state.cruiseWasActive ?? false;
     this.cruisePedalOverride=state.cruisePedalOverride??false;
     this.yellowDecision = state.yellowDecision ? { ...state.yellowDecision } : null;
     this.laneTarget = state.laneTarget;
@@ -357,101 +498,65 @@ export class ADASController {
     const availability = assistanceAvailability(frame);
     const sensorsAvailable = availability.forward;
     const laneAvailable = availability.lane;
+    const muEst = this.resolveEstimatedMu(frame);
+    const calibration = this.resolvedCalibration();
+    const perceptionMode: PerceptionMode = (frame.usePerception ?? true) ? "sensor" : "ground-truth-debug";
+
     if (input.brake > 0 || !availability.cruise) this.cancelCruise();
     let cruiseActive = this.config.acc && !this.cruiseCancelled && availability.cruise;
     const brakingHorizon = Math.max(
       80,
       (ego.v * ego.v) / (2 * Math.max(ego.maxDecel * 0.8, 1)) + ego.v * 0.25 + 10,
     );
-    let lead: { obstacle: Obstacle; gap: number; ahead: number } | null = null;
-    let fcw = false;
-    let fcwLevel: 0 | 1 | 2 = 0;
-    let aebRequested = false;
-    let requestedBrakeForce = 0;
+    let lead: { obstacle: Obstacle; gap: number; ahead: number; id: number } | null = null;
     let blindSpotLeft = false;
     let blindSpotRight = false;
     let parkingFront: number | null = null;
-    let aebCause='';
 
-    for (const obstacle of obstacles) {
+    // Canonical obstacle ordering for ACC lead / BSM / USS so every output is array-order invariant.
+    const orderedObstacles = [...obstacles].sort((a, b) =>
+      ((a.id ?? Infinity) - (b.id ?? Infinity)) ||
+      (a.s - b.s) ||
+      (a.d - b.d) ||
+      (a.v - b.v),
+    );
+
+    const inForwardCarriageway = (o: Obstacle) =>
+      o.kind === "ped" ||
+      (o.v >= -1.0 && o.d >= road.forwardLeftEdge - 0.5 && o.d <= road.forwardRightEdge + road.shoulderWidth + 0.5);
+
+    for (const obstacle of orderedObstacles) {
       const ds = wrapDiff(obstacle.s, egoS, path.length);
       const dd = obstacle.d - egoD;
       const gap = ds - (ego.dims.length + obstacle.length) / 2;
-      const closingSpeed = ego.v - obstacle.v;
-      const ttc = closingSpeed > 0.1 ? gap / closingSpeed : Infinity;
       const rawLateralReach = (ego.dims.width + obstacle.width) / 2 + 0.25;
-      // For crossing pedestrians (or merging vehicles), predict lateral position at arrival time (ttc)
-      let inPath = Math.abs(dd) <= rawLateralReach;
-      if (!inPath && obstacle.vd && Math.abs(obstacle.vd) > 0.1 && ttc > 0 && ttc < 4.0) {
-        const predictedDd = dd + obstacle.vd * ttc;
-        // If they will cross into our path, or are currently crossing through
-        if (Math.abs(predictedDd) <= rawLateralReach || (dd * predictedDd <= 0)) {
-          inPath = true;
-        }
-      }
+      const confirmedTrack = obstacle.confirmed !== false;
+      const inAccCorridor = confirmedTrack && !obstacle.roadBoundary && inForwardCarriageway(obstacle) && Math.abs(dd) <= rawLateralReach;
 
-      // When the driver owns steering, inspect the bicycle path in world space
-      // rather than assuming the car will follow the road centre around a bend.
-      // Lane-centred driving keeps the established Frenet sensor corridor.
-      if(!this.config.laneCentering||input.steeringOverride||Math.abs(input.steer)>.05){
-        inPath=false;
-        const curvature=Math.tan(clamp(input.steer,-1,1)*ego.maxSteer)/ego.dims.wheelbase;
-        const horizon=Math.min(4,Math.max(2,ego.v/Math.max(ego.maxDecel*ego.surfaceMu,1)+.5));
-        for(let t=0;t<=horizon;t+=.1){
-          const angle=ego.yaw+ego.v*curvature*t;
-          const x=Math.abs(curvature)<1e-5?ego.x+ego.v*Math.cos(ego.yaw)*t:ego.x+(Math.sin(angle)-Math.sin(ego.yaw))/curvature;
-          const y=Math.abs(curvature)<1e-5?ego.y+ego.v*Math.sin(ego.yaw)*t:ego.y-(Math.cos(angle)-Math.cos(ego.yaw))/curvature;
-          const o=path.toCartesian(obstacle.s+obstacle.v*t,obstacle.d+obstacle.vd*t);
-          if(bodyContact({x,y,yaw:angle,...ego.dims},{x:o.x,y:o.y,yaw:o.heading,length:obstacle.length,width:obstacle.width},.3)){inPath=true;break;}
-        }
-      }
-      if (sensorsAvailable && ds > 0 && ds <= brakingHorizon && inPath) {
-        // Evaluate every hazard independently. ACC's nearest target must not
-        // make emergency braking depend on obstacle-array ordering.
-        if (!lead || ds < lead.ahead) lead = { obstacle, gap, ahead: ds };
-        const approaching = closingSpeed > .2 || (ego.v > .3 && gap < this.config.standstillGap);
-        const gapWarn = Math.max(8, ego.v * 0.8);
-        if (this.config.fcw && approaching && (ttc <= this.config.warningTtc || gap <= gapWarn)) {
-          fcw = true;
-          fcwLevel = Math.max(fcwLevel, 1) as 1 | 2;
-        }
-        // Trigger from stopping distance, not TTC alone. TTC can still look
-        // comfortable after the remaining distance is already too short to stop.
-        const closing = Math.max(closingSpeed, 0);
-        // Add a safety buffer for pedestrians or high speeds
-        const reactionMargin = (obstacle.kind === "ped" ? 3.5 : 2.5) + ego.v * .25 + closing * .10;
-        // A moving lead can keep braking after we start braking. Squaring only
-        // relative speed assumes it will maintain its current speed, and can
-        // trigger too late even though both cars could have stopped safely.
-        const availableDecel=Math.max(ego.maxDecel*ego.surfaceMu*.95,1);
-        const leadStoppingDistance=Math.max(0,obstacle.v)**2/(2*8);
-        const stoppingGap=Math.max(closing**2/(2*availableDecel),ego.v**2/(2*availableDecel)-leadStoppingDistance)+reactionMargin;
-        const urgent = gap <= stoppingGap * 1.15 || ttc <= this.config.brakingTtc;
-        if (urgent && approaching && this.config.fcw) fcwLevel = 2;
-        const availableGap = Math.max(gap - reactionMargin+leadStoppingDistance, .5);
-        const requestedDecel = ego.v**2 / (2 * availableGap);
-        const requiredPressure = clamp(requestedDecel / Math.max(ego.maxDecel * ego.surfaceMu, .1), 0, 1);
-        const needsBrakeAssist = input.brake > 0 && requiredPressure > input.brake + .04 && ttc < this.config.warningTtc;
-        if (this.config.aeb && approaching && (gap <= stoppingGap || ttc <= this.config.brakingTtc || gap < 2 || needsBrakeAssist)) {
-          aebRequested = true;
-          // Brake to the estimated stopping demand when the driver is already
-          // braking; if there is no pedal input, apply full emergency pressure.
-          const demand = input.brake > 0
-            ? requiredPressure
-            : 1;
-          requestedBrakeForce = Math.max(requestedBrakeForce, demand);
-          const cause=Math.abs(obstacle.vd)>.35?'Vật cắt vào đường xe chạy':'Không đủ khoảng cách dừng an toàn';
-          if(!aebCause||cause<aebCause)aebCause=cause;
+      if (sensorsAvailable && ds > 0 && ds <= brakingHorizon && inAccCorridor) {
+        const obsId = obstacle.id ?? Infinity;
+        if (!lead || ds < lead.ahead - 1e-6 || (Math.abs(ds - lead.ahead) <= 1e-6 && obsId < lead.id)) {
+          lead = { obstacle, gap, ahead: ds, id: obsId };
         }
       }
 
       // Positive d is the driver's right in the rendered road convention.
-      const rearClosing=obstacle.v-ego.v;
-      const rearApproach=ds<0&&rearClosing>.5&&(-ds-(ego.dims.length+obstacle.length)/2)/rearClosing<4.5;
-      if (!obstacle.roadBoundary && availability.sensors.rearRadar && this.config.bsm && ds >= -100 && (ds >= -8 || rearApproach) && ds <= 3) {
+      // Exclude oncoming traffic in opposing lanes and parked/receding objects far behind.
+      const rearClosing = obstacle.v - ego.v;
+      const rearApproach = ds < 0 && rearClosing > .5 && (-ds - (ego.dims.length + obstacle.length) / 2) / rearClosing < 4.5;
+      const inSameDirectionCorridor = obstacle.v >= -0.5 && obstacle.d >= road.forwardLeftEdge - 0.5 && obstacle.d <= road.forwardRightEdge + road.shoulderWidth + 0.5;
+      const recedingBehind = ds < -4 && ds + obstacle.length / 2 < -ego.dims.length / 2 && ego.v - obstacle.v > 6;
+      const wasActiveSide = dd > 0 ? this.status.blindSpotRight : this.status.blindSpotLeft;
+      const bsmMaxDs = wasActiveSide ? 4.2 : 3.0;
+      const bsmMinDs = wasActiveSide ? -9.5 : -8.0;
+      // A bus/trailer can have its centre outside the radar's calibrated
+      // centre window while its body still occupies the space beside us.
+      const alongside = Math.abs(ds) < (ego.dims.length + obstacle.length) / 2 + .5;
+      const inBlindSpot = alongside || ((ds >= bsmMinDs || rearApproach) && ds <= bsmMaxDs);
+      if (confirmedTrack && !obstacle.roadBoundary && inSameDirectionCorridor && !recedingBehind && availability.sensors.rearRadar && this.config.bsm && ds >= -100 && inBlindSpot) {
         const lateral = Math.abs(dd);
-        const nearSide = (ego.dims.width + obstacle.width) / 2 + 0.15;
-        const outerEdge = nearSide + laneWidth * 0.75;
+        const nearSide = (ego.dims.width + obstacle.width) / 2 + (wasActiveSide ? 0.05 : 0.15);
+        const outerEdge = nearSide + laneWidth * (wasActiveSide ? 0.92 : 0.78);
         if (lateral >= nearSide && lateral <= outerEdge) {
           if (dd > 0) blindSpotRight = true;
           else blindSpotLeft = true;
@@ -465,28 +570,114 @@ export class ADASController {
       }
     }
 
-    // Keep the brake applied if the driver continues to request acceleration.
-    // Without this hold, throttle resumes as soon as speed reaches zero, causing
-    // repeated brake/re-acceleration pulses into the same stationary obstacle.
-    if (aebRequested) this.aebLatched = true;
-    if (aebRequested) { this.cancelCruise(); cruiseActive = false; }
-    const leadPullingAway=lead!==null&&lead.obstacle.v>.8&&lead.gap>this.config.standstillGap+1&&lead.obstacle.v>ego.v;
-    if (!this.config.aeb || !sensorsAvailable || leadPullingAway || (!lead&&ego.v<.3&&input.throttle<=0)) this.aebLatched = false;
-    const adasBrakeForce = aebRequested ? Math.max(requestedBrakeForce, input.brake) : 0;
-    const aebHolding = this.config.aeb && this.aebLatched && ego.v < .3;
-    const aeb = !aebHolding && this.config.aeb && (
-      (aebRequested && adasBrakeForce > input.brake + 0.02) ||
-      (this.aebLatched && (input.throttle > 0 || ego.v >= .3))
-    );
-    if (aeb) this.aebLatched = true;
-    const appliedAebForce = aebHolding ? 1 : aeb
-      ? Math.max(adasBrakeForce, aebRequested ? 0 : 1)
-      : 0;
+    // Preliminary lateral state for 2D ego trajectory prediction in CollisionPredictor.
+    const onShoulder = road.shoulderWidth > 0 && egoD > road.forwardRightEdge && egoD + ego.dims.width / 2 <= road.pavedHalfWidth + .05;
+    const currentLane = onShoulder ? road.numLanes : road.laneOf(egoD);
+    const steeringOverride = input.steeringOverride ?? Math.abs(input.steer) > .05;
+    const inCarriageway = egoD >= road.forwardLeftEdge - .1 && egoD <= road.forwardRightEdge + .1;
+    const prelimCenterLane = this.alcTargetLane ?? this.laneTarget ?? currentLane;
+    const prelimTargetLaneD = this.laneCenter(road, prelimCenterLane);
+    const prelimLaneAssist = (inCarriageway || onShoulder && (this.alcTargetLane !== null || this.config.shoulderLaneChange)) &&
+      laneAvailable && !steeringOverride && this.steeringReleaseTime === 0 && (this.config.laneCentering || this.alcTargetLane !== null);
+    const manualSteer = clamp(input.steer, -1, 1) * ego.maxSteer;
+    const predictedSteerCmd = prelimLaneAssist
+      ? ego.delta
+      : (Math.abs(manualSteer) > 1e-4 || steeringOverride ? manualSteer : ego.delta);
+
+    // ---- modular collision prediction & AEB state machine -----------------
+    const hasCoastingTarget = orderedObstacles.some((o) => (o.coastingSec ?? 0) > 0.02);
+    const aebAvail = assessAEBAvailability(this.config.aeb, frame, hasCoastingTarget);
+    const evalAvail = !this.config.aeb && this.config.fcw
+      ? assessAEBAvailability(true, frame, hasCoastingTarget)
+      : aebAvail;
+    const prefillReady =
+      this.aebStateMachine.state === "WARN" ||
+      this.aebStateMachine.state === "PARTIAL" ||
+      this.aebStateMachine.state === "EMERGENCY";
+
+    const pred = evalAvail.availability !== "unavailable"
+      ? this.predictor.evaluate({
+          ego,
+          egoS,
+          egoD,
+          path,
+          road,
+          obstacles: orderedObstacles,
+          steerCmd: predictedSteerCmd,
+          driverSteerInput: input.steer,
+          driverThrottle: input.throttle,
+          driverBrake: input.brake,
+          laneAssistActive: prelimLaneAssist,
+          targetLaneD: prelimTargetLaneD,
+          estimatedMu: muEst,
+          prefillReady,
+          availability: evalAvail,
+          calibration,
+          indicator,
+        })
+      : { risks: [] as TargetRisk[], critical: null, estimatedBrakeCap: ego.maxDecel * muEst };
+
+    const wasHoldingBeforeStep = this.aebStateMachine.state === "HOLD";
+    const aebOut = this.aebStateMachine.step({
+      ego,
+      risks: pred.risks,
+      critical: pred.critical,
+      availability: aebAvail,
+      driverThrottle: input.throttle,
+      driverBrake: input.brake,
+      driverSteer: input.steer,
+      steeringOverride,
+      usePerception: frame.usePerception ?? true,
+      calibration,
+      dt,
+    });
+    this.lastAebDecision = aebOut;
+    this.lastAebRisk = aebOut.targetRisk ?? pred.critical;
+
+    // FCW warning (remains operational when FCW=true even if AEB=false).
+    let fcw = false;
+    let fcwLevel: 0 | 1 | 2 = 0;
+    if (this.config.fcw) {
+      if (this.config.aeb) {
+        fcw = aebOut.fcw;
+        fcwLevel = aebOut.fcwLevel;
+      } else if (pred.critical && pred.critical.hasCollisionCourse) {
+        const fcwHyst = this.status.fcw ? 0.55 : 0;
+        if (pred.critical.ttb <= 0.7 || pred.critical.tti <= 1.6) {
+          fcw = true;
+          fcwLevel = 2;
+        } else if (pred.critical.ttb <= calibration.warnTtbSec + fcwHyst || pred.critical.tti <= calibration.warnTtiSec + fcwHyst) {
+          fcw = true;
+          fcwLevel = 1;
+        }
+      }
+    }
+
+    if (
+      aebOut.state === "EMERGENCY" ||
+      (aebOut.holdActive && !wasHoldingBeforeStep) ||
+      (aebOut.aebActive && (ego.v < 2.0 || input.brake > 0 || (aebOut.targetRisk && aebOut.targetRisk.obstacle.v < 0.8)))
+    ) {
+      this.cancelCruise();
+      cruiseActive = false;
+    } else if (aebOut.holdActive) {
+      cruiseActive = false;
+    }
+
+    const driverDecelNominal = clamp(input.brake, 0, 1) * ego.maxDecel;
+    const aebHolding = aebOut.holdActive;
+    const aeb = aebOut.aebActive && (input.brake <= 0 || aebOut.decelDemand > driverDecelNominal + 0.05);
+    this.aebLatched = aeb || aebHolding;
+    const aebCause = aebHolding ? "Đang giữ dừng trước vật cản" : aebOut.cause;
 
     // ---- traffic-sign recognition / intelligent speed assist --------------
-    const tsrLimitKph = this.config.tsr && availability.sensors.camera ? frame.speedLimitKph ?? null : null;
+    // Passing a sign does not end its restriction. Retain the recognised limit
+    // until a replacement sign, explicit TSR disable, or session reset. Camera
+    // loss suspends the output without erasing the last recognised sign.
+    if (!this.config.tsr) this.lastTsr = null;
+    const tsrLimitKph = this.config.tsr && availability.sensors.camera ? frame.speedLimitKph ?? this.lastTsr : null;
     const tsrNew = tsrLimitKph !== null && tsrLimitKph !== this.lastTsr;
-    this.lastTsr = tsrLimitKph;
+    if (tsrLimitKph !== null) this.lastTsr = tsrLimitKph;
     const signCapMps = tsrLimitKph !== null ? tsrLimitKph / 3.6 : Infinity;
     const setSpeed = this.getSetSpeed(desiredSpeed);
     const isaLimiting = this.config.isa && this.config.isaMode === 'limit';
@@ -506,7 +697,7 @@ export class ADASController {
     let targetSpeed = cruiseActive ? speedCap : 0;
     let accHolding = false;
     const desiredGap = this.config.standstillGap + ego.v * this.config.timeGap;
-    const comfortDecel = Math.min(2.8, ego.maxDecel * ego.surfaceMu * .55);
+    const comfortDecel = Math.min(2.8, ego.maxDecel * muEst * .55);
     if (cruiseActive && lead) {
       const gapError = lead.gap - desiredGap;
       const gapCorrection = gapError >= 0 ? Math.sqrt(2 * comfortDecel * gapError) : gapError * .5;
@@ -517,6 +708,10 @@ export class ADASController {
       }
     }
     const resumeSeconds = ASSISTANCE_REFERENCE.stopGoResumeSeconds;
+    if (input.throttle > 0.05 && (!accHolding || !lead || lead.gap > this.config.standstillGap * 0.5)) {
+      this.cruiseHoldTime = 0;
+      accHolding = false;
+    }
     this.cruiseHoldTime = accHolding ? this.cruiseHoldTime + dt : this.cruiseHoldTime >= resumeSeconds ? this.cruiseHoldTime : 0;
     if (cruiseActive && this.cruiseHoldTime >= resumeSeconds) { targetSpeed = 0; accHolding = true; }
 
@@ -537,76 +732,69 @@ export class ADASController {
       (light.state === "red" || (light.state === "yellow" && this.yellowDecision?.stop === true) || signalConfirmationRequired);
     if (trafficLightStopping && light) {
       const stopDistance = Math.max(light.distance - stopCentreGap, 0);
-      // Reserve the approach distance consumed while normal braking pressure
-      // ramps up; a pure sqrt(2*a*d) profile assumes instant full deceleration.
       const cap = Math.sqrt(2 * comfortDecel * Math.max(0, stopDistance - ego.v * .8));
       targetSpeed = Math.min(targetSpeed, cap);
       if (stopDistance < .8) targetSpeed = 0;
     }
 
-    // Preview the braking distance, not just the curve under the front wheels.
-    // This cap belongs to ACC: pedals still override cruise, and lane support
-    // must request takeover if the driver enters a bend too fast for grip.
     const roadCurvature = path.signedCurvatureAt(egoS);
     const laneCurvature = roadCurvature / Math.max(.25, 1 - roadCurvature * egoD);
-    const corneringBudget = 3.5 * clamp(ego.surfaceMu, .35, 1);
-    let curveGripLimited = ego.v ** 2 * Math.abs(laneCurvature) > 9.81 * clamp(ego.surfaceMu, .35, 1) * .85;
-    // Warn before reaching the bend, including when pedals override ACC.
-    // Lane assistance cannot manufacture tyre grip at an impossible speed.
+    const corneringBudget = 3.5 * clamp(muEst, .35, 1);
+    let curveGripLimited = ego.v ** 2 * Math.abs(laneCurvature) > 9.81 * clamp(muEst, .35, 1) * .85;
     if(laneAvailable&&this.config.laneCentering){
       for(let distance=4;distance<=Math.max(8,ego.v*1.5);distance+=4){
         const k=path.signedCurvatureAt(egoS+distance);
         const laneK=Math.abs(k/Math.max(.25,1-k*egoD));
-        if(ego.v**2*laneK>9.81*clamp(ego.surfaceMu,.35,1)*.85)curveGripLimited=true;
+        if(ego.v**2*laneK>9.81*clamp(muEst,.35,1)*.85)curveGripLimited=true;
       }
     }
     const laneSupportLimited=laneAvailable && this.config.laneCentering && (curveGripLimited||ego.tractionLimited);
-    // Steering saturation on a straight road is not evidence of a sharp
-    // road bend. Preserve the warning, but report the actual limiting cause.
     const laneSupportLimitCause=laneSupportLimited?curveGripLimited?'curve':'lateral-grip':null;
     let curveSpeedLimited = false;
     let curveBrakeDemand = 0;
-    if (cruiseActive && laneAvailable && this.config.curveSpeedAssist) {
-      let curveCap = Infinity;
-      const preview = Math.max(80, ego.v ** 2 / (2 * comfortDecel) + ego.v * 1.2);
-      for (let distance = 0; distance <= preview; distance += 4) {
+    let curveCap = Infinity;
+    const csaEnabled = this.config.acc && laneAvailable && this.config.curveSpeedAssist && availability.cruise;
+    if (csaEnabled) {
+      const effectiveCornerBudget = (this.alcTargetLane !== null || indicator !== 0) ? corneringBudget * 0.85 : corneringBudget;
+      const preview = Math.max(85, ego.v ** 2 / (2 * comfortDecel) + ego.v * 1.55);
+      for (let distance = 0; distance <= preview; distance += 2) {
         const k = path.signedCurvatureAt(egoS + distance);
         const laneK = Math.abs(k / Math.max(.25, 1 - k * egoD));
         if (laneK < 1e-5) continue;
-        const curveV2 = corneringBudget / laneK;
-        const brakingDistance = Math.max(0, distance - ego.v * 1.2);
+        const curveV2 = effectiveCornerBudget / laneK;
+        const brakingDistance = Math.max(0, distance - ego.v * 1.48);
         curveCap = Math.min(curveCap, Math.sqrt(curveV2 + 2 * comfortDecel * brakingDistance));
-        // Joining ACC at high speed can leave less distance than a comfort
-        // stop requires. Request stronger braking while it is still physically
-        // possible, rather than obeying a 2.8 m/s² cap until leaving the lane.
-        if(distance>0&&ego.v**2>curveV2){
-          const available=Math.max(1,distance-ego.v*.35);
-          curveBrakeDemand=Math.max(curveBrakeDemand,(ego.v**2-curveV2)/(2*available));
+        const overspeedFloor = curveV2 + Math.max(1.1, 0.07 * curveV2);
+        if (distance > 0 && ego.v ** 2 > overspeedFloor) {
+          const available = Math.max(3.5, distance - ego.v * .38);
+          curveBrakeDemand = Math.max(curveBrakeDemand, (ego.v ** 2 - curveV2) / (2 * available));
         }
       }
-      curveSpeedLimited = curveCap < targetSpeed - .1;
-      targetSpeed = Math.min(targetSpeed, curveCap);
+      if (cruiseActive) {
+        curveSpeedLimited = curveCap < targetSpeed - .1;
+        targetSpeed = Math.min(targetSpeed, curveCap);
+      } else if (input.brake === 0 && (curveBrakeDemand > comfortDecel || (input.throttle > 0 && ego.v > curveCap - 0.15))) {
+        curveSpeedLimited = true;
+        targetSpeed = Math.min(speedCap, curveCap);
+      }
     }
 
     // ---- assisted lane change --------------------------------------------
-    const onShoulder=road.shoulderWidth>0&&egoD>road.forwardRightEdge&&egoD+ego.dims.width/2<=road.pavedHalfWidth+.05;
-    const currentLane = onShoulder?road.numLanes:road.laneOf(egoD);
     const laneOffset = egoD - this.laneCenter(road,currentLane);
     this.alcComplete = false;
     this.alcAborted = false;
-    const steeringOverride = input.steeringOverride ?? Math.abs(input.steer) > .05;
-    const inCarriageway=egoD>=road.forwardLeftEdge-.1 && egoD<=road.forwardRightEdge+.1;
+    const alcInProgress = this.alcTargetLane !== null;
     const alcUnavailable = !availability.cruise ? availability.cruiseReason : !laneAvailable ? 'Không nhận diện được làn' :
       !inCarriageway && !(onShoulder&&(this.config.shoulderLaneChange||indicator<0)) ? onShoulder?'Từ làn khẩn cấp: bật xi-nhan trái để nhập lại làn chạy':'Xe cần nằm trong phần đường cùng chiều để yêu cầu ALC' :
-      !this.config.laneCentering ? 'Cần bật giữ giữa làn LFA' : !cruiseActive ? 'Cần ACC hoạt động' :
+      !this.config.laneCentering ? 'Cần bật giữ giữa làn LFA' : !this.config.acc ? 'Cần ACC hoạt động' :
       !availability.sensors.rearRadar ? 'Radar sau không sẵn sàng' : !availability.conditions.handsOn ? 'Cần đặt tay lên vô-lăng' :
       availability.conditions.hazards ? 'Đèn khẩn cấp đang bật' :
       this.config.alcHighwayOnly && !(frame.conditions?.motorway ?? road.profile?.motorway) ? 'ALC chỉ hỗ trợ trên cao tốc trong cấu hình này' :
       fcw ? 'Đang có cảnh báo va chạm phía trước' :
-      frame.trafficLight && frame.trafficLight.distance < Math.max(80, ego.v * 5) ? 'Đang đến giao lộ có đèn tín hiệu' :
-      obstacles.some(o => o.kind === 'ped' && wrapDiff(o.s, egoS, path.length) > 0 && wrapDiff(o.s, egoS, path.length) < 80 &&
+      frame.trafficLight && ((!alcInProgress && frame.trafficLight.distance < Math.max(60, ego.v * 3.2)) || (trafficLightStopping && frame.trafficLight.distance < 22)) ? 'Đang đến giao lộ có đèn tín hiệu' :
+      orderedObstacles.some(o => o.kind === 'ped' && wrapDiff(o.s, egoS, path.length) > 0 && wrapDiff(o.s, egoS, path.length) < (alcInProgress ? 32 : 70) &&
         Math.abs(o.d - road.forwardOffset) < road.numLanes * road.laneWidth / 2) ? 'Có người đi bộ trên phần đường phía trước' : '';
-    this.steeringReleaseTime = steeringOverride ? 1 : Math.max(0, this.steeringReleaseTime - dt);
+    this.steeringReleaseTime = steeringOverride ? 0.18 : Math.max(0, this.steeringReleaseTime - dt);
     if (!laneAvailable || !this.config.laneCentering || steeringOverride) this.laneTarget = null;
     if (laneAvailable && this.config.laneCentering && this.steeringReleaseTime === 0 && this.laneTarget === null) this.laneTarget = currentLane;
     if (!indicator) this.alcCancelledSignal = 0;
@@ -616,9 +804,6 @@ export class ADASController {
       if(wasActive&&!steeringOverride&&laneAvailable&&this.config.laneCentering)this.laneTarget=currentLane;
       this.alcTargetLane = null;
       this.alcBlocked = !!indicator && this.config.alc;
-      // Only an aborted manoeuvre or explicit driver takeover needs a new
-      // stalk command. An initial speed/sensor rejection must not permanently
-      // consume the request after that condition clears.
       if(wasActive || steeringOverride || input.brake>.02)this.alcCancelledSignal=indicator;
       this.alcArmTimer=0;this.alcRequestedDir=0;
       this.alcReason = steeringOverride ? "Người lái tiếp quản" : input.brake > .02 ? 'Người lái phanh' : alcUnavailable;
@@ -626,7 +811,7 @@ export class ADASController {
       this.alcBlocked=this.config.alc;
       this.alcReason='Yêu cầu đã hủy · tắt rồi bật lại xi-nhan để chuyển làn';
     } else {
-      this.stepLaneChange(indicator, ego, egoS, egoD, onShoulder?road.numLanes:currentLane, path, road, obstacles, dt);
+      this.stepLaneChange(indicator, ego, egoS, egoD, onShoulder?road.numLanes:currentLane, path, road, orderedObstacles, dt);
     }
     const alcActive = this.alcTargetLane !== null;
     const alcBlocked = !alcActive && indicator !== 0 && this.config.alc && this.alcBlocked;
@@ -634,7 +819,7 @@ export class ADASController {
     const centerLane = alcActive ? this.alcTargetLane! : this.laneTarget ?? currentLane;
 
     // ---- steering: manual torque + lane assist ---------------------------
-    const manualSteer = clamp(input.steer, -1, 1) * ego.maxSteer;
+    // Note: AEB NEVER modifies steering (`steer` is strictly lateral LFA/LKA/ALC + manual).
     let steer = manualSteer;
     let laneKeepAssist = false;
     const outward = ego.v * Math.sin(wrapAngle(ego.yaw - path.cartesianAt(egoS).heading));
@@ -647,29 +832,27 @@ export class ADASController {
       const pathHeading = path.cartesianAt(egoS).heading;
       const laneChangePhase = clamp(this.alcProgress, 0, 1);
       const blend = laneChangePhase ** 3 * (10 - 15 * laneChangePhase + 6 * laneChangePhase ** 2);
-      // Move the reference across the lane over time, instead of instantly
-      // requesting the adjacent centre and saturating the steering wheel.
       const centerD = alcActive ? this.alcStartD + (this.laneCenter(road,centerLane) - this.alcStartD) * blend : this.laneCenter(road,centerLane);
-      // At crawling speed, use at least 18m of forward travel, instead of
-      // finishing the lateral reference in 3.6s while the car barely moves.
       const p=laneChangePhase, deltaD=alcActive?this.laneCenter(road,centerLane)-this.alcStartD:0;
       const progressPerMetre=Math.min(1/(ASSISTANCE_REFERENCE.alcNominalSeconds*Math.max(ego.v,.01)),1/ASSISTANCE_REFERENCE.alcMinPathMetres);
       const slope=deltaD*30*p*p*(1-p)**2*progressPerMetre;
       const lateralCurvature=deltaD*60*p*(1-p)*(1-2*p)*progressPerMetre**2/Math.pow(1+slope*slope,1.5);
-      // Vehicle integrates translation at its centre. Track that same point,
-      // and supply the lane curvature explicitly instead of relying on a
-      // heading error at the half-wheelbase point to create the whole turn.
-      const targetCurvature = roadCurvature / Math.max(.25, 1 - roadCurvature * centerD);
+      const steerLead = clamp(ego.v * 0.12, 0, 3.6);
+      const leadRoadCurvature = steerLead > 0.2
+        ? 0.65 * roadCurvature + 0.35 * path.signedCurvatureAt(egoS + steerLead)
+        : roadCurvature;
+      const targetCurvature = leadRoadCurvature / Math.max(.25, 1 - leadRoadCurvature * centerD);
       const feedForward = Math.atan(ego.dims.wheelbase * (targetCurvature+lateralCurvature));
+      const headingErr = wrapAngle(pathHeading + Math.atan(slope) - ego.yaw);
+      const frontCrossTrack = (egoD - centerD) + (ego.dims.wheelbase * 0.5) * Math.sin(-headingErr);
+      const stanleyK = 2.2 + clamp((ego.v - 16) * 0.035, 0, 0.75) + (alcActive && p > 0.7 ? 0.45 : 0);
       const correction = clamp(feedForward + stanleyControl(
-        wrapAngle(pathHeading + Math.atan(slope) - ego.yaw),
-        egoD - centerD,
+        headingErr,
+        frontCrossTrack,
         ego.v,
-        { k: 3, kSoft: 1.2, maxSteer: ego.maxSteer },
+        { k: stanleyK, kSoft: 1.4, maxSteer: ego.maxSteer },
       ), -ego.maxSteer, ego.maxSteer);
       laneKeepAssist = departureAssist && Math.abs(correction) > 0.008;
-      // An assisted lane change owns the wheel; otherwise the driver can always
-      // add torque on top of the lane-centring assist.
       steer = alcActive
         ? correction
         : clamp(manualSteer + correction, -ego.maxSteer, ego.maxSteer);
@@ -680,46 +863,141 @@ export class ADASController {
       laneDeparture = laneOffset > 0 ? "right" : "left";
     }
 
-    // ---- longitudinal control --------------------------------------------
-    let accel: number;
+    // ---- longitudinal control & single-point BrakeArbiter ----------------
+    let propulsionOrCoastAccel = 0;
+    let accDecelReq = 0;
+    const passiveCoast = -coastDeceleration(ego.v) - .07 - ego.extraCoastDecel;
+    const csaIntervention = csaEnabled && input.brake === 0 &&
+      (curveBrakeDemand > comfortDecel || (input.throttle > 0 && Number.isFinite(curveCap) && ego.v > curveCap - 0.25));
     if (cruiseActive) {
-      // ACC controls speed until the driver presses the accelerator. Brake input
-      // always has priority and remains available to the driver.
-      if (input.throttle > 0) {
-        accel = input.throttle * ego.maxAccel;
-        this.cruisePedalOverride=true;
-      } else {
-        // Hand back from the ACTUAL acceleration, even after a one-frame tap.
-        // This comfort transition never limits the independent AEB override.
-        if(this.cruisePedalOverride){this.normalAccel=ego.a;this.cruisePedalOverride=false;}
-        const demand = clamp(frame.speedControl(targetSpeed - ego.v, dt), -comfortDecel, Math.min(ego.maxAccel, 2));
-        this.normalAccel += clamp(demand - this.normalAccel, -2.5 * dt, 1.8 * dt);
-        accel = this.normalAccel;
-        if (targetSpeed < .05 && ego.v < .2) { accel = -1; this.normalAccel = 0; }
+      if (!this.cruiseWasActive && Math.abs(ego.a) > 1e-4) {
+        this.normalAccel = clamp(ego.a, -comfortDecel, Math.min(ego.maxAccel, 2));
       }
-      if (input.brake > 0) accel = -input.brake * ego.maxDecel;
+      if (input.throttle > 0 && !csaIntervention) {
+        propulsionOrCoastAccel = input.throttle * ego.maxAccel;
+        this.cruisePedalOverride = true;
+      } else if (input.brake === 0) {
+        // Comfort handback limiter applies ONLY to ACC, never to AEB!
+        if (input.throttle === 0 && this.cruisePedalOverride) {
+          this.normalAccel = ego.a;
+          this.cruisePedalOverride = false;
+        }
+        // Soft-stop brake feathering near rest prevents a step jump in chassis
+        // acceleration (and pitch rebound jerk) when v reaches 0.
+        const stoppingToRest = targetSpeed < .05 && ego.v < .45;
+        const gradeHold = Math.max(0, -9.81 * Math.sin(ego.roadGrade));
+        const softStopTarget = -(Math.max(0.14, Math.min(0.85, ego.v * 2.1)) + gradeHold);
+        const demand = stoppingToRest
+          ? softStopTarget
+          : clamp(frame.speedControl(targetSpeed - ego.v, dt), -comfortDecel, Math.min(ego.maxAccel, 2));
+        const riseRate = stoppingToRest ? 3.6 : 1.8;
+        this.normalAccel += clamp(demand - this.normalAccel, -2.5 * dt, riseRate * dt);
+        if (aebOut.aebActive) {
+          this.normalAccel = Math.min(this.normalAccel, clamp(ego.a, -comfortDecel, 0));
+        }
+        let accCmd = this.normalAccel;
+        if (targetSpeed < .05 && ego.v <= 1e-6) {
+          accCmd = Math.min(accCmd, -0.8);
+        }
+        if (curveBrakeDemand > comfortDecel) {
+          const curveDemand = Math.min(curveBrakeDemand, ego.maxDecel * muEst * .9);
+          const urgentRate = curveDemand > comfortDecel * 1.35 ? 28 : 8.5;
+          this.normalAccel += clamp(-curveDemand - this.normalAccel, -urgentRate * dt, 2.5 * dt);
+          accCmd = Math.min(accCmd, this.normalAccel);
+          curveSpeedLimited = true;
+        }
+        if (accCmd < 0) accDecelReq = -accCmd;
+        else propulsionOrCoastAccel = accCmd;
+      }
+      this.cruiseWasActive = true;
     } else {
-      this.normalAccel = 0;
-      this.cruisePedalOverride=false;
-      accel = input.brake > 0 ? -input.brake * ego.maxDecel : input.throttle * ego.maxAccel;
-      if (input.throttle === 0 && input.brake === 0) accel = -coastDeceleration(ego.v) - .07;
+      this.cruisePedalOverride = false;
+      if (csaIntervention) {
+        curveSpeedLimited = true;
+        const capDemand = clamp(frame.speedControl(curveCap - ego.v, dt), -comfortDecel, Math.min(Math.max(input.throttle * ego.maxAccel, 0), 2));
+        this.normalAccel += clamp(capDemand - this.normalAccel, -2.5 * dt, 1.8 * dt);
+        let csaCmd = this.normalAccel;
+        if (curveBrakeDemand > comfortDecel) {
+          const curveDemand = Math.min(curveBrakeDemand, ego.maxDecel * muEst * .9);
+          const urgentRate = curveDemand > comfortDecel * 1.35 ? 28 : 8.5;
+          this.normalAccel += clamp(-curveDemand - this.normalAccel, -urgentRate * dt, 2.5 * dt);
+          csaCmd = Math.min(csaCmd, this.normalAccel);
+        }
+        if (csaCmd < 0) {
+          accDecelReq = -csaCmd;
+          propulsionOrCoastAccel = input.throttle > 0 ? 0 : passiveCoast;
+        } else {
+          propulsionOrCoastAccel = input.throttle > 0 ? Math.min(input.throttle * ego.maxAccel, csaCmd) : passiveCoast;
+        }
+      } else if (input.throttle > 0) {
+        this.normalAccel = 0;
+        this.cruiseWasActive = false;
+        propulsionOrCoastAccel = input.throttle * ego.maxAccel;
+      } else if (input.brake > 0 || aebOut.aebActive || aebOut.holdActive || !this.cruiseWasActive) {
+        this.normalAccel = 0;
+        this.cruiseWasActive = false;
+        propulsionOrCoastAccel = passiveCoast;
+      } else {
+        // Smooth transition from ACC propulsion into passive/EV-regen coasting on manual cancel.
+        this.normalAccel += clamp(passiveCoast - this.normalAccel, -3.5 * dt, 3.5 * dt);
+        if (Math.abs(this.normalAccel - passiveCoast) < 0.02) {
+          this.normalAccel = 0;
+          this.cruiseWasActive = false;
+          propulsionOrCoastAccel = passiveCoast;
+        } else if (this.normalAccel < 0) {
+          accDecelReq = -this.normalAccel;
+          propulsionOrCoastAccel = passiveCoast;
+        } else {
+          propulsionOrCoastAccel = this.normalAccel;
+        }
+      }
     }
 
-    let isaBrakeForce = 0;
+    // Limiting is primarily a smooth propulsion cap. Braking alone starts
+    // only after overspeed, creating a throttle/brake sawtooth at the boundary.
+    if (isaLimiting && tsrLimitKph !== null && !isaOverride && input.brake === 0 && propulsionOrCoastAccel > 0) {
+      propulsionOrCoastAccel = Math.min(propulsionOrCoastAccel, Math.max(0, (signCapMps - ego.v) * 1.4));
+    }
+    let isaDecelReq = 0;
     if (isaLimiting && tsrLimitKph !== null && !isaOverride && ego.v >= signCapMps && input.brake === 0) {
-      accel = Math.min(accel, clamp((signCapMps - ego.v) * 1.4, -2.5, 0));
-      isaBrakeForce = clamp(-accel / ego.maxDecel, 0, 1);
+      const rawIsaDecel = clamp((ego.v - signCapMps) * 1.4, 0, 2.5);
+      this.isaDecel = rawIsaDecel > 0
+        ? Math.min(rawIsaDecel, Math.max(0.25, this.isaDecel + 3.0 * dt))
+        : 0;
+      isaDecelReq = this.isaDecel;
+    } else if (isaOverride || input.brake > 0 || !isaLimiting) {
+      this.isaDecel = 0;
+    } else if (this.isaDecel > 0) {
+      this.isaDecel = Math.max(0, this.isaDecel - 3.0 * dt);
+      isaDecelReq = this.isaDecel;
     }
-    if(cruiseActive&&input.throttle===0&&input.brake===0&&curveBrakeDemand>comfortDecel){
-      const demand=Math.min(curveBrakeDemand,ego.maxDecel*ego.surfaceMu*.9);
-      accel=Math.min(accel,-demand);this.normalAccel=Math.min(this.normalAccel,accel);
-      curveSpeedLimited=true;
-    }
-    if (aeb || aebHolding) accel = Math.min(accel, -appliedAebForce * ego.maxDecel);
+
+    const arbitrated = this.brakeArbiter.resolve({
+      maxDecel: ego.maxDecel,
+      maxAccel: ego.maxAccel,
+      propulsionOrCoastAccel,
+      driverBrakePedal: input.brake,
+      accDecelReq,
+      isaDecelReq,
+      aeb: aebOut,
+      overrideActive: aebOut.reasonCode.startsWith("driver-"),
+    });
+    this.lastAccDecelReq = accDecelReq;
+    this.lastNonAebDecelReq = Math.max(accDecelReq, isaDecelReq);
+    this.lastDriverDecelReq = arbitrated.driverDecelReq;
+    const accel = arbitrated.finalAccelCmd;
 
     const headway = lead && ego.v > .3 ? lead.gap / ego.v : null;
-    const brakeReason = input.brake > 0 ? "driver" : aebHolding ? "aeb-hold" : aeb ? "aeb" : isaBrakeForce > 0 ? "isa" :
-      cruiseActive && accel < -.05 ? trafficLightStopping ? "signal" : curveSpeedLimited ? "curve" : lead && targetSpeed < speedCap - .1 ? "acc-gap" : "acc-speed" : "none";
+    const brakeReason: ADASStatus["brakeReason"] =
+      arbitrated.source === "driver" ? "driver" :
+      arbitrated.source === "aeb-hold" ? "aeb-hold" :
+      arbitrated.source === "aeb-emergency" || arbitrated.source === "aeb-partial" || arbitrated.source === "aeb-brake-assist" ? "aeb" :
+      arbitrated.source === "isa" ? "isa" :
+      arbitrated.source === "acc" && accel < -.05
+        ? (trafficLightStopping ? "signal" : curveSpeedLimited ? "curve" : lead && targetSpeed < speedCap - .1 ? "acc-gap" : "acc-speed")
+        : "none";
+
+    const activeRisk = aebOut.targetRisk ?? pred.critical;
     this.status = {
       extra: emptyAssistanceStatus(),
       availabilityReason: availability.cruiseReason, signalConfirmationRequired, speedWarning,
@@ -730,16 +1008,24 @@ export class ADASController {
       accActive: cruiseActive,
       accHolding,
       desiredGap, timeGap: this.config.timeGap, trafficLightStopping, brakeReason, curveSpeedLimited, laneSupportLimited, laneSupportLimitCause,
-      aebCause:aebHolding?'Đang giữ dừng trước vật cản':aebCause,
+      aebCause,
+      aebState: aebOut.state,
+      aebAvailability: aebAvail.availability,
+      aebAvailabilityReason: aebAvail.reason,
+      aebTargetId: aebOut.targetId,
+      aebTtb: activeRisk && Number.isFinite(activeRisk.ttb) ? activeRisk.ttb : null,
+      aebMinGap: activeRisk && Number.isFinite(activeRisk.minGapFull) ? activeRisk.minGapFull : null,
+      arbiterSource: arbitrated.source,
+      perceptionMode,
       accState: !this.config.acc ? "off" : !cruiseActive ? "cancelled" : this.cruiseHoldTime >= 3 ? "resume-required" : accHolding ? "hold" : "active",
-      sensorsAvailable, laneAvailable, takeoverRequired: !sensorsAvailable || (this.config.laneCentering && !laneAvailable) || laneSupportLimited, aebHolding,
+      sensorsAvailable, laneAvailable, takeoverRequired: !sensorsAvailable || (!availability.conditions.escAvailable && this.config.aeb) || (this.config.laneCentering && !laneAvailable) || laneSupportLimited, aebHolding,
       laneCenteringActive: inCarriageway && this.config.laneCentering && laneAvailable && this.steeringReleaseTime === 0,
       laneKeepAssist,
       laneDeparture,
       fcw,
       fcwLevel,
       aeb,
-      adasBrakeForce: Math.max(appliedAebForce, isaBrakeForce, cruiseActive && input.throttle === 0 && input.brake === 0 ? clamp(-accel / ego.maxDecel, 0, 1) : 0),
+      adasBrakeForce: arbitrated.adasBrakeForce,
       rctaActive: false,
       rctaArmed: false,
       rctaLeft: false,
@@ -749,7 +1035,7 @@ export class ADASController {
       blindSpotRight,
       leadGap: lead ? lead.gap : null,
       leadTtc:
-        lead && ego.v > lead.obstacle.v + 0.1 ? lead.gap / (ego.v - lead.obstacle.v) : null,
+        lead && lead.gap >= 0 && ego.v > lead.obstacle.v + 0.05 ? lead.gap / (ego.v - lead.obstacle.v) : null,
       headway,
       targetSpeed,
       setSpeed,
@@ -899,6 +1185,13 @@ export class ADASController {
 
   clearStatus(): void {
     this.aebLatched = false;
+    this.aebStateMachine.reset();
+    this.lastAebDecision = null;
+    this.lastAebRisk = null;
+    this.lastAccDecelReq = 0;
+    this.lastDriverDecelReq = 0;
+    this.adaptedMu = null;
+    this.brakingSaturationTimer = 0;
     this.alcTargetLane = null;
     this.alcBlocked = false;
     this.alcComplete = false;
@@ -911,6 +1204,8 @@ export class ADASController {
     this.cruiseHoldTime = 0;
     this.steeringReleaseTime = 0;
     this.normalAccel = 0;
+    this.isaDecel = 0;
+    this.cruiseWasActive = false;
     this.cruisePedalOverride=false;
     this.yellowDecision = null;
     this.laneTarget = null;
@@ -925,6 +1220,8 @@ function emptyStatus(): ADASStatus {
     extra: emptyAssistanceStatus(),
     availabilityReason: '', signalConfirmationRequired: false, speedWarning: false,
     highwayAssistActive: false, trafficJamAssistActive: false,
+    aebState: "MONITOR", aebAvailability: "available", aebAvailabilityReason: "Sẵn sàng",
+    aebTargetId: null, aebTtb: null, aebMinGap: null, arbiterSource: "none", perceptionMode: "sensor",
     active: false,
     engaged: false,
     accActive: false,

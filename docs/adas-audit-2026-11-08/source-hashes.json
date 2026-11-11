@@ -1,0 +1,30 @@
+[
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\ADAS.ts",
+    "Hash": "8953E6AEA9FF86527836C2488513CD20490B34B9CD4189663432C5177F5CACA8"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\AEB.ts",
+    "Hash": "4EEFD6AC0DA2E06D32F54C1F6314E1138A654BBB1BD981FD38F7A94FDA3E3BFC"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\Simulation.ts",
+    "Hash": "8B991D59AA1A599D10AD01F76FC795A856C8AB76B8E19EFA8C0D896FE3164427"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\ExtendedAssistance.ts",
+    "Hash": "18FFF9E2460E8D32E5B9CFE00BD73A21E14EEA70DDE6EAA5033BEDEBAFF59089"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\sim\\ProximitySafety.ts",
+    "Hash": "6E8B6165EBD4C80BBEE378CDB74DB1A15CD8103459057BFFC48A9871088FBCEA"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\planner\\Trajectory.ts",
+    "Hash": "AA182BB279067FAFBB38F4EF2A027117EE81BD80E32B6D98ADBD60BAA9561C8E"
+  },
+  {
+    "Path": "C:\\Users\\KHOA DANG\\Downloads\\blueline-main\\src\\ui\\CenterConsoleControls.ts",
+    "Hash": "DC1F71786E975AAA6C1E29AB877FBA6189CF61FAF38613A8ABD2B8A431FADC86"
+  }
+]

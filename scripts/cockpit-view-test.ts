@@ -84,7 +84,15 @@ const columnTilt=steeringRoot.quaternion.clone();
 cabin.wheelSpin.rotation.x=2.4;cabin.group.updateMatrixWorld(true);
 assert(steeringRoot.quaternion.angleTo(columnTilt)<1e-9,"steering input must rotate spokes without rotating column tilt");
 const windscreen=cabin.group.getObjectByName("sloped-windscreen")!;
-assert(windscreen && cabin.group.getObjectByName("left-door-panel") && cabin.group.getObjectByName("roof-headliner"));
+const windshieldHud=cabin.group.getObjectByName("windshield-hud")!;
+assert(windscreen && windshieldHud && cabin.group.getObjectByName("left-door-panel") && cabin.group.getObjectByName("roof-headliner"));
+const closedHandlePos = cabin.group.getObjectByName("left-door-handle")!.getWorldPosition(new THREE.Vector3());
+cabin.doorPivots.left.rotation.y = 0.85;
+cabin.group.updateMatrixWorld(true);
+const openHandlePos = cabin.group.getObjectByName("left-door-handle")!.getWorldPosition(new THREE.Vector3());
+assert(openHandlePos.distanceTo(closedHandlePos) > 0.4, "3D left door pivot must swing door handle outward when opened");
+cabin.doorPivots.left.rotation.y = 0;
+cabin.group.updateMatrixWorld(true);
 
 // Exercise the real surround-camera positioning without initializing a GPU.
 Object.defineProperty(globalThis,"window",{value:{innerWidth:1280},configurable:true});

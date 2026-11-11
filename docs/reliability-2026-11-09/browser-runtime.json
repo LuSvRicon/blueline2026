@@ -1,0 +1,37 @@
+{
+  "capturedAt": "2026-11-10T02:10:06.550Z",
+  "source": "901ad19c8201f78dbe605778c157628f0d2eb3d2ad8a6436d2c947e707ef617b",
+  "environment": "Codex in-app Chromium; local production preview, concurrent headless tests",
+  "limitations": [
+    "Intervals include host/browser scheduling. This is not a real-phone or hardware-isolated FPS benchmark.",
+    "Rendering remains expensive; these measurements do not establish smooth 60 FPS."
+  ],
+  "report": {
+    "contextLosses": 1,
+    "contextRestores": 1,
+    "fps": 1.38876060538087,
+    "frameP50Ms": 1016.3999999999996,
+    "frameP95Ms": 1016.6999999999972,
+    "frameP99Ms": 1099.8000000000002,
+    "frames": 421,
+    "jsHeapBytes": 218046018,
+    "longFramesOver50Ms": 420,
+    "meanMainThreadWorkMs": 95.12280285035452,
+    "peakJsHeapBytes": 392836032,
+    "render": {
+      "calls": 2992,
+      "geometries": 1241,
+      "textures": 95,
+      "triangles": 3834426
+    },
+    "sampleCapacity": 3600,
+    "samples": 421,
+    "visibleSeconds": 303.1480000000001,
+    "worstFrameMs": 3049.7999999999993
+  },
+  "session": "00:40 · 0.48 km",
+  "viewport": [
+    1920,
+    1080
+  ]
+}

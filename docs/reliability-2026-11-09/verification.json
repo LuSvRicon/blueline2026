@@ -1,0 +1,113 @@
+{
+  "startedAt": "2026-11-11T14:31:43.559Z",
+  "endedAt": "2026-11-11T14:43:06.071Z",
+  "sourceBefore": "79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94",
+  "sourceAfter": "79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94",
+  "files": 214,
+  "orchestratorSha256": "8e7515cb5bfa828c2b5b7f3fb5cc07a5d28651efbad8bd341a32a5060a1bd00e",
+  "testCount": 72,
+  "shards": [
+    {
+      "log": "release-shard-1.log",
+      "tests": [
+        "network-matrix-test",
+        "smoke",
+        "adas-test",
+        "alc-indicator-repeat-test",
+        "high-speed-lane-test",
+        "audio-runtime-test",
+        "parking-assist-test",
+        "aeb-audit-test",
+        "render-geometry-test",
+        "projection-cache-test",
+        "imported-cabin-test",
+        "maps-traffic-test",
+        "drive-input-test",
+        "traffic-profile-test",
+        "lights-test",
+        "acc-aeb-audit-20261108",
+        "sensor-latency-pipeline-test",
+        "spatial-scenery-test"
+      ],
+      "code": 0
+    },
+    {
+      "log": "release-shard-2.log",
+      "tests": [
+        "adas-endurance-test",
+        "all-scenarios-smoke",
+        "adas-reference-test",
+        "acc-aeb-handoff-test",
+        "acc-curve-recovery-test",
+        "adas-runtime-audit-test",
+        "extended-adas-test",
+        "aeb-deep-physics-test",
+        "render-runtime-test",
+        "runtime-recovery-test",
+        "view-quality-test",
+        "world-assets-test",
+        "scenario-matrix-test",
+        "scenario-lab-test",
+        "weather-test",
+        "lateral-audit-20261108",
+        "vehicle-envelope-test",
+        "mirror-refresh-test"
+      ],
+      "code": 0
+    },
+    {
+      "log": "release-shard-3.log",
+      "tests": [
+        "adas-noisy-sequence-test",
+        "traffic-flow-test",
+        "vietnam-scenario-smoke",
+        "adas-motorway-domain-test",
+        "emergency-shoulder-test",
+        "handling-traffic-test",
+        "pedal-console-input-test",
+        "adas-brake-test",
+        "driving-systems-test",
+        "render-motion-test",
+        "detailed-vehicle-test",
+        "cockpit-view-test",
+        "road-profiles-test",
+        "static-traffic-adas-test",
+        "record-replay-test",
+        "road-sign-test",
+        "extended-audit-20261108",
+        "runtime-performance-test"
+      ],
+      "code": 0
+    },
+    {
+      "log": "release-shard-4.log",
+      "tests": [
+        "adas-coordination-audit",
+        "learn-test",
+        "vietnam-scenarios-test",
+        "alc-all-speeds-test",
+        "adas-regression-test",
+        "driver-feedback-test",
+        "touch-steering-test",
+        "aeb-following-test",
+        "dynamics-collision-test",
+        "sensor-visibility-test",
+        "imported-vehicles-test",
+        "cabin-look-test",
+        "planner-rear-clearance-test",
+        "adas-features-test",
+        "session-timeline-test",
+        "evo-test",
+        "isa-limit-audit-20261108",
+        "graphics-recovery-test"
+      ],
+      "code": 0
+    }
+  ],
+  "passed": true,
+  "notes": [
+    "All processes use the registered test scripts and their physical assertions.",
+    "216 noisy cases and one continuous 3600-second simulated drive are included.",
+    "Browser/GPU and real-phone verification are separate."
+  ]
+}

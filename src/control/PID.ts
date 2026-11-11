@@ -22,6 +22,11 @@ export class PID {
     this.initialized = false;
   }
 
+  clampIntegralSign(error: number): void {
+    if (error < -0.15 && this.integral > 0) this.integral = 0;
+    else if (error > 0.15 && this.integral < 0) this.integral = 0;
+  }
+
   update(error: number, dt: number): number {
     if (dt <= 0) return 0;
 

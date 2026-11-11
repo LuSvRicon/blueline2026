@@ -1,5 +1,15 @@
 # BlueLine current module map
 
+## Cảm biến trễ, bao hình xe, gương và độ tin cậy — 11/11/2026
+
+Xem [báo cáo kiểm chứng mới nhất](reliability-2026-11-09/README.md). Luồng `Sensor.capture/poll → Tracker → Simulation → AEB → BrakeActuator → Vehicle` có hàng đợi thời gian xử lý và cập nhật về đúng thời điểm hiện tại. Bốn hồ sơ xe dùng kích thước thân riêng; hình ảnh 3D khớp cùng bao hình. Thêm cụm cảnh quan theo không gian, sửa phân lượt gương ở FPS thấp, phục hồi GPU và số đo hiệu năng trong bảng phím G. Báo cáo ghi riêng phạm vi một giờ **mô phỏng**, kiểm tra trình duyệt và phần điện thoại thật chưa thử; không suy ra “không còn mọi lỗi” từ build hoặc test.
+
+Các mục baseline và giới hạn ở cuối tài liệu là lịch sử lúc mới nhận dự án, không phải trạng thái hiện tại. Checkout hiện có Git và bộ chạy `npm test`; xem báo cáo mới nhất để lấy số nhóm và kết quả đúng với dấu nguồn.
+
+## ADAS consistency audit — 2026-11-08
+
+See [the audit and verification report](adas-audit-2026-11-08/REPORT.md). Corrected road-envelope/latency contracts in AEB, completed-stop HOLD, low-grip downhill estimates, long-body blind-spot/exit detection, ESA condition loss and shared lane ownership, foot-brake priority, TSR memory/order invariance, ISA propulsion limiting and the Rear AEB console label. Four new audit groups are registered in the runner; the final relevant 30-group run passed. Direct browser checks cover AEB/Rear AEB, brake takeover, all 24 ADAS switches, APA hold/release and the landscape phone layout. The report separates checked behaviour from physical/sensor/model limitations.
+
 ## ACC/AEB handback and bidirectional shoulder ALC — 2026-10-29
 
 See [the Vietnamese research and implementation report](ACC_AEB_PHOI_HOP_VA_LAN_KHAN_CAP_2026-10-29.md). Reviewed primary Kia, Volvo and NHTSA sources, retaining explicit differences between OEM examples and BlueLine. Pedal-to-ACC handback now starts from actual applied acceleration; AEB still bypasses comfort limiting and cancels cruise. A marked simulation option permits ALC into/out of the motorway shoulder, models its true centre as a separate lateral target and maintains lane support there. Rear-approach gap checks, manual braking and parking interlocks remain active.
@@ -112,7 +122,7 @@ There is now a `test` script in `package.json`: `npm test` bundles every headles
 5. **Partial:** procedural event audio, a small fixed live-event toolbox, capped state recording/replay and JSON export are implemented. There is no arbitrary scenario editor, import flow, or deterministic re-simulation.
 6. **Partial:** UI controls are exposed and browser-checked, but a complete premium visual redesign, responsive/mobile pass, and broader usability review remain.
 
-## Repository limitations
+## Repository limitations at the initial snapshot (historical)
 
 - This checkout has no `.git` directory, so changes cannot be reviewed through a Git diff or committed here.
 - `package.json` has no test runner or `test` script; checks are standalone TypeScript scripts.

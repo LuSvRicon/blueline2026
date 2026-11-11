@@ -6,6 +6,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { sourceFingerprint } from './source-fingerprint.mjs';
 
 const TESTS = [
   "smoke",
@@ -27,10 +28,13 @@ const TESTS = [
   "audio-runtime-test",
   "adas-runtime-audit-test",
   "pedal-console-input-test",
+  "touch-steering-test",
   "parking-assist-test",
   "extended-adas-test",
   "adas-brake-test",
   "aeb-following-test",
+  "aeb-audit-test",
+  "aeb-deep-physics-test",
   "driving-systems-test",
   "dynamics-collision-test",
   "render-geometry-test",
@@ -64,6 +68,19 @@ const TESTS = [
   "road-sign-test",
   "learn-test",
   "evo-test",
+  "adas-coordination-audit",
+  "acc-aeb-audit-20261108",
+  "lateral-audit-20261108",
+  "extended-audit-20261108",
+  "isa-limit-audit-20261108",
+  "sensor-latency-pipeline-test",
+  "vehicle-envelope-test",
+  "runtime-performance-test",
+  "graphics-recovery-test",
+  "spatial-scenery-test",
+  "mirror-refresh-test",
+  "adas-noisy-sequence-test",
+  "adas-endurance-test",
 ];
 const requested = process.argv.slice(2);
 if (requested.some((name) => !TESTS.includes(name))) throw new Error("Unknown test name. Pass names from the TESTS list without extensions.");
@@ -72,6 +89,8 @@ const selected = requested.length ? TESTS.filter((name) => requested.includes(na
 const outDir = mkdtempSync(join(tmpdir(), "blueline-tests-"));
 const failed = [];
 const started = Date.now();
+const sourceBefore = sourceFingerprint();
+console.log(`SOURCE ${sourceBefore.sha256} — ${sourceBefore.files.length} files`);
 
 for (const name of selected) {
   const outfile = join(outDir, `${name}.mjs`);
@@ -93,6 +112,15 @@ for (const name of selected) {
 }
 
 rmSync(outDir, { recursive: true, force: true });
+const sourceAfter = sourceFingerprint();
+if (sourceBefore.sha256 !== sourceAfter.sha256) {
+  const before = new Map(sourceBefore.files.map(file => [file.path, file.sha256]));
+  const after = new Map(sourceAfter.files.map(file => [file.path, file.sha256]));
+  const changed = [...new Set([...before.keys(), ...after.keys()])].filter(path => before.get(path) !== after.get(path));
+  failed.push('source-changed-during-suite');
+  console.error(`Source changed during verification: ${changed.join(', ')}`);
+}
+console.log(`SOURCE FINAL ${sourceAfter.sha256}`);
 const seconds = ((Date.now() - started) / 1000).toFixed(1);
 if (failed.length > 0) {
   console.error(`\nTEST SUITE FAILED (${failed.length}/${selected.length}) in ${seconds}s: ${failed.join(", ")}`);

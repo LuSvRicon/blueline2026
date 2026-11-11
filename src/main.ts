@@ -38,11 +38,18 @@ import "./ui/game.css";
 import "./ui/dashboard-controls.css";
 import "./ui/dashboard-adas.css";
 import "./ui/dashboard.css";
+import "./ui/mobile.css";
+import "./ui/station.css";
+import { TouchSteering } from "./ui/TouchSteering.ts";
 import { SCENARIOS } from "./ui/scenarios.ts";
 import { CabinLookControls } from "./ui/CabinLookControls.ts";
 import { ParkingView } from "./render/ParkingView.ts";
+import { ARHudView } from "./render/ARHudView.ts";
 import {WorldSceneryView} from './render/WorldSceneryView.ts';
 import {RenderMotion} from './render/RenderMotion.ts';
+import {selectedVehicleModel} from './render/VehicleCatalog.ts';
+import { RuntimePerformance } from './diagnostics/RuntimePerformance.ts';
+import './ui/runtime-performance.css';
 
 function boot(): void {
   const canvas = document.getElementById("scene") as HTMLCanvasElement;
@@ -51,6 +58,7 @@ function boot(): void {
 
   const params = new URLSearchParams(location.search);
   const sim = new Simulation({ trackId: getTrack(params.get("map") ?? undefined).id });
+  sim.setVehicleProfile(selectedVehicleModel());
 
   // Vietnamese traffic is the default; profile and scenarios can be deep-linked.
   sim.setTrafficProfile(params.get("profile") === "international" ? "international" : "vietnam");
@@ -82,6 +90,8 @@ function boot(): void {
   const road = new RoadView(sim.road);
   const fleet = new CarFleet(sim);
   const ribbon = new PathRibbon();
+  const arHud = new ARHudView();
+  ribbon.group.add(arHud.group);
   const candidates = new CandidatesView();
   const tracksView = new TracksView();
   const occupancyView = new OccupancyView(sim.occupancy);
@@ -112,19 +122,26 @@ function boot(): void {
   const audio = new SimulationAudio();
   const scorecard = new Scorecard(uiRoot, sim);
   const minimap = new Minimap(uiRoot, sim);
-  const adasPanel = new ADASPanel(uiRoot, sim);
-  const telemetryPanel = new TelemetryPanel(uiRoot, sim);
+  const adasPanel = new ADASPanel(uiRoot, sim, (active) => {
+    if (active) audio.honk(0.18);
+  });
+  const runtimePerformance = new RuntimePerformance();
+  const telemetryPanel = new TelemetryPanel(uiRoot, sim, runtimePerformance, () => scene.testGraphicsRecovery());
   // eslint-disable-next-line no-new
   new IntroOverlay(uiRoot, sim, scene);
   // eslint-disable-next-line no-new
   new Shortcuts();
   const learningPanel = new LearningPanel(uiRoot, sim);
   // eslint-disable-next-line no-new
-  const driveControls = new DriveControls(sim, () => {
-    const modes: Array<"chase" | "top" | "cockpit" | "orbit"> = ["chase", "top", "cockpit", "orbit"];
-    const idx = modes.indexOf(scene.cameraMode);
-    scene.cameraMode = modes[(idx + 1) % modes.length];
-  });
+  const driveControls = new DriveControls(
+    sim,
+    () => {
+      const modes: Array<"chase" | "top" | "cockpit" | "orbit"> = ["chase", "top", "cockpit", "orbit"];
+      const idx = modes.indexOf(scene.cameraMode);
+      scene.cameraMode = modes[(idx + 1) % modes.length];
+    },
+    () => audio.honk(0.18),
+  );
   const pedalControls = new PedalControls(uiRoot, driveControls);
   const consoleControls = new CenterConsoleControls(uiRoot, sim);
   const camera360 = new Camera360Widget(uiRoot, sim);
@@ -136,7 +153,25 @@ function boot(): void {
     navigation: ribbon.group,
   }, audio);
   const cockpitLayout = new CockpitLayout(uiRoot, sim, scene, driveControls, camera360, telemetryPanel);
+  const touchSteering = new TouchSteering(uiRoot, driveControls);
   const cabinLook = new CabinLookControls(canvas,scene,()=>sim.paused);
+  const graphicsNotice = document.createElement('div');
+  graphicsNotice.id = 'graphics-recovery-status'; graphicsNotice.className = 'graphics-recovery-status';
+  graphicsNotice.setAttribute('role', 'alert'); graphicsNotice.hidden = true;
+  graphicsNotice.innerHTML = '<span></span><button type="button">Tải lại mô phỏng</button>';
+  graphicsNotice.querySelector('button')!.addEventListener('click', () => location.reload());
+  uiRoot.appendChild(graphicsNotice);
+  scene.onGraphicsStateChange = state => {
+    driveControls.clear();
+    const unavailable = state !== 'ready';
+    uiRoot.dataset.graphicsUnavailable = String(unavailable);
+    graphicsNotice.hidden = !unavailable;
+    graphicsNotice.querySelector('span')!.textContent = state === 'failed'
+      ? 'Chưa khôi phục được hình ảnh. Hãy tải lại mô phỏng.' : 'Đang khôi phục hình ảnh · các phím đang giữ đã được nhả';
+    (graphicsNotice.querySelector('button') as HTMLButtonElement).hidden = state !== 'failed';
+    if (state === 'lost') runtimePerformance.contextLosses++;
+    if (state === 'ready') runtimePerformance.contextRestores++;
+  };
 
   // ---- fixed-timestep loop ----------------------------------------------
   const fixedDt = sim.config.fixedDt;
@@ -148,17 +183,28 @@ function boot(): void {
   let lastSurroundFrame = -Infinity;
   let lastUIFrame = -Infinity;
   const motion=new RenderMotion();
+  scene.renderer.info.autoReset = false;
+  document.addEventListener('visibilitychange', () => {
+    // Resume with fresh input/timing, without toggling the user's pause state
+    // or treating minutes in another app as one massive render frame.
+    driveControls.clear(); last = performance.now(); acc = 0;
+  });
 
   // A small scripting handle for debugging and live demos from the dev console.
   (window as unknown as Record<string, unknown>).blueline = { sim, scene, fleet, fps: () => fps };
 
   function frame(now: number): void {
     requestAnimationFrame(frame);
-
-    let delta = (now - last) / 1000;
+    const workStarted = performance.now();
+    const rawFrameMs = now - last;
+    let delta = rawFrameMs / 1000;
     last = now;
     if (delta > 0.1) delta = 0.1; // avoid spiral-of-death after a tab stall
-    if (delta > 1e-4) fps = fps * 0.9 + (1 / delta) * 0.1;
+    if (rawFrameMs > .1) fps = fps * 0.9 + (1000 / rawFrameMs) * 0.1;
+    // Do not advance an invisible vehicle while the GPU is unavailable. This
+    // does not alter the driver's pause setting or replay elapsed wall time.
+    if (scene.graphicsState !== 'ready') { acc = 0; return; }
+    scene.renderer.info.reset();
     acc += delta;
 
     let steps = 0;
@@ -197,18 +243,22 @@ function boot(): void {
     const emergencyStopped=sim.controlMode==="adas"&&(sim.adas.status.aeb||sim.adas.status.aebHolding);
     const emergencyPath=sim.emergencyTrajectory();
     ribbon.update(sim.parkingBays.length||emergencyStopped ? null : emergencyPath??(sim.emergencyPullOver.status.active?null:sim.plan), sim.planner.config.desiredSpeed, cockpitView ? 7 : 0, cockpitView ? 0.45 : 1);
+    arHud.update(sim, delta, cockpitView, eye);
     candidates.update(sim.emergencyPullOver.status.active?[]:sim.candidates, sim.plan);
     tracksView.update(sim.tracks);
     occupancyView.update(sim.occupancy);
     sensorView.update(eye.x,eye.y,sim.sensor.config.range);
     cabinLook.update();
     scene.cockpitModelRig=fleet.cockpitRig();
+    scene.vehicleLength = sim.ego.dims.length; scene.vehicleWidth = sim.ego.dims.width;
     scene.updateCamera(eye.x,eye.y,eye.yaw,delta,Math.abs(eye.v));
     hud.setCameraMode(scene.cameraMode);
     scene.updateWeather(delta,eye.x,eye.y);
     audio.update(sim);
-    // DOM/radar work shares 30 Hz with the small camera, keeping the main 3-D
-    // render independent of hundreds of repeated unchanged HUD writes.
+    // DOM/radar work and the 360° camera are staggered onto alternate frames
+    // so the browser never executes heavy DOM updates and a secondary 3-D
+    // scene render in the same 16.6 ms frame.
+    let didUIUpdate = false;
     if(now-lastUIFrame>=1000/30){
       const uiDt=Number.isFinite(lastUIFrame)?(now-lastUIFrame)/1000:delta;
       hud.update(sim.telemetry, sim.road.numLanes);
@@ -219,10 +269,12 @@ function boot(): void {
       telemetryPanel.update();
       controlPanel.update();
       pedalControls.update(sim.telemetry);
+      touchSteering.update(sim.telemetry);
       consoleControls.update();
       camera360.update(sim.telemetry);
       cockpitLayout.update();
       lastUIFrame=now;
+      didUIUpdate=true;
     }
 
     // Collision feedback: flash the screen and thump once per new impact.
@@ -233,8 +285,10 @@ function boot(): void {
       audio.impact();
     }
     // A hidden surround display needs no second scene render. Keep visible
-    // camera video at 30 Hz while physics and the main view retain their cadence.
-    if(camera360.expanded&&now-lastSurroundFrame>=1000/30){
+    // camera video staggered off UI frames while physics and the main view retain their cadence.
+    const surroundVisible = camera360.expanded && (!uiRoot.classList.contains("phone-landscape") || uiRoot.dataset.mobileView === "camera");
+    const surroundInterval = scene.effectiveQuality === "ultra" ? 1000 / 30 : scene.effectiveQuality === "medium" ? 1000 / 24 : 1000 / 18;
+    if(surroundVisible && (!didUIUpdate || now - lastSurroundFrame > 65) && now - lastSurroundFrame >= surroundInterval){
       fleet.renderExterior(() => scene.renderSurroundView(
         camera360.renderSurface,
         eye.x,
@@ -244,7 +298,18 @@ function boot(): void {
       ));
       lastSurroundFrame=now;
     }
+    if (sim.metrics.time > 2.5 && !sim.paused) {
+      scene.stepAdaptiveQuality(fps, delta);
+    }
     scene.render();
+    if (!document.hidden) {
+      const info = scene.renderer.info;
+      const heap = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize;
+      runtimePerformance.record(rawFrameMs, performance.now() - workStarted, {
+        calls: info.render.calls, triangles: info.render.triangles,
+        geometries: info.memory.geometries, textures: info.memory.textures,
+      }, heap);
+    }
 
     if (firstFrame && loading) {
       firstFrame = false;

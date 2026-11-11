@@ -71,7 +71,7 @@ export class ADASPanel {
   private clock = 0;
   private previousExtraAlert = "";
 
-  constructor(root: HTMLElement, private sim: Simulation) {
+  constructor(root: HTMLElement, private sim: Simulation, private onHorn?: (active: boolean) => void) {
     const systemControls = ADAS_OPTIONS.map(({ code, label, option }) => {
       const enabled = sim.adas.config[option];
       return `<button type="button" role="switch" class="adas-system-toggle${enabled ? " on" : ""}" data-adas-toggle="${option}" aria-checked="${enabled}" aria-labelledby="adas-toggle-label-${option}" aria-label="${code} · ${label}" title="${code} · ${label}">
@@ -108,8 +108,9 @@ export class ADASPanel {
             <select class="adas-gap-choice" id="adas-notch" aria-label="Khoảng cách ACC">${ADAS_GAP_NOTCHES.map((gap, i) => `<option value="${gap}">${["Gần", "Vừa", "Chuẩn", "Xa", "Rất xa", "Xa nhất"][i]} · ${gap.toFixed(1)} s</option>`).join("")}</select>
             <button class="adas-mini" data-adas-gap="1">+</button>
           </div>
-          <div class="adas-indctl" title="Xi nhan / chuyển làn hỗ trợ">
+          <div class="adas-indctl" title="Xi nhan / còi xe / chuyển làn hỗ trợ">
             <button class="adas-mini" data-adas-ind="-1" aria-label="Xi-nhan trái / yêu cầu chuyển làn trái">◀</button>
+            <button type="button" class="adas-mini adas-horn-btn" data-adas-horn="1" aria-label="Bấm còi xe (Phím F)" title="Còi xe (Phím F)">📯</button>
             <button class="adas-mini" data-adas-ind="1" aria-label="Xi-nhan phải / yêu cầu chuyển làn phải">▶</button>
           </div>
         </div>
@@ -134,12 +135,13 @@ export class ADASPanel {
                 <label class="adas-lab-check"><input id="adas-highway-only" type="checkbox"> Chỉ cho phép ALC trên cao tốc</label>
                 <small>ALC hỗ trợ mọi dải tốc độ xe đang chạy, kể cả bò chậm; đứng yên thì chờ xe di chuyển. Cần ACC + LFA, cảm biến, làn cùng chiều và khoảng trống an toàn; tránh giao lộ/người đi bộ. Đây là cấu hình mô phỏng BlueLine, không phải hiệu chuẩn ECU chính hãng.</small>
                 <div id="adas-availability-readout" class="adas-lab-readout" aria-live="polite"></div>
-                <details class="adas-reference-sources"><summary>Nguồn tham chiếu và giới hạn</summary><p>ACC/LFA/ALC/đỗ xe: Kia EV9 26MY, tài liệu RHD công bố trên Kia India; pha/cốt: Kia EV6. Dừng trong làn: Volvo EX90. Tấp lề khẩn cấp: tham khảo Toyota RAV4 Nhật và BMW, tùy phiên bản/thị trường. BlueLine kết hợp các hành vi này; thời gian cảnh báo, lực lái/phanh và cảm biến là hiệu chỉnh mô phỏng.</p><a href="https://www.kia.com/content/dam/kia2/in/en/content/ev9-manual/index.html" target="_blank" rel="noopener noreferrer">Kia EV9</a> · <a href="https://global.toyota/en/newsroom/toyota/43740895.html" target="_blank" rel="noopener noreferrer">Toyota: dừng khẩn cấp</a> · <a href="https://www.tesla.com/ownersmanual/modely/en_gb/GUID-A701F7DC-875C-4491-BC84-605A77EA152C.html" target="_blank" rel="noopener noreferrer">Tesla: đèn tín hiệu</a><p>EDSS dùng đầu vào tài xế giả lập và bản đồ/định vị lý tưởng, chưa phát hiện đột quỵ. Mất camera thì chỉ dùng bản đồ mô phỏng để phanh theo làn hiện tại. APA hiện đỗ song song; RPA tiến/lùi thẳng. Chưa có nhận dạng mắt/camera thật hoặc chứng nhận an toàn.</p></details>
+                <details class="adas-reference-sources"><summary>Nguồn tham chiếu và giới hạn</summary><p>ACC/LFA/ALC/đỗ xe: Kia EV9 26MY, tài liệu RHD công bố trên Kia India; pha/cốt: Kia EV6. Dừng trong làn: Volvo EX90. Tấp lề khẩn cấp: tham khảo Toyota RAV4 Nhật và BMW, tùy phiên bản/thị trường. BlueLine kết hợp các hành vi này; thời gian cảnh báo, lực lái/phanh và cảm biến là hiệu chỉnh mô phỏng.</p><a href="https://www.kia.com/content/dam/kia2/in/en/content/ev9-manual/index.html" target="_blank" rel="noopener noreferrer">Kia EV9</a> · <a href="https://global.toyota/en/newsroom/toyota/43740895.html" target="_blank" rel="noopener noreferrer">Toyota: dừng khẩn cấp</a> · <a href="https://www.tesla.com/ownersmanual/modely/en_gb/GUID-A701F7DC-875C-4491-BC84-605A77EA152C.html" target="_blank" rel="noopener noreferrer">Tesla: đèn tín hiệu</a><p>EDSS dùng đầu vào tài xế giả lập và bản đồ/định vị lý tưởng, chưa phát hiện đột quỵ. Mất camera thì chỉ dùng bản đồ mô phỏng để phanh theo làn hiện tại. APA hỗ trợ đỗ song song và đỗ lùi vuông góc 90°; RPA tiến/lùi thẳng. Chưa có nhận dạng mắt/camera thật hoặc chứng nhận an toàn.</p></details>
               </div>
               <p class="adas-lab-note">Mô hình ADAS để học và thử tình huống. TSR đọc dữ liệu biển; DAW dùng trạng thái tài xế giả lập. Đạp ga hết hành trình để tạm vượt ISA; AEB vẫn có ưu tiên.</p>
             </div>
             <div class="adas-lab-page" role="tabpanel" id="adas-page-parking" aria-labelledby="adas-tab-parking" data-adas-content="parking" hidden>
-              <p class="adas-lab-note">APA: ô song song đã kẻ trên đoạn thẳng. RPA: điều khiển từ xa giả lập, tiến/lùi thẳng tối đa 6 m. Luôn giữ nút; nhả hoặc mất tín hiệu sẽ phanh.</p>
+              <p class="adas-lab-note">APA: hỗ trợ ô đỗ song song và ô đỗ vuông góc 90°. RPA: điều khiển từ xa giả lập, tiến/lùi thẳng tối đa 6 m. Luôn giữ nút; nhả hoặc mất tín hiệu sẽ phanh.</p>
+              <label>Kiểu ô đỗ APA <select id="adas-park-orientation" aria-label="Kiểu ô đỗ tự động APA"><option value="parallel">Đỗ song song (Parallel)</option><option value="perpendicular">Đỗ vuông góc 90° (Perpendicular)</option></select></label>
               <button class="adas-lab-button" id="adas-parking-lab">Mở bãi tập đỗ · bắt đầu phiên mới</button>
               <button class="adas-lab-button" id="adas-find-bay">Quét ô đỗ phù hợp · APA</button>
               <div class="adas-lab-row"><button class="adas-lab-button" data-remote="remote-forward">Chuẩn bị RPA tiến</button><button class="adas-lab-button" data-remote="remote-reverse">Chuẩn bị RPA lùi</button></div>
@@ -147,7 +149,7 @@ export class ADASPanel {
               <button class="adas-lab-button" id="adas-park-cancel">Hủy đỗ xe · phanh dừng</button>
               <p id="adas-parking-status" class="adas-lab-readout" role="status">Chưa tìm ô đỗ</p>
               <div class="adas-lab-row"><button class="adas-lab-button" data-door="left">Cửa trái</button><button class="adas-lab-button" data-door="right">Cửa phải</button></div>
-              <p class="adas-lab-note">SEA chặn yêu cầu mở cửa khi có xe áp sát. Đóng cửa trước khi vào D/R. Mô hình cửa mở hiện biểu diễn bằng trạng thái.</p>
+              <p class="adas-lab-note">SEA chặn yêu cầu mở cửa khi có xe áp sát. Đóng cửa trước khi vào D/R. Cánh cửa 3D và đèn cảnh báo SEA hiển thị trực tiếp trên thân xe và trong cabin.</p>
             </div>
             <div class="adas-lab-page" role="tabpanel" id="adas-page-testing" aria-labelledby="adas-tab-testing" data-adas-content="testing" hidden>
               <p class="adas-lab-note">Đây là đầu vào lỗi/tài xế của phòng thí nghiệm, không phải kết quả nhận diện từ webcam.</p>
@@ -199,6 +201,23 @@ export class ADASPanel {
         this.sim.toggleIndicator(parseInt(button.dataset.adasInd!, 10) as -1 | 1);
       });
     }
+    for (const button of Array.from(document.querySelectorAll<HTMLButtonElement>("[data-adas-horn]"))) {
+      const releaseHorn = () => {
+        this.sim.setHorn(false);
+        this.onHorn?.(false);
+      };
+      button.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        if (this.sim.paused || this.sim.recorder.playing) return;
+        button.setPointerCapture?.(event.pointerId);
+        this.sim.setHorn(true);
+        this.onHorn?.(true);
+      });
+      for (const evt of ["pointerup", "pointercancel", "lostpointercapture"] as const) {
+        button.addEventListener(evt, releaseHorn);
+      }
+      window.addEventListener("blur", releaseHorn);
+    }
     for (const button of Array.from(document.querySelectorAll<HTMLButtonElement>("[data-adas-toggle]"))) {
       button.addEventListener("click", () => {
         const option = button.dataset.adasToggle as ADASOption;
@@ -247,7 +266,18 @@ export class ADASPanel {
         event.preventDefault(); event.stopPropagation(); selectPage(tabs[next]); tabs[next].focus();
       });
     });
-    on("adas-parking-lab", () => { release(); sim.prepareParkingLab(); });
+    const parkOrientationSelect = document.getElementById("adas-park-orientation") as HTMLSelectElement | null;
+    parkOrientationSelect?.addEventListener("change", () => {
+      release();
+      const orient = parkOrientationSelect.value === "perpendicular" ? "perpendicular" : "parallel";
+      sim.parkingLabOrientation = orient;
+      if (sim.parkingBays.length > 0) sim.prepareParkingLab(orient);
+    });
+    on("adas-parking-lab", () => {
+      release();
+      const orient = parkOrientationSelect?.value === "perpendicular" ? "perpendicular" : "parallel";
+      sim.prepareParkingLab(orient);
+    });
     on("adas-find-bay", () => { release(); sim.requestParking("apa"); });
     for (const b of this.panel.querySelectorAll<HTMLButtonElement>("[data-remote]")) b.addEventListener("click", () => {
       release(); sim.requestParking(b.dataset.remote as "remote-forward" | "remote-reverse");
@@ -366,7 +396,8 @@ export class ADASPanel {
     const a = assistanceAvailability({ sensorsAvailable: !sim.sensorFault, sensorAvailability: sim.sensorAvailability, laneConfidence: sim.laneMarkingConfidence });
     document.getElementById('adas-availability-readout')!.textContent = [sim.adas.status.availabilityReason,
       !a.sensors.camera ? 'Camera bị che: LFA/LKA/biển báo không sẵn sàng' : '',
-      !a.sensors.rearRadar ? 'Radar sau lỗi: BSM/RCTA/SEA không sẵn sàng' : '',
+      !a.sensors.frontRadar ? 'Radar trước lỗi: ACC không sẵn sàng · AEB chế độ suy giảm' : '',
+      !a.sensors.rearRadar ? 'Radar sau lỗi: BSM/RCTA/SEA/ESA tự động không sẵn sàng' : '',
       !a.sensors.ultrasonic ? 'Siêu âm lỗi: đỗ xe không sẵn sàng' : '',
       sim.adas.status.alc === 'blocked' ? sim.adas.status.alcReason : '',
       sim.adas.status.highwayAssistActive ? 'Phối hợp ACC + LFA trên cao tốc' : sim.adas.status.trafficJamAssistActive ? 'Phối hợp ACC + LFA khi ùn tắc' : '',
@@ -410,6 +441,8 @@ export class ADASPanel {
       badge.textContent = 'BCA · PHANH KHI RỜI CHỖ'; badge.classList.add('danger');
     } else if (status.extra.pedalMitigation) {
       badge.textContent = "PMC · NGẮT GA / PHANH"; badge.classList.add("danger");
+    } else if (status.extra.evasiveSteering) {
+      badge.textContent = "ESA · ĐÁNH LÁI KHẨN CẤP"; badge.classList.add("danger");
     } else if (status.extra.driverWarning !== "none") {
       badge.textContent = status.extra.driverWarning === "hands" ? "ĐẶT TAY LÊN VÔ-LĂNG" : "CHÚ Ý LÁI XE"; badge.classList.add("warn");
     } else if (status.extra.leadDeparture) {
@@ -451,6 +484,7 @@ export class ADASPanel {
     }
     this.panel.querySelector("#adas-acc-cancel")!.classList.toggle("active", status.accState === "cancelled");
     const extraAlert = status.laneSupportLimited ? status.laneSupportLimitCause==='lateral-grip' ? 'Giảm tốc và tiếp quản · điều khiển ngang đã chạm giới hạn độ bám' : "Giảm tốc và tiếp quản · tốc độ quá cao cho cua hiện tại hoặc sắp tới" : status.takeoverRequired ? "Hãy tiếp quản · kiểm tra cảm biến/vạch làn hoặc trạng thái tài xế" : status.extra.pedalMitigation ? "PMC ngắt ga và phanh" :
+      status.extra.evasiveSteering ? "ESA hỗ trợ đánh lái khẩn cấp tránh vật cản" :
       status.extra.blindSpotIntervention ? "BCA hỗ trợ tránh xe trong điểm mù" : status.extra.emergencyLaneKeeping ? "ELK can thiệp tại mép đường" :
       status.extra.driverWarning !== "none" ? "Cảnh báo trạng thái tài xế giả lập" : status.extra.leadDeparture ? "Xe phía trước đã khởi hành" : "";
     if (extraAlert && extraAlert !== this.previousExtraAlert) this.log(extraAlert, status.takeoverRequired || status.extra.pedalMitigation ? "danger" : "warn");
@@ -463,7 +497,7 @@ export class ADASPanel {
       ldw: status.laneDeparture !== "none" ? "warn" : "off",
       fcw: status.aeb ? "danger" : status.fcw ? "warn" : "off",
       aeb: status.aeb ? "danger" : "off",
-      bsm: status.blindSpotLeft || status.blindSpotRight ? "warn" : "off",
+      bsm: (status.blindSpotLeft && sim.indicator < 0) || (status.blindSpotRight && sim.indicator > 0) || status.extra.blindSpotIntervention ? "danger" : status.blindSpotLeft || status.blindSpotRight ? "warn" : "off",
       alc: status.alc === "active" ? "on" : status.alc === "blocked" ? "warn" : status.alc === "armed" ? "warn" : "off",
       tsr: status.tsrLimitKph !== null ? (status.speedLimited || status.speedWarning ? "warn" : "on") : "off",
       rcta: status.rearAeb ? "danger" : status.rctaActive ? "warn" : status.rctaArmed ? 'on' : "off",
@@ -483,6 +517,9 @@ export class ADASPanel {
       const direction = parseInt(button.dataset.adasInd!, 10);
       button.classList.toggle("active", sim.indicator === direction);
       button.title=status.alc==='active'?'ALC đang đổi làn: bấm lặp không đổi hướng. Đạp phanh hoặc đánh lái để tiếp quản.':'Bật/tắt xi-nhan và yêu cầu chuyển làn hỗ trợ';
+    }
+    for (const button of Array.from(document.querySelectorAll<HTMLButtonElement>("[data-adas-horn]"))) {
+      button.classList.toggle("active", Boolean(sim.hornActive));
     }
     if (status.tsrLimitKph !== null) {
       this.el.limit.textContent = `${Math.round(status.tsrLimitKph)}`;
@@ -691,11 +728,16 @@ export class ADASPanel {
       ctx.fillRect(egoX + 14, egoY - 18, 4, 4);
     }
 
-    // Blind-spot shading.
+    // Blind-spot shading (amber when occupied, red when signalling toward occupied side).
     if (status.blindSpotLeft || status.blindSpotRight) {
-      ctx.fillStyle = "rgba(255, 184, 64, 0.1)";
-      if (status.blindSpotLeft) ctx.fillRect(egoX - 44, egoY - 22, 30, 42);
-      if (status.blindSpotRight) ctx.fillRect(egoX + 14, egoY - 22, 30, 42);
+      if (status.blindSpotLeft) {
+        ctx.fillStyle = sim.indicator < 0 ? "rgba(255, 90, 90, 0.22)" : "rgba(255, 184, 64, 0.1)";
+        ctx.fillRect(egoX - 44, egoY - 22, 30, 42);
+      }
+      if (status.blindSpotRight) {
+        ctx.fillStyle = sim.indicator > 0 ? "rgba(255, 90, 90, 0.22)" : "rgba(255, 184, 64, 0.1)";
+        ctx.fillRect(egoX + 14, egoY - 22, 30, 42);
+      }
     }
 
     // Sensor horizon hint.

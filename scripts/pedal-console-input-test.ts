@@ -21,7 +21,7 @@ class ElementStub extends EventTarget {
  querySelectorAll(selector:string){return selector==='.gear-select'?gearButtons:[];}
 }
 const ids=['intro','pedal-accelerator','pedal-brake','pedal-brake-caption','steer-left','steer-right','steering-value','pedal-brake-value',
- 'console-state','console-alert','console-engine','console-epb','console-engine-state','console-engine-label','console-epb-label'];
+ 'pedal-horn','console-state','console-alert','console-engine','console-epb','console-engine-state','console-engine-label','console-epb-label'];
 for(const id of ids)new ElementStub(id);
 const userFill=new ElementStub(),adasFill=new ElementStub(),root=new ElementStub();
 const gearButtons=['P','R','N','D'].map(gear=>{const button=new ElementStub();button.dataset.gear=gear;return button;});
@@ -61,6 +61,10 @@ point('pedal-accelerator','pointerdown',7);step();controls.clear();
 point('pedal-brake','pointerdown',8);step();
 assert.equal(sim.driverInput.throttle,0,'a fresh brake after reset restored stale cached throttle');assert.equal(sim.driverInput.brake,1);
 point('pedal-brake','pointerup',8);point('pedal-accelerator','pointerup',7);step();
+point('pedal-horn','pointerdown',9);step();
+assert.equal(sim.hornActive,true,'pressing horn pedal did not activate horn');
+point('pedal-horn','pointerup',9);step();
+assert.equal(sim.hornActive,false,'releasing horn pedal did not deactivate horn');
 pedals.update(sim.telemetry);
 
 sim.startRecording();sim.step(1/60);sim.stopRecording();assert(sim.startReplay());consoleControls.update();
@@ -70,5 +74,7 @@ const before={gear:sim.gear,engine:sim.engineOn,epb:sim.epbEngaged};
 click(gearButtons[0]);click(elements.get('console-engine')!);click(elements.get('console-epb')!);
 assert.deepEqual({gear:sim.gear,engine:sim.engineOn,epb:sim.epbEngaged},before,'queued control click modified replay state');
 sim.stopReplay();consoleControls.update();assert(gearButtons.every(button=>!button.disabled));
+sim.telemetry.rearAeb=true;sim.telemetry.adas.aeb=true;consoleControls.update();
+assert.equal(elements.get('console-alert')!.textContent,'PHANH TỰ ĐỘNG KHI LÙI','Rear AEB was labelled as a forward intervention');
 controls.dispose();
 console.log('PEDAL-CONSOLE-INPUT PASS — form-to-pedal focus, multi-pointer cancellation, independent pedals, reset revisions and replay PRND/ignition/EPB guards.');

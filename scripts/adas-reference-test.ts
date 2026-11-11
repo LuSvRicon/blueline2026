@@ -4,6 +4,8 @@ import { assistanceAvailability } from '../src/sim/AssistancePolicy.ts';
 import { ExtendedAssistance } from '../src/sim/ExtendedAssistance.ts';
 import { proximitySafety } from '../src/sim/ProximitySafety.ts';
 import { Simulation } from '../src/sim/Simulation.ts';
+import * as THREE from 'three';
+import { CarFleet } from '../src/render/CarFleet.ts';
 
 // Behaviour acceptance tests reference public manuals, not the implementation's
 // intermediate calculations. Numerical braking/steering tuning remains BlueLine's.
@@ -31,7 +33,21 @@ function obstacle(ds: number, dd = 0, v = 0, vd = 0) {
   assert(!result.status.accActive && !result.status.laneCenteringActive && result.status.blindSpotLeft);
   const rearLost = c.update(frame({ sensorAvailability: { rearRadar: false }, obstacles: [obstacle(-4, -3.7, 26)] }));
   assert(!rearLost.status.blindSpotLeft && rearLost.status.laneCenteringActive);
+  // BSM must not false-trigger on oncoming traffic in opposing lanes.
+  const oncoming = c.update(frame({ obstacles: [obstacle(-3, -3.7, -20)] }));
+  assert(!oncoming.status.blindSpotLeft, 'BSM falsely triggered on oncoming traffic');
 }
+// ACC Stop & Go: after >3s hold (resume-required), tapping throttle or pressing RES resumes.
+{
+  const c = new ADASController();
+  position(150, 0, 0);
+  for (let i = 0; i < 40; i++) c.update(frame({ obstacles: [obstacle(5, 0, 0)] }));
+  assert.equal(c.status.accState, 'resume-required');
+  assert.equal(c.update(frame({ obstacles: [obstacle(40, 0, 15)] })).targetSpeed, 0, 'ACC resumed after >3s hold without driver input');
+  const resumedByThrottle = c.update(frame({ obstacles: [obstacle(40, 0, 15)], input: { steer: 0, throttle: .2, brake: 0 } }));
+  assert(resumedByThrottle.status.accState === 'active' && resumedByThrottle.targetSpeed > 0, 'throttle tap did not resume ACC from stop-and-go hold');
+}
+position();
 // SCC: brake cancels until RES; belt/door/ESC/ABS conditions inhibit cruise.
 for (const conditions of [{ beltFastened: false }, { doorsClosed: false }, { escAvailable: false }, { absActive: true }, { epb: true }, { gear: 'N' as const }]) {
   const c = new ADASController();
@@ -228,5 +244,65 @@ const options = { gear: 'D', night: true, weather: 'clear', attentive: true, han
   p.sensorAvailability.ultrasonic = false;
   for (let i = 0; i < 60; i++) { p.parkingAssist.hold(true); p.step(1 / 60); }
   assert(p.parkingAssist.status.state === 'cancelled' && p.ego.v === 0);
+}
+// Nearest speed limit sign selection prioritizes proximity while respecting co-located lower zone limits.
+{
+  const s = new Simulation({ trafficCount: 0 });
+  s.roadSigns = [
+    { id: 'far-low', s: 100, kind: 'speed-limit', valueKph: 40 },
+    { id: 'near-high', s: 170, kind: 'speed-limit', valueKph: 60 },
+  ];
+  assert.equal(s.nearestSpeedLimit(160), 60, 'TSR selected distant sign over right-next-to-ego sign');
+  s.roadSigns = [
+    { id: 'zone-default', s: 165, kind: 'speed-limit', valueKph: 50 },
+    { id: 'zone-school', s: 185, kind: 'speed-limit', valueKph: 30 },
+  ];
+  assert.equal(s.nearestSpeedLimit(160), 30, 'TSR failed to prioritize co-located lower school-zone sign');
+}
+// Rear AEB in Reverse sets brakeReason to "aeb" and applies 100% brake pressure.
+{
+  const r = new Simulation({ trafficCount: 0 }); r.traffic.clear(); r.pedestrians.clear(); r.usePerception = false;
+  r.setControlMode('adas'); r.ego.v = 0; assert(r.setGear('R'));
+  const p = r.path.toFrenet(r.ego.x, r.ego.y);
+  r.traffic.addTestVehicle('stalled', r.road.laneOf(p.d), p.s - 5.5, 0, 0);
+  r.setDriverInput({ steer: 0, throttle: 1, brake: 0 });
+  r.step(1 / 60);
+  assert(r.adas.status.rearAeb && r.adas.status.aeb && r.adas.status.brakeReason === 'aeb' && r.adas.status.adasBrakeForce === 1);
+}
+// BCA ignores oncoming traffic in opposing lanes on two-way roads.
+{
+  const twoWay = new Simulation({ trackId: 'two-way', trafficCount: 0 });
+  twoWay.traffic.clear(); twoWay.pedestrians.clear(); twoWay.usePerception = false;
+  const p = twoWay.path.toCartesian(200, twoWay.road.laneCenter(0));
+  Object.assign(twoWay.ego, { x: p.x, y: p.y, yaw: p.heading, v: 18 });
+  const a = new ExtendedAssistance();
+  const oncomingCar = { s: 198, d: twoWay.road.oncomingCenter(0), v: -18, vd: 0, length: 4.6, width: 1.9, kind: 'car' as const };
+  const f: ADASFrame = { ego: twoWay.ego, egoS: 200, egoD: twoWay.road.laneCenter(0), path: twoWay.path, road: twoWay.road,
+    obstacles: [oncomingCar], desiredSpeed: 18, input: { steer: -.25, throttle: 0, brake: 0 }, dt: 1 / 60, speedControl: e => e };
+  const out = a.update(f, DEFAULT_ADAS_CONFIG, -.25, 0, options);
+  assert(!out.status.blindSpotIntervention && !out.status.blindSpotBraking, 'BCA falsely triggered on oncoming traffic');
+}
+// Side-mirror BSM LEDs stay steadily lit (stage 1) when turn signal is off, and flash (stage 2) when signalling toward that side.
+{
+  const mSim = new Simulation({ trafficCount: 0 });
+  const leftMat = new THREE.MeshStandardMaterial();
+  const rightMat = new THREE.MeshStandardMaterial();
+  const fleet = Object.assign(Object.create(CarFleet.prototype), {
+    sim: mSim,
+    ego: { userData: { bsmIndicators: { left: { material: leftMat }, right: { material: rightMat } } } },
+  }) as CarFleet;
+  mSim.indicator = 0;
+  fleet.updateMirrorWarnings(true, false, 0);
+  const steadyA = leftMat.emissiveIntensity;
+  fleet.updateMirrorWarnings(true, false, 0.125);
+  const steadyB = leftMat.emissiveIntensity;
+  assert.equal(steadyA, 4.2, 'BSM stage-1 steady LED intensity mismatch');
+  assert.equal(steadyB, 4.2, 'BSM stage-1 LED flashed despite turn signal being off');
+  mSim.indicator = -1;
+  fleet.updateMirrorWarnings(true, false, 0);
+  const flashHigh = leftMat.emissiveIntensity;
+  fleet.updateMirrorWarnings(true, false, 0.125);
+  const flashLow = leftMat.emissiveIntensity;
+  assert(flashHigh > 5 && flashLow < 2, 'BSM stage-2 LED did not flash when signalling toward occupied blind spot');
 }
 console.log('ADAS REFERENCE PASS: ACC interlocks, independent faults, LFA/LKA, ALC domain, signal confirmation, ISA, HBA hysteresis, driver stop/override/replay, RCTA, Rear AEB and parking.');

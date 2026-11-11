@@ -1,0 +1,346 @@
+SOURCE 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94 — 214 files
+
+=== vietnam-scenarios-test ===
+Vietnam scenarios: motorcycle weaving, bus boarding, queued congestion, disabled truck, and mixed rush hour verified
+
+VIETNAM-SCENARIOS-TEST PASS — added scenario actors behave as configured.
+
+=== alc-all-speeds-test ===
+0.5km/h, left, mu=1, s=500: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=1, s=500: completed, max lateral=0.00m/s2
+1km/h, left, mu=1, s=500: completed, max lateral=0.01m/s2
+1km/h, right, mu=1, s=500: completed, max lateral=0.01m/s2
+3km/h, left, mu=1, s=500: completed, max lateral=0.05m/s2
+3km/h, right, mu=1, s=500: completed, max lateral=0.05m/s2
+5km/h, left, mu=1, s=500: completed, max lateral=0.14m/s2
+5km/h, right, mu=1, s=500: completed, max lateral=0.14m/s2
+10km/h, left, mu=1, s=500: completed, max lateral=0.54m/s2
+10km/h, right, mu=1, s=500: completed, max lateral=0.54m/s2
+15km/h, left, mu=1, s=500: completed, max lateral=1.20m/s2
+15km/h, right, mu=1, s=500: completed, max lateral=1.20m/s2
+30km/h, left, mu=1, s=500: completed, max lateral=1.71m/s2
+30km/h, right, mu=1, s=500: completed, max lateral=1.71m/s2
+50km/h, left, mu=1, s=500: completed, max lateral=1.69m/s2
+50km/h, right, mu=1, s=500: completed, max lateral=1.69m/s2
+79km/h, left, mu=1, s=500: completed, max lateral=1.68m/s2
+79km/h, right, mu=1, s=500: completed, max lateral=1.68m/s2
+80km/h, left, mu=1, s=500: completed, max lateral=1.68m/s2
+80km/h, right, mu=1, s=500: completed, max lateral=1.68m/s2
+100km/h, left, mu=1, s=500: completed, max lateral=1.94m/s2
+100km/h, right, mu=1, s=500: completed, max lateral=1.94m/s2
+130km/h, left, mu=1, s=500: completed, max lateral=2.36m/s2
+130km/h, right, mu=1, s=500: completed, max lateral=2.36m/s2
+160km/h, left, mu=1, s=500: completed, max lateral=2.80m/s2
+160km/h, right, mu=1, s=500: completed, max lateral=2.80m/s2
+180km/h, left, mu=1, s=500: completed, max lateral=3.11m/s2
+180km/h, right, mu=1, s=500: completed, max lateral=3.11m/s2
+198km/h, left, mu=1, s=500: completed, max lateral=3.38m/s2
+198km/h, right, mu=1, s=500: completed, max lateral=3.38m/s2
+0.5km/h, left, mu=0.72, s=500: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=0.72, s=500: completed, max lateral=0.00m/s2
+1km/h, left, mu=0.72, s=500: completed, max lateral=0.01m/s2
+1km/h, right, mu=0.72, s=500: completed, max lateral=0.01m/s2
+3km/h, left, mu=0.72, s=500: completed, max lateral=0.05m/s2
+3km/h, right, mu=0.72, s=500: completed, max lateral=0.05m/s2
+5km/h, left, mu=0.72, s=500: completed, max lateral=0.14m/s2
+5km/h, right, mu=0.72, s=500: completed, max lateral=0.14m/s2
+10km/h, left, mu=0.72, s=500: completed, max lateral=0.54m/s2
+10km/h, right, mu=0.72, s=500: completed, max lateral=0.54m/s2
+15km/h, left, mu=0.72, s=500: completed, max lateral=1.20m/s2
+15km/h, right, mu=0.72, s=500: completed, max lateral=1.20m/s2
+30km/h, left, mu=0.72, s=500: completed, max lateral=1.71m/s2
+30km/h, right, mu=0.72, s=500: completed, max lateral=1.71m/s2
+50km/h, left, mu=0.72, s=500: completed, max lateral=1.69m/s2
+50km/h, right, mu=0.72, s=500: completed, max lateral=1.69m/s2
+79km/h, left, mu=0.72, s=500: completed, max lateral=1.68m/s2
+79km/h, right, mu=0.72, s=500: completed, max lateral=1.68m/s2
+80km/h, left, mu=0.72, s=500: completed, max lateral=1.68m/s2
+80km/h, right, mu=0.72, s=500: completed, max lateral=1.68m/s2
+100km/h, left, mu=0.72, s=500: completed, max lateral=1.94m/s2
+100km/h, right, mu=0.72, s=500: completed, max lateral=1.94m/s2
+130km/h, left, mu=0.72, s=500: completed, max lateral=2.36m/s2
+130km/h, right, mu=0.72, s=500: completed, max lateral=2.36m/s2
+160km/h, left, mu=0.72, s=500: completed, max lateral=2.80m/s2
+160km/h, right, mu=0.72, s=500: completed, max lateral=2.80m/s2
+180km/h, left, mu=0.72, s=500: completed, max lateral=3.11m/s2
+180km/h, right, mu=0.72, s=500: completed, max lateral=3.11m/s2
+198km/h, left, mu=0.72, s=500: completed, max lateral=3.38m/s2
+198km/h, right, mu=0.72, s=500: completed, max lateral=3.38m/s2
+0.5km/h, left, mu=1, s=150: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=1, s=150: completed, max lateral=0.00m/s2
+1km/h, left, mu=1, s=150: completed, max lateral=0.01m/s2
+1km/h, right, mu=1, s=150: completed, max lateral=0.01m/s2
+3km/h, left, mu=1, s=150: completed, max lateral=0.05m/s2
+3km/h, right, mu=1, s=150: completed, max lateral=0.05m/s2
+5km/h, left, mu=1, s=150: completed, max lateral=0.15m/s2
+5km/h, right, mu=1, s=150: completed, max lateral=0.13m/s2
+10km/h, left, mu=1, s=150: completed, max lateral=0.58m/s2
+10km/h, right, mu=1, s=150: completed, max lateral=0.54m/s2
+15km/h, left, mu=1, s=150: completed, max lateral=1.28m/s2
+15km/h, right, mu=1, s=150: completed, max lateral=1.21m/s2
+30km/h, left, mu=1, s=150: completed, max lateral=2.02m/s2
+30km/h, right, mu=1, s=150: completed, max lateral=1.99m/s2
+50km/h, left, mu=1, s=150: completed, max lateral=2.58m/s2
+50km/h, right, mu=1, s=150: completed, max lateral=2.58m/s2
+0.5km/h, left, mu=0.72, s=150: completed, max lateral=0.00m/s2
+0.5km/h, right, mu=0.72, s=150: completed, max lateral=0.00m/s2
+1km/h, left, mu=0.72, s=150: completed, max lateral=0.01m/s2
+1km/h, right, mu=0.72, s=150: completed, max lateral=0.01m/s2
+3km/h, left, mu=0.72, s=150: completed, max lateral=0.05m/s2
+3km/h, right, mu=0.72, s=150: completed, max lateral=0.05m/s2
+5km/h, left, mu=0.72, s=150: completed, max lateral=0.15m/s2
+5km/h, right, mu=0.72, s=150: completed, max lateral=0.13m/s2
+10km/h, left, mu=0.72, s=150: completed, max lateral=0.58m/s2
+10km/h, right, mu=0.72, s=150: completed, max lateral=0.54m/s2
+15km/h, left, mu=0.72, s=150: completed, max lateral=1.28m/s2
+15km/h, right, mu=0.72, s=150: completed, max lateral=1.21m/s2
+30km/h, left, mu=0.72, s=150: completed, max lateral=2.02m/s2
+30km/h, right, mu=0.72, s=150: completed, max lateral=1.99m/s2
+50km/h, left, mu=0.72, s=150: completed, max lateral=2.58m/s2
+50km/h, right, mu=0.72, s=150: completed, max lateral=2.58m/s2
+ACC integration from 0km/h: ALC began at 1.1km/h, completed without contact
+ACC integration from 1km/h: ALC began at 1.7km/h, completed without contact
+ACC integration from 5km/h: ALC began at 5.7km/h, completed without contact
+ACC integration from 15km/h: ALC began at 15.7km/h, completed without contact
+ACC integration from 30km/h: ALC began at 30.7km/h, completed without contact
+ACC integration from 60km/h: ALC began at 59.0km/h, completed without contact
+ALL-SPEED ALC PASS: 92 physical speed/direction/grip/curve runs, standing wait, replay, six ACC integrations and slow/fast traffic gap checks.
+
+=== adas-regression-test ===
+ADAS regression: order invariance, RCTA directions, stationary rear brake, ALC override/timeout/rear prediction, LDW, ACC cancel/resume, multi-stage AEB and degradation PASS
+
+=== driver-feedback-test ===
+red stop: 0.00m/s, bumper 0.90m before paint
+ACC slow lead: peak decel 2.36m/s², jerk 2.50m/s³, AEB=false
+ACC gaps near/far: 13.0 / 33.0m
+DRIVER-FEEDBACK PASS — light reset/render, red/green/yellow, brake cancellation, speed/gap, smooth ACC, radar velocity and signals
+
+=== touch-steering-test ===
+TOUCH-STEERING PASS — proportional drag, relative origin, clamp, independent throttle, pointer ownership, release/cancel, reset, pause and input-mode changes.
+
+=== aeb-following-test ===
+{
+  cancelled: false,
+  throttle: 0,
+  perception: false,
+  minGap: 3.22,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 0,
+  perception: true,
+  minGap: 8.86,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: false,
+  minGap: 2.89,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: true,
+  minGap: 9.55,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: false,
+  minGap: 3.02,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: true,
+  minGap: 3.34,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: false,
+  minGap: 2.89,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: true,
+  minGap: 9.55,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+clear: real scenario, 7.60m clearance, 100% brake hold, no contact
+rain: real scenario, 1.70m clearance, 100% brake hold, no contact
+{
+  profile: 'international',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+{
+  profile: 'vietnam',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+AEB-FOLLOWING PASS — moving lead emergency braking, noisy perception, held throttle and five-minute shortest-headway runs.
+
+=== dynamics-collision-test ===
+DYNAMICS-COLLISION PASS — continuous/rotated contact, neutral in both directions, braking, crossing tunneling and wet grip.
+
+=== sensor-visibility-test ===
+SENSOR-VISIBILITY PASS — adjacent lead visible, full/partial occlusion, rotated bodies, range and occlusion switch
+
+=== imported-vehicles-test ===
+VinFast VF 9: 36 batches, 4 wheels, geometry/ground/replace PASS
+Hyundai Santa Fe 2023: 60 batches, 4 wheels, geometry/ground/replace PASS
+Ford Everest Sport 2023: 32 batches, 4 wheels, geometry/ground/replace PASS
+Honda Civic Type R 2023: 44 batches, 4 wheels, geometry/ground/replace PASS
+IMPORTED-VEHICLES PASS — all four actual optimized GLBs, float decoding, axis/size, wheels and switching.
+
+=== cabin-look-test ===
+CABIN-LOOK PASS — held glances, right-drag directions, recenter, form focus, pause/menu/blur and camera isolation.
+
+=== planner-rear-clearance-test ===
+PLANNER-REAR-CLEARANCE PASS — pull away from a stopped rear bike, retain physical/front constraints, three-minute two-way flow without contact.
+
+=== adas-features-test ===
+ALC clear: lane 1 -> 2, signal self-cancelled
+ALC blocked: occupied target lane kept the car in its lane
+TSR/ISA: limit 50 km/h, target capped at 11.4 m/s
+LDW: warned about a right departure
+Parking: front sensor reads 1.4 m
+
+ADAS-FEATURES-TEST PASS — lane change, TSR/ISA, LDW and parking checks passed.
+
+=== session-timeline-test ===
+SESSION-TIMELINE PASS — timestamp-based replay, atomic import, monotonic/finite/size validation and invalid delta guards.
+
+=== learn-test ===
+collected 18200 expert samples
+initial train: fixed expert loss 0.0917 -> 0.0291; epoch loss 0.0441 -> 0.0269
+  DAgger 0: samples 28000, loss 0.0228
+  DAgger 1: samples 37800, loss 0.0204
+  DAgger 2: samples 47600, loss 0.0197
+  DAgger 3: samples 57400, loss 0.0205
+  DAgger 4: samples 60000, loss 0.0184
+network now driving:
+  [NN drives highway] dist 0.82 km | speed 4.7-27.5 | max|d| 0.85 (half 5.55) | crash 0
+  [NN drives trucks] dist 0.71 km | speed 8.0-22.0 | max|d| 3.87 (half 5.55) | crash 0
+
+LEARN-TEST PASS — the from-scratch neural network learned to drive.
+
+=== evo-test ===
+  gen 1/16: best 27.7, avg -0.2
+  gen 2/16: best 51.2, avg 8.1
+  gen 3/16: best 59.3, avg 7.3
+  gen 4/16: best 59.3, avg 14.7
+  gen 5/16: best 59.3, avg 11.4
+  gen 6/16: best 89.4, avg 17.4
+  gen 7/16: best 89.4, avg 18.7
+  gen 8/16: best 169.3, avg 27.6
+  gen 9/16: best 169.3, avg 35.3
+  gen 10/16: best 169.3, avg 41.3
+  gen 11/16: best 169.3, avg 28.4
+  gen 12/16: best 169.3, avg 32.8
+  gen 13/16: best 169.3, avg 32.3
+  gen 14/16: best 169.3, avg 36.4
+  gen 15/16: best 169.3, avg 50.5
+  gen 16/16: best 179.5, avg 52.5
+fitness: 27.7 -> 179.5
+champion drives: dist 0.42 km | max|d| 5.25 (half 5.55) | crash 0
+
+EVO-TEST PASS — neuroevolution discovered a driving policy from scratch.
+
+=== adas-coordination-audit ===
+city/vf9/clear                 v̄= 34km/h AEB=0 ok
+city/vf9/rain                  v̄= 34km/h AEB=1 ok
+city/civic/clear               v̄= 34km/h AEB=0 ok
+city/civic/rain                v̄= 34km/h AEB=0 ok
+boulevard/vf9/clear            v̄= 37km/h AEB=0 ok
+boulevard/vf9/rain             v̄= 36km/h AEB=1 ok
+boulevard/civic/clear          v̄= 37km/h AEB=0 ok
+boulevard/civic/rain           v̄= 36km/h AEB=0 ok
+ring-road/vf9/clear            v̄= 49km/h AEB=0 ok
+ring-road/vf9/rain             v̄= 49km/h AEB=0 ok
+ring-road/civic/clear          v̄= 49km/h AEB=0 ok
+ring-road/civic/rain           v̄= 49km/h AEB=0 ok
+motorway/vf9/clear             v̄= 87km/h AEB=0 ok
+motorway/vf9/rain              v̄= 82km/h AEB=0 ok
+motorway/civic/clear           v̄= 87km/h AEB=0 ok
+motorway/civic/rain            v̄= 82km/h AEB=0 ok
+national/vf9/clear             v̄= 64km/h AEB=0 ok
+national/vf9/rain              v̄= 60km/h AEB=0 ok
+national/civic/clear           v̄= 64km/h AEB=0 ok
+national/civic/rain            v̄= 60km/h AEB=0 ok
+two-way/vf9/clear              v̄= 47km/h AEB=0 ok
+two-way/vf9/rain               v̄= 45km/h AEB=0 ok
+two-way/civic/clear            v̄= 47km/h AEB=0 ok
+two-way/civic/rain             v̄= 45km/h AEB=0 ok
+neighborhood/vf9/clear         v̄= 29km/h AEB=0 ok
+neighborhood/vf9/rain          v̄= 29km/h AEB=0 ok
+neighborhood/civic/clear       v̄= 29km/h AEB=0 ok
+neighborhood/civic/rain        v̄= 29km/h AEB=0 ok
+active/acc-tla-fda             ok
+active/isa-kickdown-aeb        ok
+active/lfa-alc-bsm-bca         ok
+active/acc-aeb-hold-resume     ok
+active/esa-aeb-radar-interlock ok
+active/dms-mrb-edss-takeover   ok
+active/reverse-rcta-rear-aeb   ok
+active/apa-obstacle-abort      ok
+active/csa-throttle-alc-curve  ok
+
+ADAS-COORDINATION-AUDIT PASS — 28 runs × 60s + active multi-ADAS checks.
+
+=== isa-limit-audit-20261108 ===
+ISA LIMIT AUDIT PASS — boundary, 10 s held throttle, kickdown, warning and suggestion.
+
+=== graphics-recovery-test ===
+PASS loss, day environment rebuild, render restart and second recovery
+PASS loss, night environment rebuild, render restart and second recovery
+PASS composer failure reports failed state and suppresses both render paths
+PASS failed first-environment cleans partial rebuild and permits clean retry
+PASS failed second-environment cleans partial rebuild and permits clean retry
+PASS failed quality cleans partial rebuild and permits clean retry
+PASS debug context-loss exercise respects state/extension and schedules restore
+PASS highest detail remains enabled at 1920×1080, DPR2.75, samples8
+PASS highest detail remains enabled at 844×390, DPR3, samples4
+PASS highest detail remains enabled at 844×390, DPR1, samples0
+PASS constructor selects highest detail and registers loss/restore listeners
+GRAPHICS-RECOVERY PASS — 11 lifecycle/cleanup/retry/quality checks. Stubbed renderer verifies application behavior; real GPU context loss still requires browser testing.
+SOURCE FINAL 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94
+
+TEST SUITE PASS — 18 headless checks in 496.7s.

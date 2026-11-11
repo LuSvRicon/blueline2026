@@ -7,7 +7,7 @@ import { Telemetry } from "../sim/Simulation.ts";
 import { clamp, mps2kph } from "../core/math.ts";
 
 const ARC_LENGTH = 330; // 270° of a r=70 circle
-const SPEEDO_MAX_KPH = 140;
+const SPEEDO_MAX_KPH = 180;
 
 export class HUD {
   private root: HTMLElement;
@@ -27,10 +27,14 @@ export class HUD {
 
   constructor(root: HTMLElement) {
     this.root = root;
-    const gaugeTicks = Array.from({ length: 29 }, (_, i) => {
-      const angle = i / 28 * Math.PI * 1.5;
-      const inner = i % 4 === 0 ? 57 : 60;
-      return `<line x1="${80 + Math.cos(angle) * inner}" y1="${80 + Math.sin(angle) * inner}" x2="${80 + Math.cos(angle) * 64}" y2="${80 + Math.sin(angle) * 64}" class="${i % 4 === 0 ? "major" : ""}"/>`;
+    const gaugeTicks = Array.from({ length: 31 }, (_, i) => {
+      const angle = i / 30 * Math.PI * 1.5;
+      const inner = i % 5 === 0 ? 58 : 61;
+      return `<line x1="${80 + Math.cos(angle) * inner}" y1="${80 + Math.sin(angle) * inner}" x2="${80 + Math.cos(angle) * 65}" y2="${80 + Math.sin(angle) * 65}" class="${i % 5 === 0 ? "major" : ""}"/>`;
+    }).join("");
+    const gaugeScale = [0, 60, 120, SPEEDO_MAX_KPH].map((speed) => {
+      const angle = (135 + speed / SPEEDO_MAX_KPH * 270) * Math.PI / 180;
+      return `<span style="left:${(80 + Math.cos(angle) * 57) / 1.6}%;top:${(80 + Math.sin(angle) * 57) / 1.6}%">${speed}</span>`;
     }).join("");
     root.insertAdjacentHTML(
       "beforeend",
@@ -44,7 +48,7 @@ export class HUD {
       </div>
 
       <div class="speedo" aria-label="Cụm đồng hồ vận hành">
-        <div class="dashboard-cluster-label">VẬN HÀNH</div>
+        <div class="dashboard-cluster-label">TỐC ĐỘ</div>
         <div class="turn-led left" id="hud-turn-l">◀</div>
         <div class="speed-ring">
           <svg viewBox="0 0 160 160" aria-hidden="true">
@@ -53,10 +57,11 @@ export class HUD {
             <circle class="ring-value" id="hud-ring" cx="80" cy="80" r="70"
               stroke-dasharray="${ARC_LENGTH} 440" stroke-dashoffset="${ARC_LENGTH}" />
           </svg>
+          <div class="gauge-scale" aria-hidden="true">${gaugeScale}</div>
           <div class="speed-core">
             <div class="speed-num" id="hud-speed">0</div>
             <div class="speed-unit">KM/H</div>
-            <div class="cluster-rpm"><span class="dashboard-rpm-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><b id="hud-rpm">800</b><span>VÒNG/PHÚT</span></div>
+            <div class="cluster-rpm"><span class="dashboard-rpm-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><b id="hud-rpm">800</b><span>v/ph</span></div>
           </div>
         </div>
         <div class="turn-led right" id="hud-turn-r">▶</div>
@@ -193,8 +198,12 @@ export class HUD {
           ? "ĐANG PHANH KHẨN CẤP"
           : t.emergencyPullOver?.active ? t.emergencyPullOver.state==='hold' ? t.emergencyPullOver.onShoulder ? 'EDSS · ĐÃ DỪNG TRÊN LÀN KHẨN CẤP' : 'EDSS · ĐÃ DỪNG TRONG LÀN' : t.emergencyPullOver.state==='fallback' ? 'EDSS · PHANH DỪNG TRONG LÀN' : 'EDSS · ĐANG TẤP LỀ PHẢI'
           : t.adas.takeoverRequired ? t.adas.laneSupportLimited ? t.adas.laneSupportLimitCause==='lateral-grip' ? 'GIẢM TỐC · GIỚI HẠN BÁM NGANG' : "GIẢM TỐC · VƯỢT TỐC ĐỘ QUA CUA" : "HÃY TIẾP QUẢN ĐIỀU KHIỂN"
+          : t.adas.extra.blindSpotBraking ? "BCA · PHANH KHI RỜI CHỖ"
           : t.adas.extra.pedalMitigation ? "PMC · NGẮT GA VÀ PHANH"
+          : t.adas.extra.evasiveSteering ? "ESA · ĐÁNH LÁI KHẨN CẤP"
           : t.adas.aebHolding ? "AEB · ĐANG GIỮ DỪNG"
+          : t.adas.extra.blindSpotIntervention ? "BCA · TRÁNH ĐIỂM MÙ"
+          : t.adas.extra.emergencyLaneKeeping ? "ELK · GIỮ LÀN KHẨN CẤP"
           : t.adas.accState === "cancelled" ? "ACC ĐÃ HỦY · ĐIỀU KHIỂN CHÂN GA"
           : t.adas.trafficLightStopping ? t.adas.trafficLight === "yellow" ? "ĐÈN VÀNG · DỪNG TRƯỚC VẠCH" : "ĐÈN ĐỎ · DỪNG TRƯỚC VẠCH"
           : t.adas.curveSpeedLimited ? "ACC · ĐIỀU CHỈNH TỐC ĐỘ QUA CUA"

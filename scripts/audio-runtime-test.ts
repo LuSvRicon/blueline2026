@@ -45,6 +45,33 @@ const hazardTicks=ticks;sim.metrics.time=.78;audio.update(sim);
 assert.equal(ticks,hazardTicks+1,'emergency hazards blinked silently without an indicator stalk command');
 sim.adas.status.extra.hazardRequest=false;audio.update(sim);sim.metrics.time=1.17;audio.update(sim);
 assert.equal(ticks,hazardTicks+1,'hazard relay continued after the emergency request ended');
+// Two-stage BSM audio: silent when turn signal is off, chimes when signalling toward blind-spot threat.
+let alerts:Array<{freq:number;pan:number}>=[];
+internals.playAlert=(freq:number,pan:number)=>alerts.push({freq,pan});
+sim.adas.status.blindSpotLeft=true;sim.indicator=0;audio.update(sim);
+assert.equal(alerts.length,0,'BSM played audible chime without turn signal');
+sim.indicator=-1;audio.update(sim);
+assert.equal(alerts.length,1,'BSM did not chime when turn signal was activated toward occupied blind spot');
+assert(alerts[0].freq===660&&alerts[0].pan<0,'BSM chime frequency or stereo pan incorrect');
+sim.adas.status.blindSpotLeft=false;sim.indicator=0;audio.update(sim);
+alerts=[];sim.adas.status.laneDeparture='right';audio.update(sim);
+assert.equal(alerts.length,1,'LDW did not play directional departure chime');
+assert(alerts[0].freq===540&&alerts[0].pan>0,'LDW chime frequency or stereo pan incorrect');
+sim.adas.status.laneDeparture='none';audio.update(sim);
+
+sim.hornActive = true;
+audio.update(sim);
+assert.equal(internals.hornGain.gain.value, 0.34, 'active horn did not ramp horn gain to audible level');
+sim.hornActive = false;
+internals.hornPulseUntil = 0;
+audio.update(sim);
+assert.equal(internals.hornGain.gain.value, 0, 'releasing horn did not silence horn gain');
+audio.honk(0.18);
+assert.equal(internals.hornGain.gain.value, 0.34, 'honk() did not trigger horn pulse');
+internals.hornPulseUntil = 0;
+audio.update(sim);
+assert.equal(internals.hornGain.gain.value, 0, 'expired pulse did not silence horn');
+
 let finishResume!:()=>void;
 internals.context.resume=()=>new Promise<void>(resolve=>{finishResume=resolve;});
 const pendingEnable=audio.setEnabled(true);

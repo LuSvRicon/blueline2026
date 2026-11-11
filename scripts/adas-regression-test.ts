@@ -80,4 +80,14 @@ reversing.traffic.addTestVehicle("stalled", reversing.road.laneOf(rf.d), rf.s - 
 let rearBraked = false;
 for (let i = 0; i < 360; i++) { reversing.setDriverInput({ steer: 0, throttle: 1, brake: 0 }); reversing.step(1 / 60); rearBraked ||= reversing.telemetry.rearAeb; }
 check(rearBraked && reversing.metrics.collisions === 0 && reversing.ego.v === 0, "Rear AEB failed physical stop against stationary rear obstacle");
-console.log("ADAS regression: order invariance, RCTA directions, stationary rear brake, ALC override/timeout/rear prediction, LDW, ACC cancel/resume and degradation PASS");
+// Two-stage AEB cascade (UN ECE R152): partial braking behind moving lead at moderate TTC,
+// and automatic AEB latch release when a crossing obstacle clears the path.
+sim.ego.v = 20;
+const partialController = new ADASController();
+const movingLead: Obstacle = { s: pose.s + 26, d: pose.d, v: 9.5, vd: 0, length: 4.6, width: 1.9, kind: "car" };
+const stage1 = partialController.update(frame({ obstacles: [movingLead], input: { steer: 0, throttle: 0, brake: 0 } }));
+check(stage1.status.aeb, `Expected AEB to trigger behind moving lead (aeb=${stage1.status.aeb})`);
+check(stage1.status.aebCause === "Xe phía trước giảm tốc gấp", `Unexpected moving-lead AEB cause: ${stage1.status.aebCause}`);
+const clearedAfterCross = partialController.update(frame({ obstacles: [{ s: pose.s + 26, d: pose.d + sim.road.laneWidth, v: 9.5, vd: 0.8, length: 2.1, width: 0.8, kind: "car" }], input: { steer: 0, throttle: 0, brake: 0 } }));
+check(!clearedAfterCross.status.aeb, "AEB stayed latched after obstacle cleared the lane");
+console.log("ADAS regression: order invariance, RCTA directions, stationary rear brake, ALC override/timeout/rear prediction, LDW, ACC cancel/resume, multi-stage AEB and degradation PASS");

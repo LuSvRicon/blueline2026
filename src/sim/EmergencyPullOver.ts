@@ -37,7 +37,8 @@ export class EmergencyPullOver {
   }
   update(frame:ADASFrame, requested:boolean, enabled:boolean) {
     const { ego,road,egoD,egoS,dt }=frame, a=assistanceAvailability(frame);
-    const crawlSpeed=14*Math.sqrt(clamp(ego.surfaceMu,.35,1));
+    const mu=clamp(frame.estimatedMu??ego.surfaceMu,.35,1);
+    const crawlSpeed=14*Math.sqrt(mu);
     if(!enabled && requested && this.status.active && !['fallback','hold'].includes(this.status.state))this.fallback(egoD,'Đã tắt tấp lề · ngừng chuyển làn, phanh có kiểm soát');
     if(!requested || (!enabled&&!this.status.active)){
       if(this.status.active){this.status={...emptyPullOverStatus(),state:'cancelled',message:'Người lái tiếp quản hoặc đã tắt hỗ trợ tấp lề'};}
@@ -100,13 +101,15 @@ export class EmergencyPullOver {
     const ref=this.reference(0);
     const k=frame.path.signedCurvatureAt(egoS), laneK=k/Math.max(.5,1-k*egoD);
     const referenceHeading=frame.path.cartesianAt(egoS).heading+Math.atan2(ref.vd,Math.max(ego.v,2));
+    const headingErr=wrapAngle(referenceHeading-ego.yaw);
+    const frontCross=(egoD-ref.d)+(ego.dims.wheelbase*0.5)*Math.sin(-headingErr);
     // Lane-camera loss forbids relocation. The fallback stop uses BlueLine's
     // ideal map/localisation to follow the current lane through a bend. This
     // is a simulation assumption, not camera performance or real redundancy.
     const steer=clamp(Math.atan(ego.dims.wheelbase*(laneK+ref.add/Math.max(ego.v**2,16)))+
-      stanleyControl(wrapAngle(referenceHeading-ego.yaw),egoD-ref.d,ego.v,{k:3,kSoft:1.2,maxSteer:ego.maxSteer}),-ego.maxSteer,ego.maxSteer);
+      stanleyControl(headingErr,frontCross,ego.v,{k:2.2,kSoft:1.4,maxSteer:ego.maxSteer}),-ego.maxSteer,ego.maxSteer);
     this.targetSpeed=stopping?0:crawlSpeed;
-    let accel=stopping?-Math.min(2.5,ego.maxDecel*ego.surfaceMu*.65):clamp((this.targetSpeed-ego.v)*.7,-2,.6);
+    let accel=stopping?-Math.min(2.5,ego.maxDecel*mu*.65):clamp((this.targetSpeed-ego.v)*.7,-2,.6);
     // Independent swept forecast with the ACTUAL steering command protects
     // against late cut-ins and obstacles during preparation or a fallback.
     if(this.imminent(frame,steer))accel=-ego.maxDecel;

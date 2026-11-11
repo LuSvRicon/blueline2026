@@ -21,7 +21,7 @@ const MODES: { id: ControlMode; icon: string; title: string; text: string }[] = 
     id: "manual",
     icon: "🎮",
     title: "Lái thủ công",
-    text: "Toàn quyền điều khiển bằng WASD. Không can thiệp — dùng để cảm nhận xe và giao thông.",
+    text: "Điều khiển bằng bàn phím, nút chạm hoặc tay cầm. Tự làm chủ ga, phanh và vô lăng.",
   },
   {
     id: "classical",
@@ -101,10 +101,12 @@ export class IntroOverlay {
           <button class="bl intro-resume" id="intro-resume" hidden>QUAY LẠI PHIÊN LÁI</button>
 
           <div class="intro-hint">
-            <b>W / ↑</b> ga · <b>Space / S / M / ↓</b> phanh · <b>A / D / ← / →</b> lái · <b>Esc</b> tạm dừng ·
+            <span class="intro-touch-hint">Chọn Nút / Kéo để đánh lái · giữ GA / PHANH · chạm xi nhan.<br />Chọn Xe / ADAS / 360° ở bảng dưới. Nút ☰ mở tình huống và cài đặt.</span>
+            <span class="intro-keyboard-hint">
+            <b>W / ↑</b> ga · <b>Space / S / M / ↓</b> phanh · <b>A / D / ← / →</b> lái · <b>F</b> còi · <b>Esc</b> tạm dừng ·
             <b>[ ]</b> xi nhan &amp; chuyển làn hỗ trợ ·
             <b>K</b> góc nhìn · <b>H</b> gọn HUD · <b>F1</b> cài đặt · <b>R</b> đặt lại
-            <br />Mô hình mô phỏng phục vụ học tập, không phải hệ thống an toàn trên xe thật.
+            </span><br />Mô hình mô phỏng phục vụ học tập, không phải hệ thống an toàn trên xe thật.
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 // Central tunables for the simulation. Anything the UI can change lives here.
 import { TrackId } from "../world/track.ts";
+import type { VehicleProfileId } from "../vehicle/VehicleProfiles.ts";
 
 export interface SimConfig {
   numLanes: number;
@@ -11,6 +12,8 @@ export interface SimConfig {
   /** Seed for every stochastic decision; the same seed yields the same run. */
   seed: number;
   trackId: TrackId;
+  /** Physical ego vehicle profile (`composite` default for deterministic baseline). */
+  vehicleProfile?: VehicleProfileId;
 }
 
 export const DEFAULT_SIM: SimConfig = {
@@ -22,4 +25,5 @@ export const DEFAULT_SIM: SimConfig = {
   fixedDt: 1 / 60,
   seed: 1,
   trackId: "city",
+  vehicleProfile: "composite",
 };

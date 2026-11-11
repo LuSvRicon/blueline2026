@@ -165,14 +165,44 @@ export class ReferencePath {
       }
     }
 
-    // Signed lateral offset via the cross product with the tangent.
-    const h = this.headings[bestI];
-    const tx = Math.cos(h);
-    const ty = Math.sin(h);
+    // Project continuously onto the bracketing polyline segment [segI, segNi]
+    // using the interpolated normal h(t) so (s, d) is C⁰ continuous across
+    // sample boundaries and accounts for the Frenet metric (1 - κ·d) on curves.
+    const hBest = this.headings[bestI];
+    const dotBest = (x - this.xs[bestI]) * Math.cos(hBest) + (y - this.ys[bestI]) * Math.sin(hBest);
+    const segI = dotBest >= 0 ? bestI : (bestI - 1 + this.count) % this.count;
+    const segNi = dotBest >= 0 ? (bestI + 1) % this.count : bestI;
+    const x0 = this.xs[segI], y0 = this.ys[segI];
+    const x1 = this.xs[segNi], y1 = this.ys[segNi];
+    const vx = x1 - x0, vy = y1 - y0;
+    const segLen = (segNi === 0 ? this.length : this.ss[segNi]) - this.ss[segI];
+    const h0 = this.headings[segI];
+    const dh = shortestAngle(h0, this.headings[segNi]);
+    const h1 = h0 + dh;
+    const f0 = (x - x0) * Math.cos(h0) + (y - y0) * Math.sin(h0);
+    const f1 = (x - x1) * Math.cos(h1) + (y - y1) * Math.sin(h1);
+    if (f0 >= 0 && f1 <= 0 && f0 - f1 > 1e-9) {
+      let t = f0 / (f0 - f1);
+      const px = x0 + vx * t, py = y0 + vy * t, ht = h0 + dh * t;
+      const tx = Math.cos(ht), ty = Math.sin(ht);
+      const rx = x - px, ry = y - py;
+      const ft = rx * tx + ry * ty;
+      const dtVal = tx * ry - ty * rx;
+      const denom = (vx * tx + vy * ty) - dh * dtVal;
+      if (denom > 1e-4) t = Math.max(0, Math.min(1, t + ft / denom));
+      const fx = x0 + vx * t, fy = y0 + vy * t, fh = h0 + dh * t;
+      const ftx = Math.cos(fh), fty = Math.sin(fh);
+      const d = ftx * (y - fy) - fty * (x - fx);
+      return { s: mod(this.ss[segI] + segLen * t, this.length), d, index: bestI };
+    }
+
+    // Fallback far outside the road's radius of curvature (e.g., corner centers).
+    const tx = Math.cos(hBest);
+    const ty = Math.sin(hBest);
     const rx = x - this.xs[bestI];
     const ry = y - this.ys[bestI];
     const d = tx * ry - ty * rx; // left-positive
-    const along = tx * rx + ty * ry; // refine s within the segment
+    const along = tx * rx + ty * ry;
     return { s: mod(this.ss[bestI] + along, this.length), d, index: bestI };
   }
 }

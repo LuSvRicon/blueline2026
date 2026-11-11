@@ -15,11 +15,25 @@ export class ParkingView {
       this.baysKey = key; this.clear(this.bays);
       for (const bay of this.sim.parkingBays) {
         const w = this.sim.path.toCartesian(bay.s, bay.d);
-        const tile = new THREE.Group(); tile.position.set(w.x, 0, w.y); tile.rotation.y = -w.heading;
-        const surface = new THREE.Mesh(new THREE.BoxGeometry(bay.length + 1, .03, bay.width + .6), new THREE.MeshStandardMaterial({ color: 0x333c41, roughness: .95 }));
+        const isPerp = bay.orientation === "perpendicular";
+        const tile = new THREE.Group();
+        tile.position.set(w.x, 0, w.y);
+        tile.rotation.y = -w.heading + (isPerp ? Math.PI / 2 : 0);
+        const surface = new THREE.Mesh(
+          new THREE.BoxGeometry(bay.length + (isPerp ? 0.4 : 1), .03, bay.width + (isPerp ? 0.3 : .6)),
+          new THREE.MeshStandardMaterial({ color: 0x333c41, roughness: .95 }),
+        );
         surface.position.y = .15; tile.add(surface);
         const points = [[-1,-1], [1,-1], [1,1], [-1,1], [-1,-1]].map(([x,z]) => new THREE.Vector3(x * bay.length / 2, .172, z * bay.width / 2));
         tile.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0xe4f0e8 })));
+        if (isPerp) {
+          const stopper = new THREE.Mesh(
+            new THREE.BoxGeometry(0.18, 0.11, bay.width * 0.62),
+            new THREE.MeshStandardMaterial({ color: 0xf0be49, roughness: 0.7 }),
+          );
+          stopper.position.set(-bay.length / 2 + 0.42, 0.21, 0);
+          tile.add(stopper);
+        }
         // A P marking formed by vector strokes, avoiding an external font asset.
         const p = [[-.7,.6],[-.7,-.6],[.4,-.6],[.6,-.4],[.6,0],[.4,.15],[-.7,.15]].map(([x,z]) => new THREE.Vector3(x,.175,z));
         tile.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(p), new THREE.LineBasicMaterial({ color: 0x6ae4bd })));

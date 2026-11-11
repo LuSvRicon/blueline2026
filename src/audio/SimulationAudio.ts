@@ -18,6 +18,11 @@ export class SimulationAudio {
   private trafficGain: GainNode | null = null;
   private trafficFilter: BiquadFilterNode | null = null;
   private skidGain: GainNode | null = null;
+  private hornLow: OscillatorNode | null = null;
+  private hornHigh: OscillatorNode | null = null;
+  private hornFilter: BiquadFilterNode | null = null;
+  private hornGain: GainNode | null = null;
+  private hornPulseUntil = 0;
   private previousAlert = "";
   private indicatorPhase: boolean | null = null;
   private indicatorDirection = 0;
@@ -98,9 +103,25 @@ export class SimulationAudio {
       this.engineGain.gain.setTargetAtTime(0, now, .05);
       this.trafficGain.gain.setTargetAtTime(0, now, .05);
       this.skidGain?.gain.setTargetAtTime(0, now, .05);
+      this.hornGain?.gain.setTargetAtTime(0, now, .03);
       this.previousAlert = "";
       this.indicatorPhase = null;
       return;
+    }
+    if (this.hornLow && this.hornHigh && this.hornGain) {
+      const profile = sim.telemetry?.vehicleProfile ?? sim.vehicleProfileId;
+      const [lowHz, highHz] =
+        profile === "vf9" || profile === "everest"
+          ? [392, 490]
+          : profile === "santafe"
+            ? [410, 512]
+            : profile === "civic"
+              ? [430, 538]
+              : [405, 506];
+      this.hornLow.frequency.setTargetAtTime(lowHz, now, 0.02);
+      this.hornHigh.frequency.setTargetAtTime(highHz, now, 0.02);
+      const hornOn = Boolean(sim.hornActive) || now < this.hornPulseUntil;
+      this.hornGain.gain.setTargetAtTime(hornOn ? 0.34 : 0, now, hornOn ? 0.015 : 0.035);
     }
     const speed = sim.ego.v;
     const acceleration = sim.ego.a;
@@ -126,10 +147,12 @@ export class SimulationAudio {
 
     const state = sim.adas.status;
     const emergencyBrake = state.aeb || state.extra.pedalMitigation || state.extra.blindSpotBraking;
-    const alert = emergencyBrake ? "aeb" : state.takeoverRequired ? "takeover" : state.fcw ? "fcw" : state.rctaActive ? "rcta" : state.extra.leadDeparture ? "departure" : state.blindSpotLeft ? "left" : state.blindSpotRight ? "right" : state.speedWarning ? 'speed' : "";
+    const bsmConflictLeft = state.blindSpotLeft && (sim.indicator < 0 || state.extra.blindSpotIntervention);
+    const bsmConflictRight = state.blindSpotRight && (sim.indicator > 0 || state.extra.blindSpotIntervention);
+    const alert = emergencyBrake ? "aeb" : state.takeoverRequired ? "takeover" : state.fcw ? "fcw" : state.rctaActive ? "rcta" : bsmConflictLeft ? "left" : bsmConflictRight ? "right" : state.laneDeparture === "left" ? "ldw-left" : state.laneDeparture === "right" ? "ldw-right" : state.extra.leadDeparture ? "departure" : state.speedWarning ? 'speed' : "";
     if (alert && alert !== this.previousAlert) {
-      const frequency = alert === "aeb" ? 980 : alert === "fcw" ? 740 : alert === "rcta" ? 620 : 480;
-      const pan = alert === "left" || (alert === "rcta" && state.rctaLeft) ? -0.65 : alert === "right" || (alert === "rcta" && state.rctaRight) ? 0.65 : 0;
+      const frequency = alert === "aeb" ? 980 : alert === "fcw" ? 740 : alert === "rcta" || alert === "left" || alert === "right" ? 660 : alert.startsWith("ldw-") ? 540 : 480;
+      const pan = alert === "left" || alert === "ldw-left" || (alert === "rcta" && state.rctaLeft) ? -0.65 : alert === "right" || alert === "ldw-right" || (alert === "rcta" && state.rctaRight) ? 0.65 : 0;
       this.playAlert(frequency, pan, alert === "aeb" ? 0.25 : 0.16);
     }
     // Escalating chime while AEB is actually braking.
@@ -160,6 +183,25 @@ export class SimulationAudio {
     }
     this.indicatorPhase = indicating ? phase : null;
     this.indicatorDirection = indicating ? sim.indicator : 0;
+  }
+
+  /** Trigger a short dual-tone horn pulse (and wake Web Audio on user horn press if needed). */
+  honk(durationSec = 0.18): void {
+    const dur = clamp(durationSec, 0.08, 1.5);
+    if (!this.enabled) {
+      void this.setEnabled(true).then((ok) => {
+        if (ok && this.context && this.hornGain) {
+          const now = this.context.currentTime;
+          this.hornPulseUntil = Math.max(this.hornPulseUntil, now + dur);
+          this.hornGain.gain.setTargetAtTime(0.34, now, 0.015);
+        }
+      }).catch(() => {});
+      return;
+    }
+    if (!this.context || !this.hornGain) return;
+    const now = this.context.currentTime;
+    this.hornPulseUntil = Math.max(this.hornPulseUntil, now + dur);
+    this.hornGain.gain.setTargetAtTime(0.34, now, 0.015);
   }
 
   /** One-shot impact thud used when the metrics count a collision. */
@@ -221,6 +263,24 @@ export class SimulationAudio {
     skid.connect(skidFilter).connect(skidGain).connect(master);
     skid.start();
 
+    const hornLow = context.createOscillator();
+    hornLow.type = "sawtooth";
+    hornLow.frequency.value = 405;
+    const hornHigh = context.createOscillator();
+    hornHigh.type = "sawtooth";
+    hornHigh.frequency.value = 506;
+    const hornFilter = context.createBiquadFilter();
+    hornFilter.type = "lowpass";
+    hornFilter.frequency.value = 1280;
+    hornFilter.Q.value = 2.0;
+    const hornGain = context.createGain();
+    hornGain.gain.value = 0;
+    hornLow.connect(hornFilter);
+    hornHigh.connect(hornFilter);
+    hornFilter.connect(hornGain).connect(master);
+    hornLow.start();
+    hornHigh.start();
+
     this.context = context;
     this.master = master;
     this.engine = engine;
@@ -230,6 +290,10 @@ export class SimulationAudio {
     this.trafficFilter = trafficFilter;
     this.trafficGain = trafficGain;
     this.skidGain = skidGain;
+    this.hornLow = hornLow;
+    this.hornHigh = hornHigh;
+    this.hornFilter = hornFilter;
+    this.hornGain = hornGain;
   }
 
   private playAlert(frequency: number, pan: number, duration: number): void {

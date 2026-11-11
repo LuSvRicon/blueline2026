@@ -1,0 +1,98 @@
+[
+  {
+    "name": "ACCGa thích ứng",
+    "passed": true
+  },
+  {
+    "name": "LFAGiữ giữa làn liên tục",
+    "passed": true
+  },
+  {
+    "name": "LKAChống lệch làn từ 60 km/h",
+    "passed": true
+  },
+  {
+    "name": "CSAACC giảm tốc trước cua",
+    "passed": true
+  },
+  {
+    "name": "LDWLệch làn",
+    "passed": true
+  },
+  {
+    "name": "FCWCảnh báo trước",
+    "passed": true
+  },
+  {
+    "name": "AEBPhanh tự động",
+    "passed": true
+  },
+  {
+    "name": "BSMĐiểm mù",
+    "passed": true
+  },
+  {
+    "name": "ALCChuyển làn",
+    "passed": true
+  },
+  {
+    "name": "ALC-LỀThử nghiệm vào/ra làn khẩn cấp",
+    "passed": true
+  },
+  {
+    "name": "TSRBiển báo",
+    "passed": true
+  },
+  {
+    "name": "ISAGiới hạn tốc độ",
+    "passed": true
+  },
+  {
+    "name": "USSCảm biến quanh xe",
+    "passed": true
+  },
+  {
+    "name": "RCTACắt ngang khi lùi",
+    "passed": true
+  },
+  {
+    "name": "Rear AEBPhanh phía sau",
+    "passed": true
+  },
+  {
+    "name": "BCATránh va chạm điểm mù",
+    "passed": true
+  },
+  {
+    "name": "ELKGiữ làn khẩn cấp",
+    "passed": true
+  },
+  {
+    "name": "PMCKiểm soát nhầm ga",
+    "passed": true
+  },
+  {
+    "name": "FDANhắc xe trước đi",
+    "passed": true
+  },
+  {
+    "name": "SEACảnh báo và chặn mở cửa",
+    "passed": true
+  },
+  {
+    "name": "DAWTài xế · đầu vào giả lập",
+    "passed": true
+  },
+  {
+    "name": "EDSSTấp lề khi tài xế không phản hồi",
+    "passed": true
+  },
+  {
+    "name": "HBATự chuyển pha/cốt",
+    "passed": true
+  },
+  {
+    "name": "TLADừng đèn khi dùng ACC",
+    "passed": true
+  }
+]

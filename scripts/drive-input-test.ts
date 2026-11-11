@@ -41,6 +41,8 @@ for (const code of ["Space", "KeyS", "KeyM", "ArrowDown"]) {
   key("keydown", code); step(); assert.equal(sim.driverInput.brake, 1, `${code} must brake`);
   key("keyup", code); step(); assert.equal(sim.driverInput.brake, 0, `${code} must release`);
 }
+key("keydown", "KeyF"); step(); assert.equal(sim.hornActive, true, "KeyF must honk the horn");
+key("keyup", "KeyF"); step(); assert.equal(sim.hornActive, false, "KeyF release must silence the horn");
 key("keydown", "KeyW"); key("keydown", "KeyA"); step();
 assert.equal(sim.driverInput.throttle, 1);
 assert(sim.driverInput.steer < 0 && sim.driverInput.steer > -0.1, "steering must ramp instead of snap");
@@ -73,6 +75,10 @@ pads = [{ connected: true, mapping: "standard", axes: [.5], buttons }];
 pads[0].axes[0] = 0; step(); // rearm after the pause/focus transition
 buttons[7].value = .65; key("keydown", "KeyA"); step();
 assert.equal(sim.driverInput.throttle, .65, "keyboard steering must preserve analog gamepad throttle");
+buttons[2].pressed = true; step();
+assert.equal(sim.hornActive, true, "gamepad button 2 must honk the horn");
+buttons[2].pressed = false; step();
+assert.equal(sim.hornActive, false, "releasing gamepad button 2 must silence the horn");
 key("keyup", "KeyA"); controls.setPedalInputs(0, .4); step();
 assert.equal(sim.driverInput.brake, .4, "pointer brake blends with gamepad input");
 pads = []; win.dispatchEvent(new Event("gamepaddisconnected")); step();

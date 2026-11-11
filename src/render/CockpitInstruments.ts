@@ -62,3 +62,150 @@ export function paintCockpitInstruments(ctx: CanvasRenderingContext2D, t: Teleme
   if(extra.highBeam){ctx.fillStyle="#73b6ff";ctx.font="600 13px Segoe UI";ctx.fillText("PHA",265,27);}
   ctx.restore();
 }
+
+/** Holographic Windshield Head-Up Display (AR-HUD) projected onto the lower windscreen in cockpit view. */
+export function paintWindshieldHud(
+  ctx: CanvasRenderingContext2D,
+  t: Telemetry,
+  speedKph: number,
+  limit: number | null,
+  seaFlashLeft = false,
+  seaFlashRight = false,
+): void {
+  const w = 512, h = 192;
+  ctx.save();
+  ctx.scale(ctx.canvas.width / w, ctx.canvas.height / h);
+  ctx.clearRect(0, 0, w, h);
+
+  // Subtle holographic projector frame glow
+  ctx.strokeStyle = t.adas.aeb || t.rearAeb ? "rgba(255, 82, 74, 0.55)" : "rgba(96, 236, 198, 0.28)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(16, 42); ctx.lineTo(16, 18); ctx.lineTo(54, 18);
+  ctx.moveTo(w - 16, 42); ctx.lineTo(w - 16, 18); ctx.lineTo(w - 54, 18);
+  ctx.moveTo(16, h - 42); ctx.lineTo(16, h - 18); ctx.lineTo(54, h - 18);
+  ctx.moveTo(w - 16, h - 42); ctx.lineTo(w - 16, h - 18); ctx.lineTo(w - 54, h - 18);
+  ctx.stroke();
+
+  // Left block: Digital Speed + Gear
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  const overSpeed = limit !== null && Math.abs(speedKph) > limit + 2;
+  ctx.fillStyle = t.adas.aeb || t.rearAeb ? "#ff6861" : overSpeed ? "#ffbe55" : "#6df5d0";
+  ctx.font = "700 66px 'Segoe UI', sans-serif";
+  ctx.fillText(String(Math.abs(speedKph)), 34, 118);
+
+  ctx.fillStyle = "rgba(175, 242, 226, 0.88)";
+  ctx.font = "700 17px 'Segoe UI', sans-serif";
+  ctx.fillText("km/h", 36, 144);
+  ctx.fillStyle = t.epbEngaged ? "#ff8a7a" : "#7ee6ff";
+  ctx.font = "700 24px 'Segoe UI', sans-serif";
+  ctx.fillText(t.gear, 102, 144);
+
+  // Speed limit TSR ring in HUD
+  if (limit !== null) {
+    const cx = 186, cy = 96, r = 28;
+    ctx.fillStyle = "rgba(12, 24, 32, 0.72)";
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = overSpeed ? "#ff4e45" : "#ff635b";
+    ctx.stroke();
+    ctx.fillStyle = "#f4fbff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 23px 'Segoe UI', sans-serif";
+    ctx.fillText(String(limit), cx, cy + 1);
+  }
+
+  // Center block: AR Lane Corridor + ACC Target / ALC Arrows
+  const midX = 292;
+  const laneActive = t.adas.laneCenteringActive || t.adas.laneKeepAssist;
+  ctx.lineWidth = 3.5;
+  ctx.strokeStyle = t.adas.laneDeparture !== "none" ? "#ffae42" : laneActive ? "#5ef2c4" : "rgba(130, 185, 200, 0.42)";
+  for (const side of [-1, 1]) {
+    ctx.beginPath();
+    ctx.moveTo(midX + side * 56, 152);
+    ctx.lineTo(midX + side * 22, 62);
+    ctx.stroke();
+  }
+
+  // Chevrons inside HUD corridor
+  ctx.strokeStyle = laneActive ? "rgba(94, 242, 196, 0.75)" : "rgba(130, 185, 200, 0.3)";
+  ctx.lineWidth = 2.5;
+  for (const y of [136, 112, 88]) {
+    const span = 12 + (y - 62) * 0.22;
+    ctx.beginPath();
+    ctx.moveTo(midX - span, y + 7);
+    ctx.lineTo(midX, y);
+    ctx.lineTo(midX + span, y + 7);
+    ctx.stroke();
+  }
+
+  if (t.adas.leadGap !== null) {
+    ctx.fillStyle = t.adas.aeb ? "#ff5c54" : t.adas.fcw ? "#ffbe4f" : "#6df5d0";
+    ctx.fillRect(midX - 18, 66, 36, 7);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 18px 'Segoe UI', sans-serif";
+    ctx.fillText(`${t.adas.leadGap.toFixed(1)} m`, midX, 166);
+  } else {
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(145, 215, 205, 0.8)";
+    ctx.font = "600 14px 'Segoe UI', sans-serif";
+    ctx.fillText(t.adas.accActive ? `ACC ${Math.round(t.targetSpeed * 3.6)} km/h` : t.controlMode === "adas" ? "ADAS SẴN SÀNG" : "LÁI TAY", midX, 166);
+  }
+
+  // Right block: ALC / Traffic Light / Parking / Door status
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  ctx.font = "700 17px 'Segoe UI', sans-serif";
+  const rightX = w - 28;
+  if (t.adas.alc === "active" || t.adas.alc === "armed") {
+    ctx.fillStyle = "#5ef2c4";
+    ctx.fillText(t.indicator < 0 ? "◀◀ ALC TRÁI" : "ALC PHẢI ▶▶", rightX, 78);
+  } else if (t.trafficLight && t.trafficLight.distance < 95) {
+    const tlColor = t.trafficLight.state === "red" ? "#ff645c" : t.trafficLight.state === "yellow" ? "#ffcb57" : "#5ef2c4";
+    ctx.fillStyle = tlColor;
+    ctx.fillText(`ĐÈN ${t.trafficLight.state === "red" ? "ĐỎ" : t.trafficLight.state === "yellow" ? "VÀNG" : "XANH"} · ${Math.round(t.trafficLight.distance)}m`, rightX, 78);
+  } else {
+    ctx.fillStyle = "rgba(135, 215, 205, 0.72)";
+    ctx.fillText(t.adas.laneCenteringActive ? "LFA GIỮ LÀN" : "HUD KÍNH LÁI", rightX, 78);
+  }
+
+  const extra = t.adas.extra;
+  if (seaFlashLeft || seaFlashRight || extra.safeExitLeft || extra.safeExitRight) {
+    ctx.fillStyle = "#ff5a52";
+    ctx.fillText("SEA · XE ÁP SÁT CỬA", rightX, 112);
+  } else if (t.doorLeftOpen || t.doorRightOpen) {
+    ctx.fillStyle = "#ffbe55";
+    ctx.fillText(t.doorLeftOpen && t.doorRightOpen ? "MỞ 2 CỬA" : t.doorLeftOpen ? "CỬA TRÁI MỞ" : "CỬA PHẢI MỞ", rightX, 112);
+  } else if (t.parkingAssist && t.parkingAssist.state !== "idle") {
+    ctx.fillStyle = "#6df5d0";
+    ctx.fillText(`${t.parkingAssist.bayOrientation === "perpendicular" ? "APA 90°" : "APA"} · ${Math.round(t.parkingAssist.progress * 100)}%`, rightX, 112);
+  } else if (t.adas.blindSpotLeft || t.adas.blindSpotRight) {
+    ctx.fillStyle = "#ffbe55";
+    ctx.fillText(t.adas.blindSpotLeft ? "BSM ◀ ĐIỂM MÙ" : "ĐIỂM MÙ ▶ BSM", rightX, 112);
+  }
+
+  // Urgent Top Alert Banner on Windshield HUD
+  const urgent = t.adas.aeb || t.rearAeb
+    ? "PHANH KHẨN CẤP AEB"
+    : seaFlashLeft || seaFlashRight
+      ? "SEA · KHÓA MỞ CỬA DO XE ÁP SÁT"
+      : t.adas.takeoverRequired
+        ? "TIẾP QUẢN VÔ-LĂNG NGAY"
+        : t.adas.fcw
+          ? "CẢNH BÁO VA CHẠM PHÍA TRƯỚC"
+          : "";
+  if (urgent) {
+    ctx.fillStyle = "rgba(190, 28, 36, 0.85)";
+    ctx.fillRect(72, 14, w - 144, 30);
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 16px 'Segoe UI', sans-serif";
+    ctx.fillText(urgent, w / 2, 29);
+  }
+  ctx.restore();
+}

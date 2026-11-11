@@ -1,0 +1,11 @@
+{
+  "opened": {
+    "blocked": "true",
+    "panelHidden": false
+  },
+  "closed": {
+    "blocked": "false",
+    "panelHidden": true
+  },
+  "source": "7fe6cd0fa5a9ee973050cfdc9563d0488da5ec21e38ac43124ba6f9223b91bd0"
+}

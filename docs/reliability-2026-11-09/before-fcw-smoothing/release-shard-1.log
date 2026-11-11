@@ -1,0 +1,867 @@
+SOURCE 7fe6cd0fa5a9ee973050cfdc9563d0488da5ec21e38ac43124ba6f9223b91bd0 — 214 files
+
+=== smoke ===
+
+[highway]
+  distance         : 0.60 km
+  speed range      : 0.0 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, STOP
+  max lateral |d|  : 0.18 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[highway@fast]
+  distance         : 0.90 km
+  speed range      : 8.2 – 38.8 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, FOLLOW
+  max lateral |d|  : 3.70 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[stalled]
+  distance         : 0.46 km
+  speed range      : 0.4 – 16.3 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, FOLLOW, STOP
+  max lateral |d|  : 3.70 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[cutin]
+  distance         : 0.41 km
+  speed range      : 9.0 – 16.3 m/s
+  lane changes     : 0
+  behaviour states : CRUISE
+  max lateral |d|  : 0.18 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[trucks]
+  distance         : 0.52 km
+  speed range      : 0.0 – 16.3 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, STOP
+  max lateral |d|  : 3.89 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[crossing]
+  distance         : 0.54 km
+  speed range      : 0.0 – 16.5 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD, STOP
+  max lateral |d|  : 0.32 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[occluded]
+  distance         : 0.55 km
+  speed range      : 4.2 – 16.5 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, YIELD, STOP
+  max lateral |d|  : 3.88 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[jaywalker]
+  distance         : 0.55 km
+  speed range      : 5.9 – 16.4 m/s
+  lane changes     : 0
+  behaviour states : CRUISE, YIELD, STOP
+  max lateral |d|  : 0.18 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+[rush]
+  distance         : 0.43 km
+  speed range      : 0.0 – 16.5 m/s
+  lane changes     : 1
+  behaviour states : CRUISE, OVERTAKE, YIELD, STOP, FOLLOW
+  max lateral |d|  : 3.77 m  (half-width 5.55 m)
+  vehicle crashes  : 0
+  pedestrian hits  : 0
+
+SMOKE PASS — all scenarios: on-road, zero collisions, pedestrians safe.
+
+=== vietnam-scenario-smoke ===
+motorcycle-weave: 0 va chạm · lệch đường 0.0 giây · đi 497 m
+bus-stop: 0 va chạm · lệch đường 0.0 giây · đi 495 m
+traffic-jam: 0 va chạm · lệch đường 0.0 giây · đi 105 m
+truck-breakdown: 0 va chạm · lệch đường 0.0 giây · đi 496 m
+vietnam-rush: 0 va chạm · lệch đường 0.0 giây · đi 237 m
+
+VIETNAM-SCENARIO-SMOKE PASS — all added cases remained on-road without collisions.
+
+=== adas-test ===
+manual: speed 14.0 -> 17.5 m/s, steering applied
+lane centering: applies a correction toward the lane center
+ACC: target 10.3 m/s behind a slower lead vehicle
+FCW/AEB: warning and emergency brake triggered for an imminent conflict
+BSM: left rear blind-spot vehicle detected
+simulation integration: ADAS mode applied AEB against a stopped vehicle
+
+ADAS-TEST PASS — manual inputs and simulated assistance checks passed.
+
+=== adas-motorway-domain-test ===
+{
+  perception: false,
+  start: 1,
+  lane: 2,
+  active: true,
+  completed: true,
+  reasons: [],
+  collisions: 0
+}
+{
+  perception: true,
+  start: 1,
+  lane: 2,
+  active: true,
+  completed: true,
+  reasons: [],
+  collisions: 0
+}
+MOTORWAY DOMAIN PASS: clear lane with noisy perception, construction rejection and median braking.
+
+=== alc-indicator-repeat-test ===
+REPEAT SIGNAL: 96 physical baseline/repeated-click pairs, both directions, four phases, two roads, three initial speeds and dry/wet.
+ALC REPEAT SIGNAL PASS — trajectory unchanged by duplicate commands; genuine takeover and ordinary signal cancellation remain available.
+
+=== emergency-shoulder-test ===
+{
+  perception: false,
+  weather: 'clear',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000056864565,
+  maxLateral: 0.8737906405178213,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'clear',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.00000005681386,
+  maxLateral: 0.8737906405178213,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'clear',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.00000005509014,
+  maxLateral: 0.8447106906328545,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000001432178351,
+  maxLateral: 0.8751812932531544,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000001431823648,
+  maxLateral: 0.8751812932531687,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: false,
+  weather: 'rain',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.00000141803389,
+  maxLateral: 0.846071039610768,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000056864565,
+  maxLateral: 0.8737906405178213,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.00000005681386,
+  maxLateral: 0.8737906405178213,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'clear',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.00000005509014,
+  maxLateral: 0.8447106906328545,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 0,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000001432178351,
+  maxLateral: 0.8751812932531544,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 1,
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000001431823648,
+  maxLateral: 0.8751812932531687,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+{
+  perception: true,
+  weather: 'rain',
+  lane: 2,
+  states: [ 'preparing', 'entering-shoulder', 'stopping', 'hold' ],
+  d: 14.00000141803389,
+  maxLateral: 0.846071039610768,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo',
+  collisions: 0
+}
+curve clear {
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000000056864565,
+  maxLateral: 3.5544397872906863,
+  maxMove: 0.4626851851851934,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo'
+}
+curve rain {
+  states: [
+    'preparing',
+    'changing-lane',
+    'assessing',
+    'entering-shoulder',
+    'stopping',
+    'hold'
+  ],
+  d: 14.000001432178351,
+  maxLateral: 3.5544397872906863,
+  maxMove: 0.4626851851851934,
+  status: 'hold',
+  reason: 'Đã dừng trên làn khẩn cấp · số P, phanh đỗ và đèn cảnh báo'
+}
+blocked shoulder {
+  states: [ 'preparing', 'changing-lane', 'assessing', 'fallback', 'hold' ],
+  d: 10.375000000000455,
+  maxLateral: 0.8737906405178213,
+  maxMove: 0.46268518518519386,
+  status: 'hold',
+  reason: 'Đã dừng trong làn · số P, phanh đỗ và đèn cảnh báo'
+}
+EMERGENCY SHOULDER PASS — road geometry, all lanes/weather/sensing, curves, blockers, rear approach, intrusion, takeover and replay.
+Emergency handover, option-off fallback, natural DMS trigger and legacy motorway replay PASS.
+
+=== high-speed-lane-test ===
+city 60km/h: max offset=0.350m, settled=0.064m, lane departure=false
+city 100km/h: max offset=0.350m, settled=0.112m, lane departure=false
+city 140km/h: max offset=0.350m, settled=0.161m, lane departure=false
+boulevard 60km/h: max offset=0.350m, settled=0.040m, lane departure=false
+boulevard 100km/h: max offset=0.350m, settled=0.070m, lane departure=false
+boulevard 140km/h: max offset=0.350m, settled=0.101m, lane departure=false
+ring-road 60km/h: max offset=0.350m, settled=0.006m, lane departure=false
+ring-road 100km/h: max offset=0.350m, settled=0.011m, lane departure=false
+ring-road 140km/h: max offset=0.350m, settled=0.023m, lane departure=false
+motorway 60km/h: max offset=0.350m, settled=0.012m, lane departure=false
+motorway 100km/h: max offset=0.350m, settled=0.021m, lane departure=false
+motorway 140km/h: max offset=0.350m, settled=0.031m, lane departure=false
+national 60km/h: max offset=0.350m, settled=0.023m, lane departure=false
+national 100km/h: max offset=0.350m, settled=0.041m, lane departure=false
+national 140km/h: max offset=0.350m, settled=0.059m, lane departure=false
+18 lane/step-size stress runs at 140km/h: maximum offset=0.361m, no lane boundary crossed
+ACC/grip city/mu=1: max offset=0.032m, curve cap=true, tyre saturation=false, bend speed=46.7km/h
+ACC/grip city/mu=0.6: max offset=0.029m, curve cap=true, tyre saturation=false, bend speed=38.6km/h
+ACC/grip motorway/mu=1: max offset=0.011m, curve cap=true, tyre saturation=false, bend speed=98.4km/h
+ACC/grip motorway/mu=0.6: max offset=0.009m, curve cap=true, tyre saturation=false, bend speed=76.2km/h
+ACC/grip national/mu=1: max offset=0.017m, curve cap=true, tyre saturation=false, bend speed=71.7km/h
+ACC/grip national/mu=0.6: max offset=0.014m, curve cap=true, tyre saturation=false, bend speed=56.7km/h
+Simulation motorway: speed=151km/h, max offset=0.013m, no contact or departure
+Simulation ring-road: speed=151km/h, max offset=0.003m, no contact or departure
+HIGH-SPEED-LANE PASS
+
+=== handling-traffic-test ===
+Integrated ACC/clear: max lane offset 0.037m
+Integrated ACC/rain: max lane offset 0.037m
+HANDLING-TRAFFIC PASS — shared grip, actuator, load response, ACC curves, pedestrian yielding and rear approach warning.
+
+=== audio-runtime-test ===
+AUDIO-RUNTIME PASS — disabled gain, saved volume, non-finite input and simulation-clock relay synchronization.
+
+=== pedal-console-input-test ===
+PEDAL-CONSOLE-INPUT PASS — form-to-pedal focus, multi-pointer cancellation, independent pedals, reset revisions and replay PRND/ignition/EPB guards.
+
+=== parking-assist-test ===
+APA parallel/city/reference: complete, error=0.20, gear=P, collisions=0
+APA parallel/city/tracks: complete, error=0.20, gear=P, collisions=0
+APA parallel/boulevard/reference: complete, error=0.20, gear=P, collisions=0
+APA parallel/boulevard/tracks: complete, error=0.20, gear=P, collisions=0
+APA parallel/ring-road/reference: complete, error=0.20, gear=P, collisions=0
+APA parallel/ring-road/tracks: complete, error=0.20, gear=P, collisions=0
+APA perpendicular/city/reference: complete, error=0.21, gear=P, collisions=0
+APA perpendicular/city/tracks: complete, error=0.21, gear=P, collisions=0
+APA perpendicular/boulevard/reference: complete, error=0.21, gear=P, collisions=0
+APA perpendicular/boulevard/tracks: complete, error=0.21, gear=P, collisions=0
+APA perpendicular/ring-road/reference: complete, error=0.22, gear=P, collisions=0
+APA perpendicular/ring-road/tracks: complete, error=0.22, gear=P, collisions=0
+Parking assist: actual D/R trajectory, sensors, remote start, hold/release/link loss and sensor-fault stop PASS
+
+=== adas-brake-test ===
+AEB stop (ground-truth test, clear): 0.00 m/s, 4.7 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 4.3 m clearance, 0 collisions
+AEB stop (sensor tracks, clear): 0.00 m/s, 5.5 m clearance, 0 collisions
+AEB stop (sensor tracks, fog): 0.00 m/s, 5.5 m clearance, 0 collisions
+Vietnam stalled scenario: 0.00 m/s, 6.6 m clearance, 0 collisions
+traffic behavior: a stable lead vehicle holds its lane during an ego-only approach
+
+ADAS-BRAKE-TEST PASS — simulated AEB stops before the obstacle; lead traffic does not evade the brake test.
+
+=== aeb-audit-test ===
+  [metrics] CCRs sensor stop clearances: 30km/h=3.62m, 50km/h=5.25m, 80km/h=7.23m
+  [metrics] Unavoidable impact (gap=13m, v0=79.2km/h): cold OFF=21.72, ON=18.56, earliest causal reference=18.56 m/s; established OFF=21.72, ON=18.01 m/s
+  [metrics] dt convergence: trigger(60/120/240Hz)=0.350/0.342/0.342s | stopGap=6.444/6.368/6.323m
+AEB-AUDIT-TEST PASS — actuator physics, CCRs/CCRm/same-speed/CCRb, cut-in/out, 3-phase pedestrian, curved road, occlusion, multi-rate/dropout/faults, low-mu/grade/cornering, unavoidable mitigation, arbiter/override, 6-way permutation, 30/60/144 FPS, dt convergence & diagnostic logger.
+
+=== driving-systems-test ===
+PRND / engine / EPB: interlocks hold; reverse moves backward while the vehicle remains forward-facing
+AEB pressure boost: driver 30%, assistance 65%, total 65%
+RCTA / Rear AEB: left-side crossing motorcycle detected and reverse motion inhibited
+Collision response: body contact detected, vehicles stopped and separated without persistent mesh overlap
+Pedal priority: manual and ADAS without ACC preserve 50% braking while accelerator is held; human resets start at rest
+
+DRIVING-SYSTEMS-TEST PASS — PRND/EPB, reverse, brake-pressure boost, RCTA/Rear AEB and collision response.
+
+=== render-geometry-test ===
+RENDER-GEOMETRY PASS — dashboard volume/winding, wheel scale, road lighting normals, streetlights, 3D AR HUD, 3D perception cages, perpendicular bays, map projection and resource disposal. Visual appearance still needs browser verification.
+
+=== render-motion-test ===
+30 Hz: constant-velocity render step error 4.8e-15m
+60 Hz: constant-velocity render step error 2.4e-15m
+75 Hz: constant-velocity render step error 6.2e-15m
+120 Hz: constant-velocity render step error 4.7e-15m
+144 Hz: constant-velocity render step error 3.9e-15m
+165 Hz: constant-velocity render step error 3.7e-15m
+RENDER-MOTION PASS — matched actor/camera presentation, angle wrap, pause/reset, no physics mutation
+
+=== projection-cache-test ===
+city: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+boulevard: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+ring-road: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+motorway: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+national: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+two-way: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+neighborhood: both directions, road/roadside offsets, noise, loop wrap, teleport match full search
+Projection-only CPU: 44.0ms full scan vs 1.1ms cache (9600 static observations)
+PROJECTION-CACHE PASS — 56000 moving observations exactly match full search
+
+=== detailed-vehicle-test ===
+DETAILED-VEHICLE PASS — orientation/scale, draw groups, wheel refs, independent paint/signals and shared-geometry lifetime.
+
+=== imported-cabin-test ===
+santafe: real interior, steering rig, clear horizon, live displays, mirrors, glass restore PASS
+civic: real interior, steering rig, clear horizon, live displays, mirrors, glass restore PASS
+IMPORTED-CABIN PASS
+
+=== cockpit-view-test ===
+COCKPIT-VIEW PASS — screen/mirror/BSM visibility, clear horizon, wide-screen FOV, driver anchoring, steering axis and all four surround-camera directions. Geometry verification is not visual approval.
+
+=== maps-traffic-test ===
+Phố đô thị/classical: 2371m loop, 263m driven
+Phố đô thị/adas: 2371m loop, 216m driven
+Đại lộ ngoại ô/classical: 3288m loop, 294m driven
+Đại lộ ngoại ô/adas: 3288m loop, 243m driven
+Đường vành đai/classical: 3292m loop, 318m driven
+Đường vành đai/adas: 3292m loop, 247m driven
+Cao tốc · 3 làn mỗi chiều/classical: 6422m loop, 318m driven
+Cao tốc · 3 làn mỗi chiều/adas: 6422m loop, 247m driven
+Quốc lộ · 2 làn mỗi chiều/classical: 4371m loop, 261m driven
+Quốc lộ · 2 làn mỗi chiều/adas: 4371m loop, 247m driven
+Đường hai chiều · 1 làn mỗi chiều/classical: 2617m loop, 230m driven
+Đường hai chiều · 1 làn mỗi chiều/adas: 2617m loop, 222m driven
+Đường nhỏ khu dân cư/classical: 1585m loop, 135m driven
+Đường nhỏ khu dân cư/adas: 1585m loop, 144m driven
+MAPS-TRAFFIC PASS — 7 maps, controllers, safe pedestrian gap, signal-controlled crossing, RCTA challenge and scenario cleanup.
+
+=== road-profiles-test ===
+Cao tốc · 3 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Quốc lộ · 2 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Đường hai chiều · 1 làn mỗi chiều: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+Đường nhỏ khu dân cư: 2 controllers x 3 weather conditions, oncoming flow, legal lanes, progress and no contact PASS
+ROAD-PROFILES PASS — four new road layouts, 24 deterministic 30-second rollouts and denser city distribution.
+
+=== drive-input-test ===
+DRIVE-INPUT PASS — W/arrows, all brake keys, progressive steering, blur/pause/menu, form focus, blended sources and disconnect.
+
+=== network-matrix-test ===
+city: compatible scenarios checked
+boulevard: compatible scenarios checked
+ring-road: compatible scenarios checked
+motorway: compatible scenarios checked
+national: compatible scenarios checked
+two-way: compatible scenarios checked
+neighborhood: compatible scenarios checked
+NETWORK-MATRIX PASS — 690 compatible map/scenario/controller/weather combinations, 20 simulated seconds each.
+
+=== static-traffic-adas-test ===
+static wall forward: high-speed sweep blocks penetration
+static wall reverse: high-speed sweep blocks penetration
+STATIC-TRAFFIC-ADAS PASS — thin barriers, reverse, physical NPC contacts, static perception/AEB in rain and steering-path discrimination.
+
+=== traffic-profile-test ===
+Vietnam traffic: 21 motorcycles, 6 buses, 7 cars, 6 trucks
+blind-spot scenario: a motorcycle starts beside and behind the ego
+
+TRAFFIC-PROFILE-TEST PASS — international and Vietnam actor profiles are distinct.
+
+=== scenario-lab-test ===
+scenario lab: stopped lead, cut-ins, crossing traffic, weaving motorcycles, and bus-stop pedestrians were created
+
+SCENARIO-LAB-TEST PASS — event tools modify the live simulation.
+
+=== session-timeline-test ===
+SESSION-TIMELINE PASS — timestamp-based replay, atomic import, monotonic/finite/size validation and invalid delta guards.
+
+=== weather-test ===
+[clear] sensor 95m | mean speed 16.8 m/s | max|d| 3.88 | crashes 0
+[rain] sensor 68m | mean speed 11.5 m/s | max|d| 0.17 | crashes 0
+[fog] sensor 46m | mean speed 12.1 m/s | max|d| 0.18 | crashes 0
+[visibility target] clear 3.0 m/s | rain 2.4 m/s | fog 1.9 m/s
+
+WEATHER-TEST PASS — safe in rain and fog; low visibility lowers the planner target and ADAS remains stable.
+
+=== learn-test ===
+collected 18200 expert samples
+initial train: fixed expert loss 0.0917 -> 0.0291; epoch loss 0.0441 -> 0.0269
+  DAgger 0: samples 28000, loss 0.0228
+  DAgger 1: samples 37800, loss 0.0204
+  DAgger 2: samples 47600, loss 0.0197
+  DAgger 3: samples 57400, loss 0.0205
+  DAgger 4: samples 60000, loss 0.0184
+network now driving:
+  [NN drives highway] dist 0.82 km | speed 4.7-27.5 | max|d| 0.85 (half 5.55) | crash 0
+  [NN drives trucks] dist 0.71 km | speed 8.0-22.0 | max|d| 3.87 (half 5.55) | crash 0
+
+LEARN-TEST PASS — the from-scratch neural network learned to drive.
+
+=== adas-coordination-audit ===
+city/vf9/clear                 v̄= 34km/h AEB=0 ok
+city/vf9/rain                  v̄= 34km/h AEB=1 ok
+city/civic/clear               v̄= 34km/h AEB=0 ok
+city/civic/rain                v̄= 34km/h AEB=0 ok
+boulevard/vf9/clear            v̄= 37km/h AEB=0 ok
+boulevard/vf9/rain             v̄= 36km/h AEB=1 ok
+boulevard/civic/clear          v̄= 37km/h AEB=0 !! fcwFlaps=5
+boulevard/civic/rain           v̄= 36km/h AEB=0 ok
+ring-road/vf9/clear            v̄= 49km/h AEB=0 ok
+ring-road/vf9/rain             v̄= 49km/h AEB=0 ok
+ring-road/civic/clear          v̄= 49km/h AEB=0 ok
+ring-road/civic/rain           v̄= 49km/h AEB=0 ok
+motorway/vf9/clear             v̄= 87km/h AEB=0 ok
+motorway/vf9/rain              v̄= 82km/h AEB=0 ok
+motorway/civic/clear           v̄= 87km/h AEB=0 ok
+motorway/civic/rain            v̄= 82km/h AEB=0 ok
+national/vf9/clear             v̄= 64km/h AEB=0 ok
+national/vf9/rain              v̄= 60km/h AEB=0 ok
+national/civic/clear           v̄= 64km/h AEB=0 ok
+national/civic/rain            v̄= 60km/h AEB=0 ok
+two-way/vf9/clear              v̄= 47km/h AEB=0 ok
+two-way/vf9/rain               v̄= 45km/h AEB=0 ok
+two-way/civic/clear            v̄= 47km/h AEB=0 ok
+two-way/civic/rain             v̄= 45km/h AEB=0 ok
+neighborhood/vf9/clear         v̄= 29km/h AEB=0 ok
+neighborhood/vf9/rain          v̄= 29km/h AEB=0 ok
+neighborhood/civic/clear       v̄= 29km/h AEB=0 ok
+neighborhood/civic/rain        v̄= 29km/h AEB=0 ok
+active/acc-tla-fda             ok
+active/isa-kickdown-aeb        ok
+active/lfa-alc-bsm-bca         ok
+active/acc-aeb-hold-resume     ok
+active/esa-aeb-radar-interlock ok
+active/dms-mrb-edss-takeover   ok
+active/reverse-rcta-rear-aeb   ok
+active/apa-obstacle-abort      ok
+active/csa-throttle-alc-curve  ok
+
+ADAS-COORDINATION-AUDIT FAIL (1/28)
+file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-Qjwzd0/adas-coordination-audit.mjs:9832
+  throw new Error(failures.join("\n"));
+        ^
+
+Error: boulevard/civic/clear: fcwFlaps=5
+    at file:///C:/Users/KHOADA%7E1/AppData/Local/Temp/blueline-tests-Qjwzd0/adas-coordination-audit.mjs:9832:9
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
+!!! adas-coordination-audit FAILED
+
+=== lateral-audit-20261108 ===
+LATERAL AUDIT 2026-11-08 PASS — 114 geometry, sensor, override, toggle and recognition checks, including 32 four-model wet/dry ALC drives.
+
+=== isa-limit-audit-20261108 ===
+ISA LIMIT AUDIT PASS — boundary, 10 s held throttle, kickdown, warning and suggestion.
+
+=== vehicle-envelope-test ===
+civic: 4.595 × 1.890 m render/body envelope, contacts, swept contacts, wheels and cabin clearances PASS
+santafe: 4.785 × 1.900 m render/body envelope, contacts, swept contacts, wheels and cabin clearances PASS
+everest: 4.914 × 1.923 m render/body envelope, contacts, swept contacts, wheels and cabin clearances PASS
+vf9: 5.118 × 2.004 m render/body envelope, contacts, swept contacts, wheels and cabin clearances PASS
+VEHICLE-ENVELOPE PASS — four real assets fit their own body envelope, profile switching/collision/cabin/phone-FOV and visual resource lifetime verified. Nominal dimensions remain a simulation model.
+
+=== graphics-recovery-test ===
+PASS loss, day environment rebuild, render restart and second recovery
+PASS loss, night environment rebuild, render restart and second recovery
+PASS composer failure reports failed state and suppresses both render paths
+PASS failed first-environment cleans partial rebuild and permits clean retry
+PASS failed second-environment cleans partial rebuild and permits clean retry
+PASS failed quality cleans partial rebuild and permits clean retry
+PASS debug context-loss exercise respects state/extension and schedules restore
+PASS highest detail remains enabled at 1920×1080, DPR2.75, samples8
+PASS highest detail remains enabled at 844×390, DPR3, samples4
+PASS highest detail remains enabled at 844×390, DPR1, samples0
+PASS constructor selects highest detail and registers loss/restore listeners
+GRAPHICS-RECOVERY PASS — 11 lifecycle/cleanup/retry/quality checks. Stubbed renderer verifies application behavior; real GPU context loss still requires browser testing.
+
+=== mirror-refresh-test ===
+MIRROR REFRESH PASS — all three reflections at 4/10/60 FPS, single-pass budget, off-frustum recovery and no recursive surround pass.
+
+=== adas-noisy-sequence-test ===
+PASS mixed/20261109/vf9/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":7,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/vf9/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/vf9/clear/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/20261109/vf9/clear/perpendicular {"seconds":34.67,"errorMetres":0.205,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/vf9/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/vf9/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/vf9/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/vf9/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/vf9/rain/parallel {"seconds":27.88,"errorMetres":0.183,"collisions":0,"maxTracks":1}
+PASS apa/20261109/vf9/rain/perpendicular {"seconds":34.67,"errorMetres":0.197,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/vf9/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/vf9/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/vf9/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/vf9/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/vf9/fog/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/20261109/vf9/fog/perpendicular {"seconds":34.67,"errorMetres":0.205,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/vf9/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/vf9/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/santafe/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/santafe/clear/1 {"seconds":31.07,"confirmedTracks":4,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/santafe/clear/parallel {"seconds":27.87,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/20261109/santafe/clear/perpendicular {"seconds":34.63,"errorMetres":0.204,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/santafe/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/santafe/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/santafe/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/santafe/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/santafe/rain/parallel {"seconds":27.87,"errorMetres":0.198,"collisions":0,"maxTracks":1}
+PASS apa/20261109/santafe/rain/perpendicular {"seconds":34.65,"errorMetres":0.199,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/santafe/rain/remote-forward {"seconds":10.77,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/santafe/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/santafe/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/santafe/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/santafe/fog/parallel {"seconds":27.87,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/20261109/santafe/fog/perpendicular {"seconds":34.63,"errorMetres":0.204,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/santafe/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/santafe/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/everest/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/everest/clear/1 {"seconds":31.07,"confirmedTracks":4,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/everest/clear/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/20261109/everest/clear/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/everest/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/everest/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/everest/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/everest/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/everest/rain/parallel {"seconds":27.88,"errorMetres":0.185,"collisions":0,"maxTracks":1}
+PASS apa/20261109/everest/rain/perpendicular {"seconds":34.65,"errorMetres":0.198,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/everest/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/everest/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/everest/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/everest/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/everest/fog/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/20261109/everest/fog/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/everest/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/everest/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/civic/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/civic/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/civic/clear/parallel {"seconds":27.82,"errorMetres":0.202,"collisions":0,"maxTracks":1}
+PASS apa/20261109/civic/clear/perpendicular {"seconds":34.6,"errorMetres":0.212,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/civic/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/civic/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/civic/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/civic/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/civic/rain/parallel {"seconds":27.9,"errorMetres":0.192,"collisions":0,"maxTracks":1}
+PASS apa/20261109/civic/rain/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/civic/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/civic/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/20261109/civic/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/20261109/civic/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/20261109/civic/fog/parallel {"seconds":27.82,"errorMetres":0.202,"collisions":0,"maxTracks":1}
+PASS apa/20261109/civic/fog/perpendicular {"seconds":34.6,"errorMetres":0.212,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/civic/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/20261109/civic/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/vf9/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/vf9/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/vf9/clear/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/17/vf9/clear/perpendicular {"seconds":34.67,"errorMetres":0.205,"collisions":0,"maxTracks":1}
+PASS rpa/17/vf9/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/vf9/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/vf9/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/vf9/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/vf9/rain/parallel {"seconds":27.88,"errorMetres":0.183,"collisions":0,"maxTracks":1}
+PASS apa/17/vf9/rain/perpendicular {"seconds":34.67,"errorMetres":0.197,"collisions":0,"maxTracks":1}
+PASS rpa/17/vf9/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/vf9/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/vf9/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/vf9/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/vf9/fog/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/17/vf9/fog/perpendicular {"seconds":34.67,"errorMetres":0.205,"collisions":0,"maxTracks":1}
+PASS rpa/17/vf9/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/vf9/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/santafe/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/santafe/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/santafe/clear/parallel {"seconds":27.87,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/17/santafe/clear/perpendicular {"seconds":34.63,"errorMetres":0.204,"collisions":0,"maxTracks":1}
+PASS rpa/17/santafe/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/santafe/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/santafe/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/santafe/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/santafe/rain/parallel {"seconds":27.87,"errorMetres":0.198,"collisions":0,"maxTracks":1}
+PASS apa/17/santafe/rain/perpendicular {"seconds":34.65,"errorMetres":0.199,"collisions":0,"maxTracks":1}
+PASS rpa/17/santafe/rain/remote-forward {"seconds":10.77,"collisions":0,"maxTracks":1}
+PASS rpa/17/santafe/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/santafe/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/santafe/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/santafe/fog/parallel {"seconds":27.87,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/17/santafe/fog/perpendicular {"seconds":34.63,"errorMetres":0.204,"collisions":0,"maxTracks":1}
+PASS rpa/17/santafe/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/santafe/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/everest/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/everest/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/everest/clear/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/17/everest/clear/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":1}
+PASS rpa/17/everest/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/everest/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/everest/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/everest/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/everest/rain/parallel {"seconds":27.88,"errorMetres":0.185,"collisions":0,"maxTracks":1}
+PASS apa/17/everest/rain/perpendicular {"seconds":34.65,"errorMetres":0.198,"collisions":0,"maxTracks":1}
+PASS rpa/17/everest/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/everest/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/everest/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/everest/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/everest/fog/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":1}
+PASS apa/17/everest/fog/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":1}
+PASS rpa/17/everest/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/everest/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/civic/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/civic/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/civic/clear/parallel {"seconds":27.82,"errorMetres":0.202,"collisions":0,"maxTracks":1}
+PASS apa/17/civic/clear/perpendicular {"seconds":34.6,"errorMetres":0.212,"collisions":0,"maxTracks":1}
+PASS rpa/17/civic/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/civic/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/civic/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/civic/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/civic/rain/parallel {"seconds":27.9,"errorMetres":0.192,"collisions":0,"maxTracks":1}
+PASS apa/17/civic/rain/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":1}
+PASS rpa/17/civic/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/civic/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/17/civic/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/17/civic/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/17/civic/fog/parallel {"seconds":27.82,"errorMetres":0.202,"collisions":0,"maxTracks":1}
+PASS apa/17/civic/fog/perpendicular {"seconds":34.6,"errorMetres":0.212,"collisions":0,"maxTracks":1}
+PASS rpa/17/civic/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS rpa/17/civic/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":1}
+PASS mixed/73/vf9/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/vf9/clear/1 {"seconds":31.07,"confirmedTracks":4,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/vf9/clear/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":2}
+PASS apa/73/vf9/clear/perpendicular {"seconds":34.67,"errorMetres":0.205,"collisions":0,"maxTracks":2}
+PASS rpa/73/vf9/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/vf9/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/vf9/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/vf9/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/vf9/rain/parallel {"seconds":27.88,"errorMetres":0.183,"collisions":0,"maxTracks":2}
+PASS apa/73/vf9/rain/perpendicular {"seconds":34.67,"errorMetres":0.197,"collisions":0,"maxTracks":2}
+PASS rpa/73/vf9/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/vf9/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/vf9/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/vf9/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/vf9/fog/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":2}
+PASS apa/73/vf9/fog/perpendicular {"seconds":34.67,"errorMetres":0.205,"collisions":0,"maxTracks":2}
+PASS rpa/73/vf9/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/vf9/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/santafe/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/santafe/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/santafe/clear/parallel {"seconds":27.87,"errorMetres":0.191,"collisions":0,"maxTracks":2}
+PASS apa/73/santafe/clear/perpendicular {"seconds":34.63,"errorMetres":0.204,"collisions":0,"maxTracks":2}
+PASS rpa/73/santafe/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/santafe/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/santafe/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/santafe/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/santafe/rain/parallel {"seconds":27.87,"errorMetres":0.198,"collisions":0,"maxTracks":2}
+PASS apa/73/santafe/rain/perpendicular {"seconds":34.65,"errorMetres":0.199,"collisions":0,"maxTracks":2}
+PASS rpa/73/santafe/rain/remote-forward {"seconds":10.77,"collisions":0,"maxTracks":2}
+PASS rpa/73/santafe/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/santafe/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/santafe/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/santafe/fog/parallel {"seconds":27.87,"errorMetres":0.191,"collisions":0,"maxTracks":2}
+PASS apa/73/santafe/fog/perpendicular {"seconds":34.63,"errorMetres":0.204,"collisions":0,"maxTracks":2}
+PASS rpa/73/santafe/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/santafe/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/everest/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/everest/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/everest/clear/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":2}
+PASS apa/73/everest/clear/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":2}
+PASS rpa/73/everest/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/everest/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/everest/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/everest/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/everest/rain/parallel {"seconds":27.88,"errorMetres":0.185,"collisions":0,"maxTracks":2}
+PASS apa/73/everest/rain/perpendicular {"seconds":34.65,"errorMetres":0.198,"collisions":0,"maxTracks":2}
+PASS rpa/73/everest/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/everest/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/everest/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/everest/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/everest/fog/parallel {"seconds":27.9,"errorMetres":0.191,"collisions":0,"maxTracks":2}
+PASS apa/73/everest/fog/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":2}
+PASS rpa/73/everest/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/everest/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/civic/clear/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/civic/clear/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.04,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/civic/clear/parallel {"seconds":27.82,"errorMetres":0.202,"collisions":0,"maxTracks":2}
+PASS apa/73/civic/clear/perpendicular {"seconds":34.6,"errorMetres":0.212,"collisions":0,"maxTracks":2}
+PASS rpa/73/civic/clear/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/civic/clear/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/civic/rain/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/civic/rain/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":5,"collisions":0,"sensorDropout":0.1,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/civic/rain/parallel {"seconds":27.9,"errorMetres":0.192,"collisions":0,"maxTracks":2}
+PASS apa/73/civic/rain/perpendicular {"seconds":34.67,"errorMetres":0.206,"collisions":0,"maxTracks":2}
+PASS rpa/73/civic/rain/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/civic/rain/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS mixed/73/civic/fog/-1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS mixed/73/civic/fog/1 {"seconds":31.07,"confirmedTracks":3,"maxTracks":6,"collisions":0,"sensorDropout":0.07,"reverseWarning":true,"reverseBraking":true}
+PASS apa/73/civic/fog/parallel {"seconds":27.82,"errorMetres":0.202,"collisions":0,"maxTracks":2}
+PASS apa/73/civic/fog/perpendicular {"seconds":34.6,"errorMetres":0.212,"collisions":0,"maxTracks":2}
+PASS rpa/73/civic/fog/remote-forward {"seconds":10.78,"collisions":0,"maxTracks":2}
+PASS rpa/73/civic/fog/remote-reverse {"seconds":10.78,"collisions":0,"maxTracks":2}
+NOISY ADAS SEQUENCE PASS — 216 seeded sensed-traffic lane-change/ACC/fault and sensor-driven APA cases.
+SOURCE FINAL 7fe6cd0fa5a9ee973050cfdc9563d0488da5ec21e38ac43124ba6f9223b91bd0
+
+TEST SUITE FAILED (1/37) in 1158.4s: adas-coordination-audit

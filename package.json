@@ -1,5 +1,5 @@
 {
-  "name": "blueline2026",
+  "name": "blueline",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -18,6 +18,6 @@
     "@types/three": "^0.161.0",
     "esbuild": "^0.21.5",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11"
+    "vite": "^8.3.6"
   }
 }

@@ -5,12 +5,14 @@ import { DriveControls } from "./DriveControls.ts";
 export class PedalControls {
   private throttleButton: HTMLButtonElement;
   private brakeButton: HTMLButtonElement;
+  private hornButton: HTMLButtonElement | null;
   private meterText: HTMLElement;
   private userFill: HTMLElement;
   private adasFill: HTMLElement;
   private pointerThrottle = 0;
   private pointerBrake = 0;
   private steeringHeld = new Map<number, number>();
+  private hornHeld = new Set<number>();
   private pedalHeld = { throttle: new Set<number>(), brake: new Set<number>() };
   private revision = 0;
 
@@ -21,6 +23,7 @@ export class PedalControls {
         <div class="steering-controls" role="group" aria-label="Điều khiển vô lăng">
           <button type="button" id="steer-left" aria-label="Giữ để đánh lái trái">◀ <kbd>A</kbd></button>
           <span class="steering-readout"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M3.5 8.8 9.8 11m10.7-2.2L14.2 11M12 14.5V21"/></svg><span id="steering-value">VÔ LĂNG · 0°</span></span>
+          <button type="button" id="pedal-horn" class="horn-btn" aria-label="Giữ để bấm còi xe (Phím F)" title="Bấm còi xe (Phím F)">📯 <kbd>F</kbd></button>
           <button type="button" id="steer-right" aria-label="Giữ để đánh lái phải"><kbd>D</kbd> ▶</button>
         </div>
         <div class="pedal-row">
@@ -40,11 +43,32 @@ export class PedalControls {
     `);
     this.throttleButton = document.getElementById("pedal-accelerator") as HTMLButtonElement;
     this.brakeButton = document.getElementById("pedal-brake") as HTMLButtonElement;
+    this.hornButton = document.getElementById("pedal-horn") as HTMLButtonElement | null;
     this.userFill = root.querySelector<HTMLElement>(".brake-meter-user")!;
     this.adasFill = root.querySelector<HTMLElement>(".brake-meter-adas")!;
     this.meterText = document.getElementById("pedal-brake-caption")!;
     this.bindPedal(this.throttleButton, "throttle");
     this.bindPedal(this.brakeButton, "brake");
+    if (this.hornButton) {
+      const hornBtn = this.hornButton;
+      const publishHorn = () => this.controls.setHornInput(this.hornHeld.size > 0);
+      const releaseHorn = (event: PointerEvent) => {
+        this.syncRevision();
+        this.hornHeld.delete(event.pointerId);
+        publishHorn();
+      };
+      hornBtn.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        if (!this.controls.canDrive) return;
+        this.syncRevision();
+        hornBtn.focus({ preventScroll: true });
+        hornBtn.setPointerCapture(event.pointerId);
+        this.hornHeld.add(event.pointerId);
+        publishHorn();
+      });
+      for (const event of ["pointerup", "pointercancel", "lostpointercapture"] as const) hornBtn.addEventListener(event, releaseHorn);
+      window.addEventListener("blur", () => { this.hornHeld.clear(); publishHorn(); });
+    }
     for (const direction of [-1, 1]) {
       const button = document.getElementById(direction < 0 ? "steer-left" : "steer-right") as HTMLButtonElement;
       const release = (event: PointerEvent) => { this.syncRevision(); this.steeringHeld.delete(event.pointerId); this.controls.setSteering(this.steeringCommand()); };
@@ -65,9 +89,13 @@ export class PedalControls {
     const enabled = this.controls.canDrive;
     this.throttleButton.disabled = !enabled;
     this.brakeButton.disabled = !enabled;
+    if (this.hornButton) {
+      this.hornButton.disabled = !enabled;
+      this.hornButton.classList.toggle("pressed", Boolean(t.hornActive));
+    }
     for (const id of ["steer-left", "steer-right"]) (document.getElementById(id) as HTMLButtonElement).disabled = !enabled;
     if (!enabled || this.revision !== this.controls.revision) {
-      this.pointerThrottle = 0; this.pointerBrake = 0; this.steeringHeld.clear();
+      this.pointerThrottle = 0; this.pointerBrake = 0; this.steeringHeld.clear(); this.hornHeld.clear();
       this.pedalHeld.throttle.clear(); this.pedalHeld.brake.clear();
       this.revision = this.controls.revision;
     }
@@ -121,7 +149,7 @@ export class PedalControls {
   private syncRevision(): void {
     if (this.revision === this.controls.revision) return;
     this.pointerThrottle = this.pointerBrake = 0;
-    this.steeringHeld.clear(); this.pedalHeld.throttle.clear(); this.pedalHeld.brake.clear();
+    this.steeringHeld.clear(); this.hornHeld.clear(); this.pedalHeld.throttle.clear(); this.pedalHeld.brake.clear();
     this.revision = this.controls.revision;
   }
 }

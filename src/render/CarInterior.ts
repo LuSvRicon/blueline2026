@@ -9,6 +9,9 @@ export interface CarInterior {
   seats: THREE.Object3D[];
   instrument: CabinDisplay;
   navigation: CabinDisplay;
+  windshieldHud: CabinDisplay;
+  doorPivots: { left: THREE.Group; right: THREE.Group };
+  doorStripMaterials: { left: THREE.MeshStandardMaterial; right: THREE.MeshStandardMaterial };
   wheelSpin: THREE.Object3D;
   wipers: THREE.Group[];
   gearLights: Record<string, THREE.MeshStandardMaterial>;
@@ -109,19 +112,56 @@ export function createCarInterior(options: InteriorOptions): CarInterior {
 
   const glass = new THREE.MeshPhysicalMaterial({color:0xc0d7dd,roughness:.14,transparent:true,opacity:.012,depthWrite:false,side:THREE.DoubleSide});
   polygon([[1.18,.97,-1.0],[1.18,.97,1.0],[.49,1.59,.88],[.49,1.59,-.88]],glass,"sloped-windscreen");
+
+  // Holographic Windshield AR-HUD floating above the instrument hood on the lower windscreen
+  const hudCanvas = options.canvasFactory?.() ?? document.createElement("canvas");
+  hudCanvas.width = 512; hudCanvas.height = 192;
+  const hudCtx = hudCanvas.getContext("2d");
+  if (hudCtx) hudCtx.clearRect(0, 0, 512, 192);
+  const hudTexture = new THREE.CanvasTexture(hudCanvas);
+  hudTexture.colorSpace = THREE.SRGBColorSpace;
+  const windshieldHud: CabinDisplay = { canvas: hudCanvas, texture: hudTexture };
+  const hudMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.36, 0.135),
+    new THREE.MeshBasicMaterial({ map: hudTexture, transparent: true, opacity: 0.04, depthWrite: false, toneMapped: false }),
+  );
+  hudMesh.name = "windshield-hud";
+  hudMesh.rotation.y = -Math.PI / 2;
+  hudMesh.rotation.z = 0.12;
+  hudMesh.position.set(0.85, 1.242, -0.43);
+  hudMesh.renderOrder = 5;
+  group.add(hudMesh);
+
+  const doorPivots = {} as { left: THREE.Group; right: THREE.Group };
+  const doorStripMaterials = {} as { left: THREE.MeshStandardMaterial; right: THREE.MeshStandardMaterial };
   for (const side of [-1,1] as const) {
     const sideName = side<0?"left":"right";
-    box(`${sideName}-door-panel`,[2.08,.65,.085],[-.24,.59,side*.94],soft,.04);
+    const doorPivot = new THREE.Group();
+    doorPivot.name = `${sideName}-door-pivot`;
+    doorPivot.position.set(0.80, 0, side * 0.94);
+    group.add(doorPivot);
+    doorPivots[sideName] = doorPivot;
+    const doorBox = (name: string, size: [number,number,number], worldPos: [number,number,number], material: THREE.Material, radius = .025): THREE.Mesh => {
+      const mesh = new THREE.Mesh(new RoundedBoxGeometry(...size, 3, Math.min(radius, Math.min(...size) * .45)), material);
+      mesh.name = name;
+      mesh.position.set(worldPos[0] - 0.80, worldPos[1], worldPos[2] - side * 0.94);
+      doorPivot.add(mesh);
+      return mesh;
+    };
+    doorBox(`${sideName}-door-panel`,[2.08,.65,.085],[-.24,.59,side*.94],soft,.04);
     box(`${sideName}-front-kick-panel`,[.55,.47,.06],[.90,.45,side*.94],soft,.025);
-    box(`${sideName}-door-beltline`,[1.90,.075,.095],[-.25,.945,side*.945],trim,.03);
-    box(`${sideName}-door-armrest`,[.64,.075,.12],[-.36,.66,side*.865],leather,.025);
-    box(`${sideName}-door-handle`,[.14,.026,.027],[.12,.785,side*.888],aluminium,.009);
-    box(`${sideName}-window-switches`,[.19,.017,.075],[-.24,.71,side*.865],trim,.01);
+    doorBox(`${sideName}-door-beltline`,[1.90,.075,.095],[-.25,.945,side*.945],trim,.03);
+    doorBox(`${sideName}-door-armrest`,[.64,.075,.12],[-.36,.66,side*.865],leather,.025);
+    doorBox(`${sideName}-door-handle`,[.14,.026,.027],[.12,.785,side*.888],aluminium,.009);
+    doorBox(`${sideName}-window-switches`,[.19,.017,.075],[-.24,.71,side*.865],trim,.01);
+    const stripMat = new THREE.MeshStandardMaterial({ color: 0x3ad8b8, emissive: 0x1e8f7a, emissiveIntensity: 0.75, toneMapped: false });
+    doorStripMaterials[sideName] = stripMat;
+    doorBox(`${sideName}-door-ambient-strip`, [1.82, 0.011, 0.014], [-0.25, 0.902, side * 0.892], stripMat, 0.004);
     tube(`${sideName}-a-pillar`,[new THREE.Vector3(1.14,.96,side*.99),new THREE.Vector3(.92,1.28,side*.96),new THREE.Vector3(.49,1.59,side*.88)],.037,headliner);
     tube(`${sideName}-roof-rail`,[new THREE.Vector3(.49,1.59,side*.88),new THREE.Vector3(-.3,1.63,side*.97),new THREE.Vector3(-1.44,1.55,side*.98)],.042,headliner);
     box(`${sideName}-b-pillar`,[.085,.65,.075],[-1.26,1.27,side*.96],headliner,.024);
     polygon([[.96,.99,side*.985],[-1.26,.99,side*.985],[-1.26,1.55,side*.965],[.49,1.59,side*.88]],glass,`${sideName}-side-window`);
-    const speaker = new THREE.Mesh(new THREE.CylinderGeometry(.11,.11,.015,24),trim); speaker.rotation.x=Math.PI/2; speaker.position.set(.32,.43,side*.892); group.add(speaker);
+    const speaker = new THREE.Mesh(new THREE.CylinderGeometry(.11,.11,.015,24),trim); speaker.rotation.x=Math.PI/2; speaker.position.set(.32 - 0.80,.43,side*.892 - side*.94); doorPivot.add(speaker);
 
     // Real-sized door mirror and its sail panel meet the front of the door.
     const sailMaterial = trim.clone(); sailMaterial.side = THREE.DoubleSide;
@@ -175,5 +215,16 @@ export function createCarInterior(options: InteriorOptions): CarInterior {
   }
   const fill=new THREE.PointLight(0xddeaff,.22,3.2,2);fill.position.set(-.25,1.60,0);group.add(fill);
   group.visible=false;
-  return {group,seats,instrument,navigation,wheelSpin:wheel.getObjectByName("wheel-spin")!,wipers,gearLights};
+  return {
+    group,
+    seats,
+    instrument,
+    navigation,
+    windshieldHud,
+    doorPivots,
+    doorStripMaterials,
+    wheelSpin: wheel.getObjectByName("wheel-spin")!,
+    wipers,
+    gearLights,
+  };
 }

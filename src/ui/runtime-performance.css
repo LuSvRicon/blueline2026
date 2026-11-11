@@ -1,0 +1,8 @@
+.runtime-diagnostics {display:grid;gap:7px;padding:10px;border:1px solid #29434c;border-radius:10px;background:#0c1b22;color:#b5ccd5;font-size:11px}
+.runtime-diagnostics output {white-space:pre-line;font-variant-numeric:tabular-nums;line-height:1.6}
+.runtime-diagnostics>div {display:flex;gap:6px;flex-wrap:wrap}
+.runtime-diagnostics button,.graphics-recovery-status button {border:1px solid #36535d;border-radius:6px;background:#17313d;color:#dff9f1;padding:7px;cursor:pointer;font:inherit}
+.runtime-diagnostics small {color:#8ca6b0;line-height:1.5}
+.graphics-recovery-status {position:fixed;z-index:1000;top:90px;left:50%;transform:translateX(-50%);max-width:min(90vw,500px);padding:16px;background:#10232cf5;border:1px solid #e7b65a;border-radius:12px;color:#f2e5c7;box-shadow:0 8px 40px #0008;display:grid;gap:10px;font-size:13px}
+.graphics-recovery-status[hidden] {display:none}
+.telemetry-panel {max-height:calc(100dvh - 100px);overflow-y:auto}

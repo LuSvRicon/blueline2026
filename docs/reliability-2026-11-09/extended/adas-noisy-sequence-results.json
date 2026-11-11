@@ -1,0 +1,1677 @@
+{
+  "profiles": [
+    "vf9",
+    "santafe",
+    "everest",
+    "civic"
+  ],
+  "weathers": [
+    "clear",
+    "rain",
+    "fog"
+  ],
+  "seeds": [
+    20261109,
+    17,
+    73
+  ],
+  "results": [
+    {
+      "key": "mixed/20261109/vf9/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 7,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/vf9/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/vf9/clear/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/vf9/clear/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.205,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/vf9/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/vf9/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/vf9/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/vf9/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/vf9/rain/parallel",
+      "seconds": 27.88,
+      "errorMetres": 0.183,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/vf9/rain/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.197,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/vf9/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/vf9/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/vf9/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/vf9/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/vf9/fog/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/vf9/fog/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.205,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/vf9/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/vf9/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/santafe/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/santafe/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 4,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/santafe/clear/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/santafe/clear/perpendicular",
+      "seconds": 34.63,
+      "errorMetres": 0.204,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/santafe/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/santafe/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/santafe/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/santafe/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/santafe/rain/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.198,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/santafe/rain/perpendicular",
+      "seconds": 34.65,
+      "errorMetres": 0.199,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/santafe/rain/remote-forward",
+      "seconds": 10.77,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/santafe/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/santafe/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/santafe/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/santafe/fog/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/santafe/fog/perpendicular",
+      "seconds": 34.63,
+      "errorMetres": 0.204,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/santafe/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/santafe/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/everest/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/everest/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 4,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/everest/clear/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/everest/clear/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/everest/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/everest/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/everest/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/everest/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/everest/rain/parallel",
+      "seconds": 27.88,
+      "errorMetres": 0.185,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/everest/rain/perpendicular",
+      "seconds": 34.65,
+      "errorMetres": 0.198,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/everest/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/everest/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/everest/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/everest/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/everest/fog/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/everest/fog/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/everest/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/everest/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/civic/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/civic/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/civic/clear/parallel",
+      "seconds": 27.82,
+      "errorMetres": 0.202,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/civic/clear/perpendicular",
+      "seconds": 34.6,
+      "errorMetres": 0.212,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/civic/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/civic/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/civic/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/civic/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/civic/rain/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.192,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/civic/rain/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/civic/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/civic/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/20261109/civic/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/20261109/civic/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/20261109/civic/fog/parallel",
+      "seconds": 27.82,
+      "errorMetres": 0.202,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/20261109/civic/fog/perpendicular",
+      "seconds": 34.6,
+      "errorMetres": 0.212,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/civic/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/20261109/civic/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/vf9/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/vf9/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/vf9/clear/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/vf9/clear/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.205,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/vf9/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/vf9/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/vf9/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/vf9/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/vf9/rain/parallel",
+      "seconds": 27.88,
+      "errorMetres": 0.183,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/vf9/rain/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.197,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/vf9/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/vf9/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/vf9/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/vf9/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/vf9/fog/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/vf9/fog/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.205,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/vf9/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/vf9/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/santafe/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/santafe/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/santafe/clear/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/santafe/clear/perpendicular",
+      "seconds": 34.63,
+      "errorMetres": 0.204,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/santafe/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/santafe/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/santafe/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/santafe/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/santafe/rain/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.198,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/santafe/rain/perpendicular",
+      "seconds": 34.65,
+      "errorMetres": 0.199,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/santafe/rain/remote-forward",
+      "seconds": 10.77,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/santafe/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/santafe/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/santafe/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/santafe/fog/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/santafe/fog/perpendicular",
+      "seconds": 34.63,
+      "errorMetres": 0.204,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/santafe/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/santafe/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/everest/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/everest/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/everest/clear/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/everest/clear/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/everest/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/everest/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/everest/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/everest/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/everest/rain/parallel",
+      "seconds": 27.88,
+      "errorMetres": 0.185,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/everest/rain/perpendicular",
+      "seconds": 34.65,
+      "errorMetres": 0.198,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/everest/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/everest/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/everest/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/everest/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/everest/fog/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/everest/fog/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/everest/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/everest/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/civic/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/civic/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/civic/clear/parallel",
+      "seconds": 27.82,
+      "errorMetres": 0.202,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/civic/clear/perpendicular",
+      "seconds": 34.6,
+      "errorMetres": 0.212,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/civic/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/civic/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/civic/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/civic/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/civic/rain/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.192,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/civic/rain/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/civic/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/civic/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/17/civic/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/17/civic/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/17/civic/fog/parallel",
+      "seconds": 27.82,
+      "errorMetres": 0.202,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "apa/17/civic/fog/perpendicular",
+      "seconds": 34.6,
+      "errorMetres": 0.212,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/civic/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "rpa/17/civic/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 1
+    },
+    {
+      "key": "mixed/73/vf9/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/vf9/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 4,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/vf9/clear/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/vf9/clear/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.205,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/vf9/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/vf9/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/vf9/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/vf9/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/vf9/rain/parallel",
+      "seconds": 27.88,
+      "errorMetres": 0.183,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/vf9/rain/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.197,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/vf9/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/vf9/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/vf9/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/vf9/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/vf9/fog/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/vf9/fog/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.205,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/vf9/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/vf9/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/santafe/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/santafe/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/santafe/clear/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/santafe/clear/perpendicular",
+      "seconds": 34.63,
+      "errorMetres": 0.204,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/santafe/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/santafe/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/santafe/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/santafe/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/santafe/rain/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.198,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/santafe/rain/perpendicular",
+      "seconds": 34.65,
+      "errorMetres": 0.199,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/santafe/rain/remote-forward",
+      "seconds": 10.77,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/santafe/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/santafe/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/santafe/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/santafe/fog/parallel",
+      "seconds": 27.87,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/santafe/fog/perpendicular",
+      "seconds": 34.63,
+      "errorMetres": 0.204,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/santafe/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/santafe/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/everest/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/everest/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/everest/clear/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/everest/clear/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/everest/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/everest/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/everest/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/everest/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/everest/rain/parallel",
+      "seconds": 27.88,
+      "errorMetres": 0.185,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/everest/rain/perpendicular",
+      "seconds": 34.65,
+      "errorMetres": 0.198,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/everest/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/everest/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/everest/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/everest/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/everest/fog/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.191,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/everest/fog/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/everest/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/everest/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/civic/clear/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/civic/clear/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.04,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/civic/clear/parallel",
+      "seconds": 27.82,
+      "errorMetres": 0.202,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/civic/clear/perpendicular",
+      "seconds": 34.6,
+      "errorMetres": 0.212,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/civic/clear/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/civic/clear/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/civic/rain/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/civic/rain/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 5,
+      "collisions": 0,
+      "sensorDropout": 0.1,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/civic/rain/parallel",
+      "seconds": 27.9,
+      "errorMetres": 0.192,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/civic/rain/perpendicular",
+      "seconds": 34.67,
+      "errorMetres": 0.206,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/civic/rain/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/civic/rain/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "mixed/73/civic/fog/-1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "mixed/73/civic/fog/1",
+      "seconds": 31.07,
+      "confirmedTracks": 3,
+      "maxTracks": 6,
+      "collisions": 0,
+      "sensorDropout": 0.07,
+      "reverseWarning": true,
+      "reverseBraking": true
+    },
+    {
+      "key": "apa/73/civic/fog/parallel",
+      "seconds": 27.82,
+      "errorMetres": 0.202,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "apa/73/civic/fog/perpendicular",
+      "seconds": 34.6,
+      "errorMetres": 0.212,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/civic/fog/remote-forward",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    },
+    {
+      "key": "rpa/73/civic/fog/remote-reverse",
+      "seconds": 10.78,
+      "collisions": 0,
+      "maxTracks": 2
+    }
+  ],
+  "failures": []
+}

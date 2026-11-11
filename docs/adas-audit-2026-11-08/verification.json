@@ -1,0 +1,59 @@
+{
+  "publicDeploymentChanged": true,
+  "registeredTestGroups": 64,
+  "date": "2026-11-08",
+  "learnRetest": {
+    "seconds": 88.0,
+    "log": "learn-retest.log",
+    "productionModelChanged": false,
+    "passed": true,
+    "disabledLearningControlRejected": true
+  },
+  "build": {
+    "warning": "Bundle above 510 kB",
+    "passed": true,
+    "script": "index-RMQM1OaV.js"
+  },
+  "browser": {
+    "errors": 0,
+    "tested": true,
+    "realPhoneTested": false,
+    "togglesPassed": 24,
+    "aebHold": {
+      "userBrakePercent": 0,
+      "collisions": 0,
+      "speedKph": 0,
+      "clearanceM": 3.4,
+      "adasBrakePercent": 100
+    },
+    "phoneViewport": "844x390"
+  },
+  "finalAffectedRun": {
+    "seconds": 362.8,
+    "log": "final-adas.log",
+    "passed": 30,
+    "groups": 30
+  },
+  "broadRun": {
+    "seconds": 1561.7,
+    "log": "full-suite.log",
+    "failed": [
+      "learn-test"
+    ],
+    "passed": 59,
+    "groups": 60
+  },
+  "scope": "Local source and local production build",
+  "deployment": {
+    "githubSynchronized": false,
+    "url": "https://blueline2026.pages.dev/",
+    "browserErrors": 0,
+    "status": "success",
+    "id": "5ac785c5-96eb-4a43-a17a-a6408b3288ce",
+    "aebSmokeTest": {
+      "speedKph": 0,
+      "collisions": 0,
+      "clearanceM": 6.5
+    }
+  }
+}

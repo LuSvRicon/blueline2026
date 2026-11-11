@@ -8,6 +8,7 @@ import * as THREE from "three";
 import { Road } from "../world/Road.ts";
 import {StaticWorld} from '../world/StaticWorld.ts';
 import {Rng} from '../core/rng.ts';
+import {addSpatialInstances} from './SpatialInstances.ts';
 
 interface Slot {
   x: number;
@@ -16,6 +17,7 @@ interface Slot {
   h: number;
   depth: number;
   color: THREE.Color;
+  nearRoad: boolean;
 }
 
 const PALETTE = [0xb6afa2, 0x999e9e, 0xc8bba5, 0x8c9c9c, 0xb6b2a9, 0x818d98, 0xd1c9b9, 0xa8aaa3];
@@ -69,10 +71,13 @@ export class BuildingsView {
         const bx = x + (rand() - 0.5) * 8;
         const bz = z + (rand() - 0.5) * 8;
         let onRoad = false;
+        let minDist2 = Infinity;
         for (const [rx, rz] of roadPts) {
           const dx = bx - rx;
           const dz = bz - rz;
-          if (dx * dx + dz * dz < clr2) {
+          const d2 = dx * dx + dz * dz;
+          if (d2 < minDist2) minDist2 = d2;
+          if (d2 < clr2) {
             onRoad = true;
             break;
           }
@@ -88,6 +93,7 @@ export class BuildingsView {
           depth: 14 + rand() * 12,
           h: 8 + t * t * t * 90,
           color: new THREE.Color(PALETTE[(rand() * PALETTE.length) | 0]),
+          nearRoad: minDist2 < 135 * 135,
         });
       }
     }
@@ -111,9 +117,10 @@ export class BuildingsView {
     for (const b of slots) {
       add(roofs,b.x,b.h+.25,b.z,b.w+.6,.5,b.depth+.6);
       add(roofs,b.x,b.h+1,b.z,b.w*.32,1.1,b.depth*.3);
-      // Recessed ground-floor glazing and projecting floor slabs.
+      if (!b.nearRoad) continue;
+      // Recessed ground-floor glazing and projecting floor slabs for near-corridor buildings.
       add(transforms,b.x,1.7,b.z,b.w+ .08,2.8,b.depth+.08);
-      for(let y=3.8;y<b.h;y+=3.8) add(roofs,b.x,y,b.z,b.w+.24,.16,b.depth+.24);
+      for(let y=3.8;y<b.h;y+=7.6) add(roofs,b.x,y,b.z,b.w+.24,.16,b.depth+.24);
       for(const side of [-1,1]) {
         add(roofs,b.x+side*(b.w/2-.3),b.h/2,b.z,.42,b.h,b.depth+.2);
         add(roofs,b.x,b.h/2,b.z+side*(b.depth/2-.3),b.w+.2,b.h,.42);
@@ -123,8 +130,8 @@ export class BuildingsView {
       [transforms,new THREE.MeshStandardMaterial({color:0x34454e,metalness:.45,roughness:.28})],
       [roofs,new THREE.MeshStandardMaterial({color:0x92938d,roughness:.83})],
     ] as const) {
-      const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),material,matrices.length);
-      matrices.forEach((matrix,i)=>mesh.setMatrixAt(i,matrix)); mesh.instanceMatrix.needsUpdate=true;mesh.receiveShadow=true; this.group.add(mesh);
+      if (!matrices.length) continue;
+      addSpatialInstances(this.group,new THREE.BoxGeometry(1,1,1),material,matrices.map(matrix=>({matrix})),{receiveShadow:true});
     }
   }
 
@@ -133,20 +140,21 @@ export class BuildingsView {
       roughness: 0.72,
       metalness: 0.04,
     });
-    const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, slots.length);
-    mesh.castShadow=true;mesh.receiveShadow=true;
     const dummy = new THREE.Object3D();
-    slots.forEach((b, i) => {
-      dummy.position.set(b.x, b.h / 2, b.z);
-      dummy.rotation.set(0, 0, 0);
-      dummy.scale.set(b.w, b.h, b.depth);
-      dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
-      mesh.setColorAt(i, b.color);
-    });
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-    this.group.add(mesh);
+    for (const [subset, castShadow] of [
+      [slots.filter((s) => s.nearRoad), true],
+      [slots.filter((s) => !s.nearRoad), false],
+    ] as const) {
+      if (!subset.length) continue;
+      const instances = subset.map(b => {
+        dummy.position.set(b.x, b.h / 2, b.z);
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.set(b.w, b.h, b.depth);
+        dummy.updateMatrix();
+        return {matrix:dummy.matrix.clone(),color:b.color};
+      });
+      addSpatialInstances(this.group,new THREE.BoxGeometry(1,1,1),mat,instances,{castShadow,receiveShadow:true});
+    }
   }
 
   private buildWindows(slots: Slot[]): void {
@@ -168,18 +176,15 @@ export class BuildingsView {
         depthWrite: false,
         side: THREE.DoubleSide,
       });
-      const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, bucket.length);
       this.windowMaterials.push(mat);
-      mesh.renderOrder = 2;
       const dummy = new THREE.Object3D();
-      bucket.forEach((b, i) => {
+      const instances = bucket.map(b => {
         dummy.position.set(b.x, b.h / 2, b.z);
         dummy.scale.set(b.w * 1.004, b.h * 0.995, b.depth * 1.004);
         dummy.updateMatrix();
-        mesh.setMatrixAt(i, dummy.matrix);
+        return {matrix:dummy.matrix.clone()};
       });
-      mesh.instanceMatrix.needsUpdate = true;
-      this.group.add(mesh);
+      addSpatialInstances(this.group,new THREE.BoxGeometry(1,1,1),mat,instances,{renderOrder:2,receiveShadow:true});
     }
   }
 }

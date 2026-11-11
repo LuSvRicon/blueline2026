@@ -62,4 +62,82 @@ const fogTarget = plannedSpeed("fog");
 console.log(`[visibility target] clear ${clearTarget.toFixed(1)} m/s | rain ${rainTarget.toFixed(1)} m/s | fog ${fogTarget.toFixed(1)} m/s`);
 if (!(rainTarget < clearTarget && fogTarget < rainTarget)) fail("weather visibility factors did not reduce the planner speed target");
 
-console.log("\nWEATHER-TEST PASS — safe in rain and fog; low visibility lowers the planner target.");
+// Verify ADAS stability in fog with full noisy perception:
+// 1. Overtaking straight-driving adjacent trucks/cars must not trigger phantom cut-in AEB.
+{
+  const sim = new Simulation({ trackId: "motorway", trafficCount: 0 });
+  sim.setControlMode("adas");
+  sim.usePerception = true;
+  sim.setWeather("fog");
+  sim.traffic.cars = [];
+  sim.trafficLights = [];
+  sim.roadSigns = [];
+  const lane1 = sim.road.laneCenter(1);
+  const p0 = sim.path.toCartesian(80, lane1);
+  Object.assign(sim.ego, { x: p0.x, y: p0.y, yaw: p0.heading, v: 24 });
+  sim.setDesiredSpeed(24);
+  sim.setAccSpeedKph(24 * 3.6);
+  sim.traffic.addTestVehicle("truck", 2, 130, 16, 16);
+  sim.traffic.addTestVehicle("car", 0, 165, 17, 17);
+  for (let i = 0; i < 420; i++) {
+    sim.step(dt);
+    if (sim.adas.status.aeb) fail(`fog adjacent-lane overtake triggered phantom AEB (${sim.adas.status.aebCause})`);
+  }
+}
+
+// 2. Two-way road oncoming traffic in fog must not trigger phantom forward AEB/FCW.
+{
+  const sim = new Simulation({ trackId: "mountain", trafficCount: 0 });
+  sim.setControlMode("adas");
+  sim.usePerception = true;
+  sim.setWeather("fog");
+  sim.traffic.cars = [];
+  sim.trafficLights = [];
+  sim.roadSigns = [];
+  const fwdLane = sim.road.laneCenter(0);
+  const oppLaneIdx = sim.road.numLanes - 1;
+  const p0 = sim.path.toCartesian(80, fwdLane);
+  Object.assign(sim.ego, { x: p0.x, y: p0.y, yaw: p0.heading, v: 18 });
+  sim.setDesiredSpeed(18);
+  sim.setAccSpeedKph(18 * 3.6);
+  sim.traffic.addTestVehicle("truck", oppLaneIdx, 220, -16, -16);
+  sim.traffic.addTestVehicle("car", oppLaneIdx, 310, -15, -15);
+  for (let i = 0; i < 400; i++) {
+    sim.step(dt);
+    if (sim.adas.status.aeb || sim.adas.status.fcw) {
+      fail(`fog two-way oncoming traffic triggered phantom ${sim.adas.status.aeb ? "AEB" : "FCW"}`);
+    }
+  }
+}
+
+// 3. BSM in fog maintains stable detection without excessive boundary chatter.
+{
+  const sim = new Simulation({ trackId: "motorway", trafficCount: 0 });
+  sim.setControlMode("adas");
+  sim.usePerception = true;
+  sim.setWeather("fog");
+  sim.traffic.cars = [];
+  sim.trafficLights = [];
+  sim.roadSigns = [];
+  const lane1 = sim.road.laneCenter(1);
+  const lane2 = sim.road.laneCenter(2);
+  const p0 = sim.path.toCartesian(100, lane1);
+  Object.assign(sim.ego, { x: p0.x, y: p0.y, yaw: p0.heading, v: 20 });
+  sim.setDesiredSpeed(20);
+  sim.setAccSpeedKph(20 * 3.6);
+  // Place vehicle near the outer BSM boundary moving at nearly identical speed
+  const adj = sim.traffic.addTestVehicle("car", 2, 97.5, 20, 20);
+  let flips = 0;
+  let prevBsm = false;
+  for (let i = 0; i < 300; i++) {
+    adj.s = sim.path.toFrenet(sim.ego.x, sim.ego.y).s - 2.5;
+    adj.d = lane2 + 0.45;
+    adj.v = sim.ego.v;
+    sim.step(dt);
+    if (i > 15 && sim.adas.status.blindSpotRight !== prevBsm) flips++;
+    prevBsm = sim.adas.status.blindSpotRight;
+  }
+  if (flips > 2) fail(`fog BSM chattered excessively at boundary (${flips} flips)`);
+}
+
+console.log("\nWEATHER-TEST PASS — safe in rain and fog; low visibility lowers the planner target and ADAS remains stable.");

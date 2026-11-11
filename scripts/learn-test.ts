@@ -5,6 +5,7 @@
 
 import { Simulation } from "../src/sim/Simulation.ts";
 import type { ScenarioName } from "../src/traffic/TrafficManager.ts";
+import { STEER_NORM, ACCEL_NORM } from "../src/learn/features.ts";
 
 let _seed = 424242;
 Math.random = () => {
@@ -23,6 +24,26 @@ const L = sim.path.length;
 const halfWidth = sim.road.totalWidth / 2;
 const wrap = (a: number, b: number) => { let d = (a - b) % L; if (d < -L / 2) d += L; else if (d > L / 2) d -= L; return d; };
 
+// Measure the same fixed expert examples before and after training. An epoch's
+// reported loss is measured DURING hundreds of weight updates: losses[0] is
+// already a partially trained model and is not the untrained baseline.
+// Keep every demonstration in the original training pipeline unchanged.
+const evaluation: { x: number[]; y: number[] }[] = [];
+const addSample = sim.imitation.addSample.bind(sim.imitation);
+let demonstration = 0;
+sim.imitation.addSample = (features, steer, accel) => {
+  if (demonstration++ % 13 === 0) evaluation.push({x:features.slice(),y:[steer/STEER_NORM,accel/ACCEL_NORM]});
+  addSample(features,steer,accel);
+};
+function fixedExpertLoss(): number {
+  let loss = 0;
+  for (const sample of evaluation) {
+    const predicted = sim.imitation.net.predict(sample.x);
+    for (let j = 0; j < sample.y.length; j++) loss += .5 * (predicted[j] - sample.y[j]) ** 2;
+  }
+  return loss / evaluation.length;
+}
+
 // --- 1) collect expert demonstrations across diverse scenarios --------------
 sim.setCollecting(true);
 const scenarios: ScenarioName[] = ["highway", "trucks", "stalled", "crossing", "cutin", "dense", "jaywalker"];
@@ -32,13 +53,16 @@ for (const sc of scenarios) {
   for (let i = 0; i < 2600; i++) sim.step(dt);
 }
 sim.setCollecting(false);
+sim.imitation.addSample = addSample;
 console.log(`collected ${sim.imitation.sampleCount} expert samples`);
 if (sim.imitation.sampleCount < 5000) fail("too few samples");
 
 // --- 2) train, then DAgger (learner drives, expert labels visited states) ---
+const untrainedLoss = fixedExpertLoss();
 const res = sim.trainImitation(70);
-console.log(`initial train: loss ${res.losses[0].toFixed(4)} -> ${res.finalLoss.toFixed(4)}`);
-if (!(res.finalLoss < res.losses[0] * 0.6)) fail("loss did not decrease (network isn't learning)");
+const trainedLoss = fixedExpertLoss();
+console.log(`initial train: fixed expert loss ${untrainedLoss.toFixed(4)} -> ${trainedLoss.toFixed(4)}; epoch loss ${res.losses[0].toFixed(4)} -> ${res.finalLoss.toFixed(4)}`);
+if (!(Number.isFinite(untrainedLoss) && Number.isFinite(trainedLoss) && trainedLoss < untrainedLoss * 0.6)) fail("loss did not decrease on fixed expert examples (network isn't learning)");
 
 for (let it = 0; it < 5; it++) {
   // Let the CURRENT network drive while we record the EXPERT's corrective

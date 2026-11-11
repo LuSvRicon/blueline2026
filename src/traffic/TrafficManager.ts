@@ -53,6 +53,8 @@ export interface TrafficCar {
   brakeTestDelay?: number;
   /** Negative v is signed along-road velocity; body heading faces backwards. */
   oncoming?: boolean;
+  /** Keep constant oncoming speed (Euro NCAP GVT target mode) instead of IDM car-following. */
+  constantSpeed?: boolean;
   /** Recoverable vehicle contact pause, seconds. Not used for scripted wrecks. */
   impactPause?:number;
   mergeWaitTime?:number;
@@ -276,6 +278,31 @@ export class TrafficManager {
     return car;
   }
 
+  addOncomingVehicle(
+    kind: CarKind,
+    opposingLaneIdx: number,
+    s: number,
+    speedMps = 13.5,
+    constantSpeed = false,
+  ): TrafficCar {
+    const dims = trafficDimensions(kind);
+    const mag = Math.abs(speedMps);
+    const clampedLane = this.road.opposingLanes > 0
+      ? clamp(opposingLaneIdx, 0, this.road.opposingLanes - 1)
+      : clamp(opposingLaneIdx, 0, this.road.numLanes - 1);
+    const car = this.make(clampedLane, mod(s, this.road.path.length), -mag, mag, dims.length, dims.width, kind);
+    car.oncoming = true;
+    car.constantSpeed = constantSpeed;
+    car.d = this.road.opposingLanes > 0
+      ? this.road.oncomingCenter(clampedLane)
+      : this.road.laneCenter(clampedLane);
+    car.headingOffset = Math.PI;
+    car.shareOffset = 0;
+    car.changeCooldown = 9999;
+    this.cars.push(car);
+    return car;
+  }
+
   addCrossingVehicle(kind: "car" | "motorcycle", s: number, speed = 3.2, triggerDist = 0): TrafficCar {
     const lane = Math.floor(this.road.numLanes / 2);
     const car = this.addTestVehicle(kind, lane, s, 0, 0);
@@ -474,6 +501,12 @@ export class TrafficManager {
       c.stopReason=c.disabled?(c.impactPause!==undefined?'collision':'breakdown'):'none';
       if(c.oncoming){
         if(c.disabled){c.v=0;continue;}
+        if(c.constantSpeed){
+          c.v=-Math.abs(c.desiredSpeed);
+          c.s=mod(c.s+c.v*dt,L);
+          c.headingOffset=Math.PI;
+          continue;
+        }
         let gap=1000,leadV=Math.abs(c.v);
         for(const other of [...this.cars,ego]){
           if(other===c||Math.abs(other.d-c.d)>((other.width??2)+c.width)/2+.2)continue;

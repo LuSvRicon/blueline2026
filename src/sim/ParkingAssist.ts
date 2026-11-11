@@ -3,7 +3,15 @@ import { clamp, wrapAngle } from "../core/math.ts";
 import type { ADASFrame } from "./ADAS.ts";
 import { assistanceAvailability } from './AssistancePolicy.ts';
 
-export interface ParkingBay { id: string; s: number; d: number; length: number; width: number }
+export type ParkingBayOrientation = "parallel" | "perpendicular";
+export interface ParkingBay {
+  id: string;
+  s: number;
+  d: number;
+  length: number;
+  width: number;
+  orientation?: ParkingBayOrientation;
+}
 export type ParkingMode = "apa" | "remote-forward" | "remote-reverse";
 export interface ParkingStatus {
   state: "idle" | "ready" | "running" | "paused" | "blocked" | "cancelled" | "complete";
@@ -11,10 +19,18 @@ export interface ParkingStatus {
   message: string;
   bayId: string | null;
   progress: number;
+  bayOrientation?: ParkingBayOrientation;
 }
 interface Waypoint { x: number; y: number; yaw: number }
 interface Segment { gear: "D" | "R"; points: Waypoint[] }
-export const emptyParkingStatus = (): ParkingStatus => ({ state: "idle", mode: "apa", message: "Chưa tìm ô đỗ", bayId: null, progress: 0 });
+export const emptyParkingStatus = (): ParkingStatus => ({
+  state: "idle",
+  mode: "apa",
+  message: "Chưa tìm ô đỗ",
+  bayId: null,
+  progress: 0,
+  bayOrientation: "parallel",
+});
 
 /** Low-speed, hold-to-run parking in marked parallel bays. It runs through the
  * SAME bicycle dynamics and collision system as driving, never teleports. */
@@ -40,6 +56,74 @@ export class ParkingAssist {
       this.status.message = 'APA cần dưới 7 km/h, máy bật, cửa đóng, dây an toàn và camera/siêu âm sẵn sàng'; return false;
     }
     for (const bay of bays) {
+      const isPerp = bay.orientation === "perpendicular";
+      if (isPerp) {
+        if (bay.length < frame.ego.dims.length + 0.8 || bay.width < frame.ego.dims.width + 0.5) continue;
+        const roadPose = frame.path.cartesianAt(bay.s);
+        const thetaR = roadPose.heading;
+        if (Math.abs(wrapAngle(thetaR - frame.ego.yaw)) > 0.15) continue;
+        const side = Math.sign(bay.d - frame.egoD) || 1;
+        const bayWorld = frame.path.toCartesian(bay.s, bay.d);
+        // Build clothoid-smoothed 90-degree reverse trajectory ending at bayWorld
+        const sTurn = 10.4, sStraight = 0.85, sTotal = sTurn + sStraight;
+        const nRev = 180, ds = sTotal / nRev, ramp = 0.18;
+        const kPeak = (Math.PI / 2) / ((1 - ramp) * sTurn);
+        const relX = [0], relY = [0], revYaw = [thetaR];
+        for (let i = 1; i <= nRev; i++) {
+          const s0 = (i - 1) * ds, s1 = i * ds;
+          const kAt = (s: number) => {
+            if (s >= sTurn) return 0;
+            const u = s / sTurn;
+            const w = u < ramp ? 0.5 - 0.5 * Math.cos((Math.PI * u) / ramp)
+              : u > 1 - ramp ? 0.5 - 0.5 * Math.cos((Math.PI * (1 - u)) / ramp)
+              : 1;
+            return -side * kPeak * w;
+          };
+          const k0 = kAt(s0), k1 = kAt(s1);
+          const nextYaw = wrapAngle(revYaw[i - 1] + 0.5 * (k0 + k1) * ds);
+          const midYaw = wrapAngle(revYaw[i - 1] + 0.25 * (k0 + k1) * ds);
+          relX.push(relX[i - 1] - Math.cos(midYaw) * ds);
+          relY.push(relY[i - 1] - Math.sin(midYaw) * ds);
+          revYaw.push(nextYaw);
+        }
+        const shiftX = bayWorld.x - relX[nRev];
+        const shiftY = bayWorld.y - relY[nRev];
+        const reverse: Waypoint[] = [];
+        for (let i = 0; i <= nRev; i++) {
+          reverse.push({ x: relX[i] + shiftX, y: relY[i] + shiftY, yaw: revYaw[i] });
+        }
+        const tx = Math.cos(thetaR), ty = Math.sin(thetaR);
+        const nx = -Math.sin(thetaR), ny = Math.cos(thetaR);
+        const dxStage = reverse[0].x - frame.ego.x;
+        const dyStage = reverse[0].y - frame.ego.y;
+        const forwardDistance = dxStage * tx + dyStage * ty;
+        const lateralShift = dxStage * nx + dyStage * ny;
+        if (forwardDistance < 4 || forwardDistance > 48 || Math.abs(lateralShift) > 4.5) continue;
+        const approach: Waypoint[] = [];
+        const nApp = 110;
+        for (let i = 0; i <= nApp; i++) {
+          const t = i / nApp;
+          const blend = t ** 3 * (10 - 15 * t + 6 * t * t);
+          const dBlend = 30 * t ** 2 * (1 - 2 * t + t ** 2);
+          const x = frame.ego.x + forwardDistance * t * tx + lateralShift * blend * nx;
+          const y = frame.ego.y + forwardDistance * t * ty + lateralShift * blend * ny;
+          const yaw = wrapAngle(thetaR + Math.atan2(lateralShift * dBlend, Math.max(forwardDistance, 1)));
+          approach.push({ x, y, yaw });
+        }
+        const segments: Segment[] = [{ gear: "D", points: approach }, { gear: "R", points: reverse }];
+        if (!this.clearRoute(frame, segments)) continue;
+        this.segments = segments;
+        this.status = {
+          state: "ready",
+          mode: "apa",
+          message: "Có ô vuông góc 90° phù hợp · giữ nút APA để tiến lấy góc rồi lùi vào ô",
+          bayId: bay.id,
+          progress: 0,
+          bayOrientation: "perpendicular",
+        };
+        return true;
+      }
+
       if (bay.length < frame.ego.dims.length + 2 || bay.width < frame.ego.dims.width + .6) continue;
       const stageS = bay.s + 18;
       const approach: Waypoint[] = [], reverse: Waypoint[] = [];
@@ -60,7 +144,14 @@ export class ParkingAssist {
       const segments: Segment[] = [{ gear: "D", points: approach }, { gear: "R", points: reverse }];
       if (!this.clearRoute(frame, segments)) continue;
       this.segments = segments;
-      this.status = { state: "ready", mode: "apa", message: "Có ô phù hợp · giữ nút APA để tiến rồi lùi vào ô", bayId: bay.id, progress: 0 };
+      this.status = {
+        state: "ready",
+        mode: "apa",
+        message: "Có ô phù hợp · giữ nút APA để tiến rồi lùi vào ô",
+        bayId: bay.id,
+        progress: 0,
+        bayOrientation: "parallel",
+      };
       return true;
     }
     this.status.state = "blocked"; this.status.message = "Không có ô hoặc đường vào đủ rộng; chưa lập được quỹ đạo an toàn";
@@ -109,20 +200,38 @@ export class ParkingAssist {
       if (Math.abs(wrapAngle(ego.yaw - end.yaw)) > .12) { this.cancel("Xe chưa thẳng trong ô · cần chỉnh tay"); return command; }
       this.status.state = "complete"; this.status.progress = 1; this.status.message = "Đã đỗ · số P và phanh đỗ"; command.gear = "P"; return command;
     }
+    const direction = segment.gear === "R" ? -1 : 1;
+    const isPerp = this.status.bayOrientation === "perpendicular";
+    const lookDist = isPerp && segment.gear === "R" ? 0.85 : 1.3;
     let look = nearest;
-    while (look < points.length - 1 && Math.hypot(points[look].x - ego.x, points[look].y - ego.y) < 1.3) look++;
+    while (look < points.length - 1 && Math.hypot(points[look].x - ego.x, points[look].y - ego.y) < lookDist) look++;
     const target = points[look], dx = target.x - ego.x, dy = target.y - ego.y;
     const lateral = -dx * Math.sin(ego.yaw) + dy * Math.cos(ego.yaw);
-    command.steer = this.status.mode === "apa" ? Math.atan2(2 * ego.dims.wheelbase * lateral, Math.max(dx * dx + dy * dy, .2)) : 0;
+    const purePursuit = Math.atan2(2 * ego.dims.wheelbase * lateral, Math.max(dx * dx + dy * dy, .2));
+    if (this.status.mode !== "apa") {
+      command.steer = 0;
+    } else if (isPerp && segment.gear === "R") {
+      const ref = points[nearest];
+      const ahead = points[Math.min(points.length - 1, nearest + 3)];
+      const dsRef = Math.hypot(ahead.x - ref.x, ahead.y - ref.y);
+      const kappa = dsRef > 1e-3 ? wrapAngle(ahead.yaw - ref.yaw) / (direction * dsRef) : 0;
+      const steerFf = Math.atan(ego.dims.wheelbase * kappa);
+      const yawErr = wrapAngle(ref.yaw - ego.yaw);
+      command.steer = clamp(0.55 * purePursuit + 0.45 * steerFf + direction * 0.65 * yawErr, -ego.maxSteer, ego.maxSteer);
+    } else {
+      command.steer = purePursuit;
+    }
     command.gear = segment.gear; command.releaseEpb = true; command.startEngine = this.status.mode !== "apa";
-    const targetSpeed = Math.min(this.status.mode === "apa" ? 1.3 : .7, Math.sqrt(Math.max(0, 1.2 * (remaining - .15))));
+    const maxParkSpeed = this.status.mode === "apa" ? (isPerp && segment.gear === "R" ? 0.95 : 1.3) : .7;
+    const targetSpeed = Math.min(maxParkSpeed, Math.sqrt(Math.max(0, 1.2 * (remaining - .15))));
     command.accel = clamp((targetSpeed - ego.v) * 2, -ego.maxDecel, 1);
-    const direction = segment.gear === "R" ? -1 : 1;
+    const sweepDist = Math.min(1.5, Math.max(0.35, remaining + 0.1));
     // Predict the actual vehicle sweep (including rotation), with moving
     // actors, before applying any throttle. A new obstacle aborts the manoeuvre.
-    const next: Body2D = { ...ego, ...ego.dims, x: ego.x + direction * Math.cos(ego.yaw) * 1.5, y: ego.y + direction * Math.sin(ego.yaw) * 1.5,
-      yaw: ego.yaw + direction * 1.5 / ego.dims.wheelbase * Math.tan(command.steer) };
+    const next: Body2D = { ...ego, ...ego.dims, x: ego.x + direction * Math.cos(ego.yaw) * sweepDist, y: ego.y + direction * Math.sin(ego.yaw) * sweepDist,
+      yaw: ego.yaw + direction * sweepDist / ego.dims.wheelbase * Math.tan(command.steer) };
     for (const o of frame.obstacles) {
+      if (o.confirmed === false) continue;
       const w = frame.path.toCartesian(o.s, o.d), predicted = frame.path.toCartesian(o.s + o.v, o.d + o.vd);
       const body: Body2D = { x: w.x, y: w.y, yaw: w.heading, length: o.length, width: o.width };
       if (sweepBodies({ ...ego, ...ego.dims }, next, body, { ...body, x: predicted.x, y: predicted.y }, .3)) {

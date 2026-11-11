@@ -18,7 +18,7 @@ import { VehicleDims } from "../vehicle/Vehicle.ts";
 import { clamp } from "../core/math.ts";
 import { disposeVehicle } from "./CockpitGeometry.ts";
 import { createCarInterior } from "./CarInterior.ts";
-import { paintCockpitInstruments } from "./CockpitInstruments.ts";
+import { paintCockpitInstruments, paintWindshieldHud } from "./CockpitInstruments.ts";
 import { indicatorOn, laneChangeIndicator } from "../vehicle/Signals.ts";
 import { projectEgoPoint } from "../core/viewProjection.ts";
 import { attachDetailedVehicle,replaceDetailedVehicle } from "./DetailedVehicle.ts";
@@ -164,24 +164,30 @@ interface WheelRef {
 }
 
 /** A wheel with a steer pivot and a separate spin pivot at the hub centre. */
-function detailedWheel(radius: number, width: number, x: number, z: number, front: boolean): THREE.Group {
+function detailedWheel(
+  radius: number,
+  width: number,
+  x: number,
+  z: number,
+  front: boolean,
+  rubber: THREE.Material,
+  alloy: THREE.Material,
+  darkAlloy: THREE.Material,
+): THREE.Group {
   const pivot = new THREE.Group();
   pivot.position.set(x, radius, z);
   const spin = new THREE.Group();
   pivot.add(spin);
 
-  const rubber = new THREE.MeshStandardMaterial({ color: 0x101216, roughness: 0.94, metalness: 0.02 });
-  const alloy = new THREE.MeshStandardMaterial({ color: 0x929ba2, roughness: 0.28, metalness: 0.82 });
-  const darkAlloy = new THREE.MeshStandardMaterial({ color: 0x343a40, roughness: 0.38, metalness: 0.72 });
-  const tire = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, width, 28, 1), rubber);
+  const tire = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, width, 18, 1), rubber);
   tire.rotation.x = Math.PI / 2;
   spin.add(tire);
   for (const side of [-1, 1]) {
     const faceZ = side * (width * 0.5 + 0.013);
-    const rim = new THREE.Mesh(new THREE.TorusGeometry(radius * 0.68, radius * 0.052, 8, 28), alloy);
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(radius * 0.68, radius * 0.052, 6, 18), alloy);
     rim.position.z = faceZ;
     spin.add(rim);
-    const hub = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.15, radius * 0.15, 0.035, 18), darkAlloy);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.15, radius * 0.15, 0.035, 14), darkAlloy);
     hub.rotation.x = Math.PI / 2;
     hub.position.z = faceZ;
     spin.add(hub);
@@ -329,7 +335,7 @@ function makeVehicle(
     for (const x of axles) {
       const front = x > 0.01;
       for (const side of [-1, 1] as const) {
-        const wheel = detailedWheel(radius, width, x, side * (W * 0.5 + 0.04), front);
+        const wheel = detailedWheel(radius, width, x, side * (W * 0.5 + 0.04), front, rubber, alloy, trim);
         wheels.push({
           pivot: wheel,
           spin: wheel.userData.spin as THREE.Group,
@@ -337,7 +343,7 @@ function makeVehicle(
           front,
         });
         chassis.add(wheel);
-        const arch = new THREE.Mesh(new THREE.TorusGeometry(radius * 1.03, 0.05, 8, 24, Math.PI), trim);
+        const arch = new THREE.Mesh(new THREE.TorusGeometry(radius * 1.03, 0.05, 6, 16, Math.PI), trim);
         arch.position.set(x, radius + 0.025, side * (W * 0.5 + 0.045));
         shell.add(arch);
       }
@@ -586,6 +592,54 @@ function makeVehicle(
     g.userData.bsmIndicators = indicators;
     g.userData.bsmIndicatorMaterials = indicatorMaterials;
 
+    // 3D articulated exterior front doors & SEA ground hazard projection
+    const exteriorDoorsGroup = new THREE.Group();
+    exteriorDoorsGroup.name = "ego-exterior-doors";
+    exteriorDoorsGroup.userData.keepWithAsset = true;
+    const exteriorDoorPivots = {} as { left: THREE.Group; right: THREE.Group };
+    const doorEdgeLights = {} as { left: THREE.MeshStandardMaterial; right: THREE.MeshStandardMaterial };
+    const seaHazardMeshes = {} as { left: THREE.Mesh; right: THREE.Mesh };
+    const innerDoorCardMat = new THREE.MeshStandardMaterial({ color: 0x161d22, roughness: 0.78, metalness: 0.08 });
+    for (const side of [-1, 1] as const) {
+      const sideKey = side < 0 ? "left" : "right";
+      const pivot = new THREE.Group();
+      pivot.name = `exterior-door-pivot-${sideKey}`;
+      pivot.position.set(0.84, 0, side * (W * 0.46));
+      pivot.visible = false;
+      const skin = vehicleBox(1.16, 0.56, 0.055, bodyMat, -0.58, 0.66, side * 0.015, 0.025);
+      const innerCard = vehicleBox(1.12, 0.52, 0.04, innerDoorCardMat, -0.58, 0.66, -side * 0.02, 0.02);
+      const windowFrame = vehicleBox(1.06, 0.36, 0.024, glassMat, -0.55, 1.12, 0, 0.012);
+      const handleBar = vehicleBox(0.16, 0.036, 0.03, chrome, -0.92, 0.82, side * 0.048, 0.012);
+      const edgeLightMat = new THREE.MeshStandardMaterial({
+        color: 0xff3b30,
+        emissive: 0xff2215,
+        emissiveIntensity: 3.4,
+        toneMapped: false,
+      });
+      doorEdgeLights[sideKey] = edgeLightMat;
+      const edgeLight = vehicleBox(0.03, 0.42, 0.028, edgeLightMat, -1.14, 0.66, -side * 0.015, 0.008);
+      pivot.add(skin, innerCard, windowFrame, handleBar, edgeLight);
+      exteriorDoorsGroup.add(pivot);
+      exteriorDoorPivots[sideKey] = pivot;
+
+      const seaArcGeo = new THREE.RingGeometry(0.35, 1.35, 20, 1, side < 0 ? Math.PI * 0.55 : -Math.PI * 0.45, Math.PI * 0.9);
+      seaArcGeo.rotateX(-Math.PI / 2);
+      const seaArcMat = new THREE.MeshBasicMaterial({
+        color: 0xff3b30,
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        toneMapped: false,
+      });
+      const seaArc = new THREE.Mesh(seaArcGeo, seaArcMat);
+      seaArc.position.set(0.15, 0.09, side * (W * 0.48));
+      seaArc.visible = false;
+      exteriorDoorsGroup.add(seaArc);
+      seaHazardMeshes[sideKey] = seaArc;
+    }
+    shell.add(exteriorDoorsGroup);
+
     const interior = createCarInterior({ bodyMaterial: bodyMat, makeMirror, blindSpotMaterials: indicatorMaterials });
     shell.add(interior.group);
     Object.assign(g.userData, {
@@ -593,11 +647,30 @@ function makeVehicle(
       cabinSeats: interior.seats,
       cockpitDisplay: interior.instrument,
       cockpitNavigation: interior.navigation,
+      cockpitWindshieldHud: interior.windshieldHud,
+      cabinDoorPivots: interior.doorPivots,
+      cabinDoorStripMaterials: interior.doorStripMaterials,
+      exteriorDoorsGroup,
+      exteriorDoorPivots,
+      doorEdgeLights,
+      seaHazardMeshes,
+      doorAngleLeft: 0,
+      doorAngleRight: 0,
       cockpitSpeed: -1,
       steeringWheel: interior.wheelSpin,
       wipers: interior.wipers,
       gearLights: interior.gearLights,
     });
+    // These displays/grain belong to this cabin; imported asset textures and
+    // cached plate/contact-shadow textures have a different shared lifetime.
+    const cabinTextures = new Set<THREE.Texture>();
+    interior.group.traverse(part => {
+      if (!(part instanceof THREE.Mesh)) return;
+      for (const material of Array.isArray(part.material) ? part.material : [part.material]) {
+        for (const value of Object.values(material)) if (value instanceof THREE.Texture) cabinTextures.add(value);
+      }
+    });
+    g.userData.ownedCabinTextures = [...cabinTextures];
 
     // Headlamp beams: two spot lights that only switch on at night.
     const beams: THREE.SpotLight[] = [];
@@ -614,7 +687,7 @@ function makeVehicle(
   }
 
   g.userData.builtKind = kind;
-  g.userData.visualDims = dims;
+  g.userData.visualDims = { ...dims };
   g.userData.builtVariant = variant;
   g.userData.bodyMats = bodyMats;
   g.userData.chassis = chassis;
@@ -704,11 +777,13 @@ export class CarFleet {
     for (const [side, active] of [["left", left], ["right", right]] as const) {
       const indicator = indicators[side];
       const material = indicator.material as THREE.MeshStandardMaterial;
-      material.color.setHex(active ? 0xffb52e : 0x60491f);
-      material.emissive.setHex(active ? 0xff8a00 : 0x100800);
-      // Production BSM telltales stay steadily lit while the object is in the
-      // blind zone; pulsing is reserved for urgent forward collision alerts.
-      material.emissiveIntensity = active ? 4.2 : 0.12;
+      const signallingToward = (side === "left" && this.sim.indicator < 0) || (side === "right" && this.sim.indicator > 0);
+      const flashHigh = Math.floor(timeSeconds * 8) % 2 === 0;
+      material.color.setHex(active ? (signallingToward && flashHigh ? 0xff5a36 : 0xffb52e) : 0x60491f);
+      material.emissive.setHex(active ? (signallingToward && flashHigh ? 0xff3b1f : 0xff8a00) : 0x100800);
+      // Production BSM telltales stay steadily lit while an object is in the
+      // blind zone, and flash rapidly when the turn signal is active toward that side.
+      material.emissiveIntensity = active ? (signallingToward ? (flashHigh ? 6.0 : 1.4) : 4.2) : 0.12;
     }
   }
 
@@ -717,20 +792,40 @@ export class CarFleet {
       | { canvas: HTMLCanvasElement; texture: THREE.CanvasTexture }
       | undefined;
     if (!display) return;
+    if (!this.inCockpit && this.ego.userData.cockpitSpeed !== -1) return;
     const t=this.sim.telemetry;
     const speedKph = Math.round(Math.abs(speedMps) * 3.6);
-    const key = [speedKph,limitKph,t.gear,Math.round(t.rpm/100),t.engineOn,t.epbEngaged,t.adas.aeb,t.rearAeb,t.adas.fcw,t.rctaActive,t.indicator,t.adas.accActive,t.adas.laneCenteringActive,t.adas.leadGap?.toFixed(1),t.controlMode].join("|");
+    const seaLeft = this.sim.seaBlockFlashLeft > 0;
+    const seaRight = this.sim.seaBlockFlashRight > 0;
+    const key = [speedKph,limitKph,t.gear,Math.round(t.rpm/100),t.engineOn,t.epbEngaged,t.adas.aeb,t.rearAeb,t.adas.fcw,t.rctaActive,t.indicator,t.adas.accActive,t.adas.laneCenteringActive,t.adas.leadGap?.toFixed(1),t.controlMode,t.doorLeftOpen,t.doorRightOpen,seaLeft,seaRight,t.parkingAssist?.state,Math.round((t.parkingAssist?.progress ?? 0)*20)].join("|");
     if (this.ego.userData.cockpitSpeed === key) return;
     this.ego.userData.cockpitSpeed = key;
     const ctx = display.canvas.getContext("2d");
     if (!ctx) return;
     paintCockpitInstruments(ctx,t,speedKph,limitKph);
     display.texture.needsUpdate = true;
+
+    const hudDisplay = this.ego.userData.cockpitWindshieldHud as
+      | { canvas: HTMLCanvasElement; texture: THREE.CanvasTexture }
+      | undefined;
+    if (hudDisplay) {
+      const hudCtx = hudDisplay.canvas.getContext("2d");
+      if (hudCtx) {
+        paintWindshieldHud(hudCtx, t, speedKph, limitKph, seaLeft, seaRight);
+        hudDisplay.texture.needsUpdate = true;
+      }
+      const hudMesh = (this.ego.userData.cockpit as THREE.Group | undefined)?.getObjectByName("windshield-hud") as THREE.Mesh | undefined;
+      if (hudMesh) (hudMesh.material as THREE.MeshBasicMaterial).opacity = 0.92;
+      const importedHud = (this.ego.userData.importedRoot as THREE.Group | undefined)?.getObjectByName("imported-windshield-hud") as THREE.Mesh | undefined;
+      if (importedHud) (importedHud.material as THREE.MeshBasicMaterial).opacity = 0.92;
+    }
+
     for(const [gear,material] of Object.entries(this.ego.userData.gearLights as Record<string,THREE.MeshStandardMaterial>)) material.emissiveIntensity = gear === this.sim.gear ? 1.8 : 0;
   }
 
   private updateCockpitNavigation(time: number): void {
-    if (time - (this.ego.userData.lastNavigationTime ?? -1) < .16) return;
+    if (!this.inCockpit && this.ego.userData.lastNavigationTime !== undefined) return;
+    if (time - (this.ego.userData.lastNavigationTime ?? -1) < .22) return;
     this.ego.userData.lastNavigationTime = time;
     const display = this.ego.userData.cockpitNavigation as { canvas: HTMLCanvasElement; texture: THREE.CanvasTexture };
     const ctx = display.canvas.getContext("2d");
@@ -772,12 +867,27 @@ export class CarFleet {
 
     // ---- ego --------------------------------------------------------------
     const ego = sim.ego;
+    const visualDims = this.ego.userData.visualDims as VehicleDims;
+    if (visualDims.length !== ego.dims.length || visualDims.width !== ego.dims.width || visualDims.wheelbase !== ego.dims.wheelbase) {
+      // Model selection changes the physical body envelope too. Rebuild the
+      // procedural fallback/mirror mounts, then fit the selected asset below.
+      // Keep the public fleet group stable for scene and mirror rendering.
+      const previous = this.ego;
+      this.ego = makeVehicle("ego", THEME.egoBlue, 0x0a1a24, 0.32, ego.dims);
+      this.group.add(this.ego);
+      previous.removeFromParent();
+      for (const texture of previous.userData.ownedCabinTextures as THREE.Texture[] ?? []) texture.dispose();
+      disposeVehicle(previous);
+      this.setNight(this.night);
+      this.setCockpitView(this.inCockpit);
+    }
     const selectedModel=selectedVehicleModel(), selectedTemplate=importedVehicle(selectedModel);
     if(selectedTemplate){
       if(replaceDetailedVehicle(this.ego,THEME.egoBlue,selectedTemplate,selectedModel)){
         installImportedCabinEquipment(this.ego.userData.importedRoot,{
           makeMirror,blindSpot:this.ego.userData.bsmIndicatorMaterials,
           instrument:this.ego.userData.cockpitDisplay.texture,navigation:this.ego.userData.cockpitNavigation.texture,
+          windshieldHud:this.ego.userData.cockpitWindshieldHud?.texture,
         });
         this.setCockpitView(this.inCockpit);
       }
@@ -799,8 +909,65 @@ export class CarFleet {
       blinkOn,
       night: this.night,
       motorcycle: false,
-      hazards: sim.adas.status.extra.hazardRequest,
+      hazards: sim.adas.status.extra.hazardRequest || sim.adas.status.aebHolding || (sim.adas.status.aeb && ego.v * 3.6 >= 50),
     });
+
+    // Animate 3D articulated doors & Safe Exit Assist (SEA) warning visuals
+    const doorStep = Math.min(1, Math.max(step, 1 / 60) * 6.5);
+    const targetLeftAngle = sim.doorLeftOpen ? 0.88 : 0;
+    const targetRightAngle = sim.doorRightOpen ? 0.88 : 0;
+    const curLeft = ((this.ego.userData.doorAngleLeft as number) ?? 0) + (targetLeftAngle - ((this.ego.userData.doorAngleLeft as number) ?? 0)) * doorStep;
+    const curRight = ((this.ego.userData.doorAngleRight as number) ?? 0) + (targetRightAngle - ((this.ego.userData.doorAngleRight as number) ?? 0)) * doorStep;
+    this.ego.userData.doorAngleLeft = curLeft;
+    this.ego.userData.doorAngleRight = curRight;
+
+    const cabinPivots = this.ego.userData.cabinDoorPivots as { left: THREE.Group; right: THREE.Group } | undefined;
+    if (cabinPivots) {
+      cabinPivots.left.rotation.y = curLeft;
+      cabinPivots.right.rotation.y = -curRight;
+    }
+    const extPivots = this.ego.userData.exteriorDoorPivots as { left: THREE.Group; right: THREE.Group } | undefined;
+    if (extPivots) {
+      extPivots.left.visible = !this.inCockpit && curLeft > 0.008;
+      extPivots.right.visible = !this.inCockpit && curRight > 0.008;
+      extPivots.left.rotation.y = curLeft;
+      extPivots.right.rotation.y = -curRight;
+    }
+    const fastFlash = Math.floor(timeSeconds * 9) % 2 === 0;
+    const seaWarnLeft = sim.adas.status.extra.safeExitLeft || sim.seaBlockFlashLeft > 0;
+    const seaWarnRight = sim.adas.status.extra.safeExitRight || sim.seaBlockFlashRight > 0;
+    const stripMats = this.ego.userData.cabinDoorStripMaterials as { left: THREE.MeshStandardMaterial; right: THREE.MeshStandardMaterial } | undefined;
+    if (stripMats) {
+      for (const [sideKey, warn, open] of [["left", seaWarnLeft, sim.doorLeftOpen], ["right", seaWarnRight, sim.doorRightOpen]] as const) {
+        const mat = stripMats[sideKey];
+        if (warn) {
+          mat.color.setHex(0xff3b30);
+          mat.emissive.setHex(0xff1e14);
+          mat.emissiveIntensity = fastFlash ? 4.8 : 1.1;
+        } else if (open) {
+          mat.color.setHex(0xffb52e);
+          mat.emissive.setHex(0xff8a00);
+          mat.emissiveIntensity = 2.4;
+        } else {
+          mat.color.setHex(0x3ad8b8);
+          mat.emissive.setHex(0x1e8f7a);
+          mat.emissiveIntensity = 0.75;
+        }
+      }
+    }
+    const seaMeshes = this.ego.userData.seaHazardMeshes as { left: THREE.Mesh; right: THREE.Mesh } | undefined;
+    if (seaMeshes) {
+      for (const [sideKey, warn, angle] of [["left", seaWarnLeft, curLeft], ["right", seaWarnRight, curRight]] as const) {
+        const mesh = seaMeshes[sideKey];
+        const showArc = warn || angle > 0.05;
+        mesh.visible = showArc;
+        if (showArc) {
+          const mat = mesh.material as THREE.MeshBasicMaterial;
+          mat.color.setHex(warn ? 0xff2e24 : 0xffb038);
+          mat.opacity = warn ? (fastFlash ? 0.68 : 0.24) : 0.35 * (angle / 0.88);
+        }
+      }
+    }
 
     // ---- traffic ----------------------------------------------------------
     const cars = sim.traffic.cars;
@@ -841,7 +1008,13 @@ export class CarFleet {
       else mesh.scale.set(c.length / DIMS.car.length, 1, c.width / DIMS.car.width);
 
       const world = motion?.cars.get(c.id)??sim.path.toCartesian(c.s, c.d);
-      mesh.visible=Math.hypot(world.x-ego.x,world.y-ego.y)<240;
+      const distToEgo = Math.hypot(world.x-ego.x,world.y-ego.y);
+      mesh.visible = distToEgo < 210;
+      if (!mesh.visible) {
+        mesh.userData.prevD = c.d;
+        mesh.userData.prevSpeed = c.v;
+        continue;
+      }
       const heading = motion?.cars.get(c.id)?.yaw??(sim.path.cartesianAt(c.s).heading + (c.crossing ? (Math.sign(c.crossingToD - c.d) || 1) * Math.PI / 2 : c.headingOffset ?? 0));
       place(mesh, world.x, world.y, heading);
 
@@ -855,9 +1028,12 @@ export class CarFleet {
       mesh.userData.prevSpeed = c.v;
 
       // Vehicles retain their paint; warnings use lamps and the ADAS display.
-      const paint = paintFor(wantKind, c.hue);
-      const mats = mesh.userData.bodyMats as THREE.MeshStandardMaterial[];
-      for (const material of mats) { material.color.copy(paint); material.emissive.setHex(0); material.emissiveIntensity = 0; }
+      if (mesh.userData.appliedHue !== c.hue) {
+        mesh.userData.appliedHue = c.hue;
+        const paint = paintFor(wantKind, c.hue);
+        const mats = mesh.userData.bodyMats as THREE.MeshStandardMaterial[];
+        for (const material of mats) { material.color.copy(paint); material.emissive.setHex(0); material.emissiveIntensity = 0; }
+      }
 
       animateVehicle(mesh, {
         dt: step,

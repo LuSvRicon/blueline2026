@@ -14,12 +14,13 @@ import {ProjectionCache} from '../world/ProjectionCache.ts';
 import { Road } from "../world/Road.ts";
 import { getTrack, TrackDef } from "../world/track.ts";
 import { Vehicle, EGO_DIMS } from "../vehicle/Vehicle.ts";
+import { getVehiclePhysicsProfile, type VehicleProfileId } from "../vehicle/VehicleProfiles.ts";
 import { PID } from "../control/PID.ts";
 import { stanleyControl, StanleyConfig } from "../control/Stanley.ts";
 import { TrafficManager, ScenarioName, TrafficProfile, TrafficCar, trafficFootprint } from "../traffic/TrafficManager.ts";
 import { FrenetPlanner } from "../planner/FrenetPlanner.ts";
 import { FrenetState, Obstacle, Trajectory } from "../planner/Trajectory.ts";
-import { Sensor, SensableObject } from "../perception/Sensor.ts";
+import { Sensor, SensableObject, DualChannelSensorSuite } from "../perception/Sensor.ts";
 import { Tracker, Track } from "../perception/Tracker.ts";
 import { OccupancyGrid } from "../perception/OccupancyGrid.ts";
 import { Pedestrian, PedestrianManager } from "../pedestrian/PedestrianManager.ts";
@@ -31,6 +32,7 @@ import { DriveContext, extractFeatures } from "../learn/features.ts";
 import { MLP } from "../learn/NN.ts";
 import { Metrics, MetricsSnapshot } from "./Metrics.ts";
 import { ADASController, ADASStatus, ADASRuntimeState, DriverInput } from "./ADAS.ts";
+import { AEBDiagnosticLogger, BrakeActuator, PerceptionMode } from "./AEB.ts";
 import { SessionRecorder } from "./SessionRecorder.ts";
 import { clamp, wrapAngle, mod, wrapDiff, smoothTowards } from "../core/math.ts";
 import { Rng } from "../core/rng.ts";
@@ -55,6 +57,7 @@ export type ScenarioEventName =
   | "vehicle-crossing"
   | "motorcycle-weave"
   | "bus-stop"
+  | "junction-turn-oncoming"
   | "rear-crossing-left"
   | "rear-crossing-right";
 export type Policy = (features: number[]) => { steer: number; accel: number };
@@ -109,6 +112,10 @@ export interface Telemetry {
   trackedCount: number; // confirmed Kalman tracks
   sensorRange: number;
   usePerception: boolean;
+  perceptionMode?: PerceptionMode;
+  requestedAccel?: number;
+  jerk?: number;
+  lastImpactSpeed?: number | null;
   behaviorState: BehaviorState;
   pedCount: number; // active pedestrians
   controlMode: ControlMode;
@@ -133,6 +140,13 @@ export interface Telemetry {
   rearAeb: boolean;
   rpm: number;
   tractionLimited: boolean;
+  vehicleProfile?: VehicleProfileId;
+  wheelAbsActive?: boolean;
+  maxWheelSlip?: number;
+  wheelSlips?: [number, number, number, number];
+  radarDetections?: number;
+  cameraDetections?: number;
+  hornActive?: boolean;
 }
 
 export interface TrafficLightInfo {
@@ -181,6 +195,7 @@ export class Simulation {
   readonly rng: Rng;
   readonly planner: FrenetPlanner;
   readonly sensor: Sensor;
+  readonly dualChannelSensor: DualChannelSensorSuite;
   readonly tracker: Tracker;
   readonly occupancy: OccupancyGrid;
   readonly pedestrians: PedestrianManager;
@@ -189,6 +204,8 @@ export class Simulation {
   readonly behavior: BehaviorPlanner;
   readonly imitation: ImitationAgent;
   readonly adas = new ADASController();
+  readonly aebLogger = new AEBDiagnosticLogger();
+  readonly brakeActuator = new BrakeActuator();
   readonly extendedAssistance = new ExtendedAssistance();
   readonly emergencyPullOver = new EmergencyPullOver();
   readonly parkingAssist = new ParkingAssist();
@@ -199,12 +216,16 @@ export class Simulation {
   driverFatigued = false;
   doorLeftOpen = false;
   doorRightOpen = false;
+  seaBlockFlashLeft = 0;
+  seaBlockFlashRight = 0;
+  parkingLabOrientation: "parallel" | "perpendicular" = "parallel";
   readonly metrics = new Metrics();
   readonly recorder = new SessionRecorder<SimulationFrame>();
   private prevDelta = 0;
   behaviorState: BehaviorState = "CRUISE";
   controlMode: ControlMode = "classical";
   driverInput: DriverInput = { steer: 0, throttle: 0, brake: 0 };
+  hornActive = false;
   gear: Gear = "D";
   engineOn = true;
   epbEngaged = false;
@@ -240,11 +261,25 @@ export class Simulation {
   showCandidates = true;
   /** When true the planner drives off Kalman tracks; when false, ground truth. */
   usePerception = true;
+  simTime = 0;
+  /** Optional sensor scan period (s); 0 scans every physics step, >0 exercises multi-rate coasting between scans. */
+  sensorScanIntervalSec = 0;
+  private sensorScanTimer = 0;
+  private sensorScanStarted = false;
+  lastImpactSpeed: number | null = null;
+  lastEgoImpactSpeed: number | null = null;
+  private stepImpactSpeed: number | null = null;
+  private gtVelocityHistory = new Map<number, { v: number; t: number; accel: number }>();
   sensorFault = false;
   sensorAvailability: SensorAvailability = { camera: true, frontRadar: true, rearRadar: true, ultrasonic: true };
   beltFastened = true;
   escAvailable = true;
   absActive = false; // Explicit laboratory input, not a simulated ABS controller.
+  /** Optional override for physical 4-channel wheel-slip ABS (`null` = follows `escAvailable`). */
+  wheelAbsOverride: boolean | null = null;
+  /** Optional override for 4-wheel rotational dynamics & Pacejka tire slip (`null` = auto: true for real vehicles). */
+  wheelSlipDynamicsOverride: boolean | null = null;
+  vehicleProfileId: VehicleProfileId = "composite";
   private rearBrakeHeld = false;
   laneMarkingConfidence = 1;
   scenario: ScenarioName = "highway";
@@ -282,6 +317,7 @@ export class Simulation {
     this.ego = new Vehicle(start.x, start.y, start.heading, 14, EGO_DIMS, {
       maxSpeed: 42,
     });
+    this.ego.corneringBrakeCoupling = true;
 
     this.traffic = new TrafficManager(this.road, this.rng);
     this.traffic.spawn(this.config.trafficCount);
@@ -292,6 +328,7 @@ export class Simulation {
     });
 
     this.sensor = new Sensor({}, this.rng);
+    this.dualChannelSensor = new DualChannelSensorSuite(new Rng((this.config.seed ^ 0x9e3779b9) >>> 0));
     this.tracker = new Tracker();
     this.occupancy = new OccupancyGrid(50, 2);
     this.pedestrians = new PedestrianManager(this.road);
@@ -306,6 +343,10 @@ export class Simulation {
       kSoft: 1.2,
       maxSteer: this.ego.maxSteer,
     };
+    // Headless test hook: BLUELINE_VEHICLE_PROFILE=vf9 re-runs the suite on the same real-vehicle
+    // physics (wheel slip/ABS on) that the browser uses by default. No effect in the browser.
+    const envProfile = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.BLUELINE_VEHICLE_PROFILE;
+    this.setVehicleProfile(this.config.vehicleProfile ?? envProfile ?? "composite", true);
 
     this.telemetry = {
       parkingAssist: { ...this.parkingAssist.status }, doorLeftOpen: false, doorRightOpen: false,
@@ -323,6 +364,10 @@ export class Simulation {
       trackedCount: 0,
       sensorRange: this.sensor.config.range,
       usePerception: this.usePerception,
+      perceptionMode: this.usePerception ? "sensor" : "ground-truth-debug",
+      requestedAccel: 0,
+      jerk: 0,
+      lastImpactSpeed: null,
       behaviorState: "CRUISE",
       pedCount: 0,
       controlMode: "classical",
@@ -346,11 +391,35 @@ export class Simulation {
       rearAeb: false,
       rpm: 800,
       tractionLimited: false,
+      vehicleProfile: this.vehicleProfileId,
+      wheelAbsActive: false,
+      maxWheelSlip: 0,
+      wheelSlips: [0, 0, 0, 0],
+      radarDetections: 0,
+      cameraDetections: 0,
     };
 
     // Prime perception + the first plan so control has something on frame 1.
     this.perceive(this.config.fixedDt);
     this.replan();
+  }
+
+  /** Apply real-vehicle mass, wheelbase, CG height, tire/brake dynamics and AEB timing profile. */
+  setVehicleProfile(id: VehicleProfileId | string, force = false): void {
+    const profile = getVehiclePhysicsProfile(id);
+    if (!force && this.vehicleProfileId === profile.id && this.ego.physicsProfile.id === profile.id) {
+      return;
+    }
+    this.vehicleProfileId = profile.id;
+    this.config.vehicleProfile = profile.id;
+    this.ego.applyPhysicsProfile(profile.id);
+    this.speedPID = new PID(1.2, 0.15, 0.05, -this.ego.maxDecel, this.ego.maxAccel);
+    this.adasSpeedPID = new PID(1.0, 0.08, 0.0, -this.ego.maxDecel, this.ego.maxAccel);
+    this.steerConfig.maxSteer = this.ego.maxSteer;
+    this.adas.setVehicleProfileOverrides(profile.aebOverrides);
+    if (this.telemetry) {
+      this.telemetry.vehicleProfile = profile.id;
+    }
   }
 
   setDesiredSpeed(v: number): void {
@@ -436,6 +505,9 @@ export class Simulation {
         wait: 0,
         triggerDist: Math.max(85, this.ego.v * 3.0),
       });
+    } else if (event === "junction-turn-oncoming") {
+      const approachDist = Math.max(46, this.ego.v * 2.8 + 26);
+      this.traffic.addOncomingVehicle("car", 0, ego.s + approachDist, 13.5, true);
     } else {
       // pedestrian-crossing: spawn far ahead (160m - 260m), wait until ego is within approach trigger
       const pedDist = speedDist;
@@ -454,14 +526,22 @@ export class Simulation {
     // Every stochastic decision restarts from the run's seed, so a reset (or a
     // replay from the same seed) reproduces the exact same world.
     this.rng.reset(this.config.seed);
+    this.dualChannelSensor.rng.reset((this.config.seed ^ 0x9e3779b9) >>> 0);
+    this.dualChannelSensor.reset();
     const mid = Math.floor(this.config.numLanes / 2);
     const start = this.path.toCartesian(0, this.road.laneCenter(mid));
     this.ego.x = start.x;
     this.ego.y = start.y;
     this.ego.yaw = start.heading;
     this.ego.v = this.controlMode === "manual" || this.controlMode === "adas" || ["traffic-jam", "school-zone", "market-street", "reverse-crossing"].includes(this.scenario) ? 0 : 14;
+    this.ego.syncWheelSpeeds();
     this.ego.a = 0;
     this.ego.delta = 0;
+    this.ego.roadGrade = 0;
+    this.ego.corneringBrakeCoupling = true;
+    this.ego.requestedAccel = 0;
+    this.ego.jerk = 0;
+    this.ego.jerkFiltered = 0;
     this.ego.bodyRoll = this.ego.bodyPitch = 0; this.ego.frontLoadFraction = .5;
     this.gear = "D";
     this.engineOn = true;
@@ -469,7 +549,17 @@ export class Simulation {
     this.motionDirection = 1;
     this.speedPID.reset();
     this.adasSpeedPID.reset();
+    this.brakeActuator.reset();
+    this.adas.resetFrictionAdaptation();
+    this.simTime = 0;
+    this.sensorScanTimer = 0;
+    this.sensorScanStarted = false;
+    this.lastImpactSpeed = null;
+    this.lastEgoImpactSpeed = null;
+    this.stepImpactSpeed = null;
+    this.gtVelocityHistory.clear();
     this.driverInput = { steer: 0, throttle: 0, brake: 0 };
+    this.hornActive = false;
     this.indicator = 0;
     this.adas.clearStatus();
     this.adas.resumeCruise();
@@ -645,6 +735,7 @@ export class Simulation {
   }
   supportsEvent(event:ScenarioEventName):boolean{
     if(this.road.numLanes===1&&['motorcycle-cutin','motorcycle-weave'].includes(event))return false;
+    if(event==='junction-turn-oncoming'&&(this.track.road?.motorway||(this.road.opposingLanes===0&&this.road.numLanes<2)))return false;
     if(this.track.road?.motorway&&!['stopped-lead','lead-hard-brake'].includes(event))return false;
     if(this.track.id==='neighborhood'&&event==='bus-stop')return false;
     return true;
@@ -652,6 +743,11 @@ export class Simulation {
 
   setSensorRange(r: number): void {
     this.sensor.config.range = r;
+  }
+
+  /** Enable or disable structured per-step AEB diagnostic logging. */
+  setAebLogging(enabled: boolean): void {
+    this.aebLogger.enabled = enabled;
   }
 
   /** Current ego state expressed in the road's Frenet frame. */
@@ -677,48 +773,146 @@ export class Simulation {
     };
   }
 
-  /** Obstacles the planner reasons about — perceived tracks or ground truth. */
+  /** Obstacles the planner & ADAS reason about — perceived tracks or explicitly-labelled debug ground truth. */
   private obstacles(): Obstacle[] {
     if (!this.usePerception) {
-      const obs: Obstacle[] = this.traffic.cars.map((c) => ({
-        s: c.s, d: c.d, v: c.v,
-        vd: this.trafficLateralSpeed(c),
-        ...trafficFootprint(c), kind: "car" as const,
-      }));
+      const obs: Obstacle[] = this.traffic.cars.map((c) => {
+        const prev = this.gtVelocityHistory.get(c.id);
+        let accel = prev?.accel ?? 0;
+        if (!prev) {
+          this.gtVelocityHistory.set(c.id, { v: c.v, t: this.simTime, accel: 0 });
+        } else if (this.simTime - prev.t > 1e-6) {
+          const rawA = clamp((c.v - prev.v) / (this.simTime - prev.t), -9.5, 4.5);
+          accel = prev.accel + (rawA - prev.accel) * clamp((this.simTime - prev.t) / 0.08, 0.25, 1);
+          this.gtVelocityHistory.set(c.id, { v: c.v, t: this.simTime, accel });
+        }
+        return {
+          id: c.id,
+          s: c.s,
+          d: c.d,
+          v: c.v,
+          vd: this.trafficLateralSpeed(c),
+          ...trafficFootprint(c),
+          footprintFrame: 'road' as const,
+          kind: "car" as const,
+          timestamp: this.simTime,
+          latencySec: 0,
+          ageSec: this.simTime,
+          coastingSec: 0,
+          misses: 0,
+          confirmed: true,
+          confidence: 1,
+          posStd: 0,
+          velStd: 0,
+          accel,
+          source: "ground-truth-debug" as const,
+        };
+      });
       for (const p of this.pedestrians.peds) {
         if (p.state === "done") continue;
         obs.push({
-          s: p.s, d: p.d, v: 0, vd: this.pedestrians.lateralVel(p),
-          length: p.radius * 2, width: p.radius * 2, kind: "ped",
+          id: 200_000 + p.id,
+          s: p.s,
+          d: p.d,
+          v: 0,
+          vd: this.pedestrians.lateralVel(p),
+          length: p.radius * 2,
+          width: p.radius * 2,
+          kind: "ped",
+          footprintFrame: 'road',
+          timestamp: this.simTime,
+          latencySec: 0,
+          ageSec: this.simTime,
+          coastingSec: 0,
+          misses: 0,
+          confirmed: true,
+          confidence: 1,
+          posStd: 0,
+          velStd: 0,
+          accel: 0,
+          source: "ground-truth-debug",
         });
       }
-      for(const body of this.staticWorld.near(this.ego.x,this.ego.y,this.sensor.config.range)){
-        const p=this.projections.project(body,body.x,body.y),angle=body.yaw-this.path.cartesianAt(p.s).heading,c=Math.abs(Math.cos(angle)),s=Math.abs(Math.sin(angle));
-        obs.push({s:p.s,d:p.d,v:0,vd:0,length:c*body.length+s*body.width,width:s*body.length+c*body.width,kind:'car',
-          ...(body.id.startsWith('rail:') ? { roadBoundary: { d: p.d, width: s*body.length+c*body.width } } : {})});
+      const staticNear = [...this.staticWorld.near(this.ego.x, this.ego.y, this.sensor.config.range)]
+        .sort((a, b) => a.id.localeCompare(b.id));
+      for (let i = 0; i < staticNear.length; i++) {
+        const body = staticNear[i];
+        const p = this.projections.project(body, body.x, body.y);
+        const angle = body.yaw - this.path.cartesianAt(p.s).heading;
+        const c = Math.abs(Math.cos(angle));
+        const s = Math.abs(Math.sin(angle));
+        obs.push({
+          id: 300_000 + i,
+          s: p.s,
+          d: p.d,
+          v: 0,
+          vd: 0,
+          length: c * body.length + s * body.width,
+          width: s * body.length + c * body.width,
+          footprintFrame: 'road',
+          kind: "car",
+          timestamp: this.simTime,
+          latencySec: 0,
+          ageSec: this.simTime,
+          coastingSec: 0,
+          misses: 0,
+          confirmed: true,
+          confidence: 1,
+          posStd: 0,
+          velStd: 0,
+          accel: 0,
+          source: "ground-truth-debug",
+          ...(body.id.startsWith("rail:") ? { roadBoundary: { d: p.d, width: s * body.length + c * body.width } } : {}),
+        });
       }
       return obs;
     }
-    // Project each confirmed Kalman track into the road's Frenet frame, using
-    // its ESTIMATED velocity for both along-road and lateral (crossing) speed.
-    // New hazards must not disappear simply because an older track is confirmed.
+    // Project each Kalman track into the road's Frenet frame, using its ESTIMATED
+    // velocity, tangential acceleration, age, coasting duration and covariance.
     const sources = this.tracks;
     if (sources.length > 0) {
-      return sources.map((t: any) => {
-        const f = this.projections.project(t,t.px,t.py);
+      return sources.map((t: Track) => {
+        const f = this.projections.project(t, t.px, t.py);
         const h = this.path.cartesianAt(f.s).heading;
         const tx = Math.cos(h);
         const ty = Math.sin(h);
         const vAlong = t.vx * tx + t.vy * ty;
         const vLat = -t.vx * ty + t.vy * tx;
+        const aAlong = t.ax * tx + t.ay * ty;
         const lateralSigma = Math.sqrt(Math.max(0, ty * ty * t.P[2][2] - 2 * tx * ty * t.P[2][3] + tx * tx * t.P[3][3]));
-        const vd = this.controlMode === "adas" ? Math.abs(vLat) > Math.max(.35, lateralSigma * 2) ? vLat : 0 : vLat;
+        const vd = this.controlMode === "adas"
+          ? Math.abs(vLat) > Math.max(.42, lateralSigma * 3.5) && (t.hits >= 3 || Math.abs(vLat) > 1.8)
+            ? vLat
+            : 0
+          : vLat;
         // Continuous rails use the known map's lateral geometry. Noisy radar
         // returns still locate them longitudinally, but must not move a mapped
         // median 0.8 m into a clear lane or turn it into an approaching car.
-        return { s: f.s, d: t.roadBoundary?.d ?? f.d, v: t.roadBoundary ? 0 : vAlong, vd: t.roadBoundary ? 0 : vd,
-          length: t.length, width: t.roadBoundary?.width ?? t.width, kind: t.kind,
-          ...(t.roadBoundary ? { roadBoundary: { ...t.roadBoundary } } : {}) };
+        return {
+          id: t.id,
+          s: f.s,
+          d: t.roadBoundary?.d ?? f.d,
+          v: t.roadBoundary ? 0 : vAlong,
+          vd: t.roadBoundary ? 0 : vd,
+          length: t.length,
+          width: t.roadBoundary?.width ?? t.width,
+          footprintFrame: 'road' as const,
+          kind: t.kind,
+          timestamp: t.lastTimestamp,
+          latencySec: t.latencySec,
+          latencyCompensated: true,
+          ageSec: t.ageSec,
+          coastingSec: t.coastingSec,
+          misses: t.misses,
+          confirmed: t.confirmed,
+          confidence: t.confidence,
+          posStd: t.posStd,
+          velStd: t.velStd,
+          accel: t.roadBoundary ? 0 : aAlong,
+          source: "sensor" as const,
+          ...(t.sensorChannel ? { sensorChannel: t.sensorChannel } : {}),
+          ...(t.roadBoundary ? { roadBoundary: { ...t.roadBoundary } } : {}),
+        };
       });
     }
     // Empty sensor observations are never replaced by perfect world state.
@@ -737,7 +931,42 @@ export class Simulation {
   }
 
   private perceive(dt: number): void {
-    if (this.sensorFault) { this.tracker.reset(); this.tracks = []; this.occupancy.build(this.ego.x, this.ego.y, []); return; }
+    const forwardBlind =
+      this.sensorFault ||
+      (!this.sensorAvailability.camera &&
+        !this.sensorAvailability.frontRadar &&
+        (this.controlMode !== "adas" || !this.sensorAvailability.rearRadar));
+    if (forwardBlind) {
+      this.tracker.reset();
+      this.tracks = [];
+      this.dualChannelSensor.reset();
+      this.sensorScanStarted = false; this.sensorScanTimer = 0;
+      this.occupancy.build(this.ego.x, this.ego.y, []);
+      return;
+    }
+    // Multi-rate sensor scheduling: between sensor scans, advance tracker state with `hasNewSample: false`
+    // so ageSec progresses without falsely counting intermediate physics ticks as sensor dropouts.
+    if (this.sensorScanIntervalSec > 0 && this.sensorScanStarted) {
+      this.sensorScanTimer += dt;
+      if (this.sensorScanTimer + 1e-9 < this.sensorScanIntervalSec) {
+        if (this.controlMode === 'adas') this.deliverProcessedScans(dt);
+        else {
+          this.tracker.update([], dt, { simTime: this.simTime, hasNewSample: false });
+          this.tracks = this.tracker.tracks;
+          this.occupancy.build(this.ego.x, this.ego.y, this.tracks.filter(t => t.confirmed));
+        }
+        return;
+      }
+      while (this.sensorScanTimer + 1e-9 >= this.sensorScanIntervalSec) {
+        this.sensorScanTimer = Math.max(0, this.sensorScanTimer - this.sensorScanIntervalSec);
+      }
+    } else {
+      this.sensorScanTimer = 0;
+    }
+    this.sensorScanStarted = true;
+    const hasRadarDoppler =
+      this.controlMode === "adas" &&
+      (this.sensorAvailability.frontRadar || this.sensorAvailability.rearRadar);
     const objects: SensableObject[] = [];
     const egoD=this.path.toFrenet(this.ego.x,this.ego.y,this.lastEgoIndex).d;
     for(const body of this.staticWorld.near(this.ego.x,this.ego.y,this.sensor.config.range)){
@@ -756,7 +985,7 @@ export class Simulation {
     for (const c of this.traffic.cars) {
       const w = this.path.toCartesian(c.s, c.d);
       const vd = this.trafficLateralSpeed(c);
-      const velocity = this.controlMode === "adas" ? { vx: c.v * Math.cos(w.heading) - vd * Math.sin(w.heading), vy: c.v * Math.sin(w.heading) + vd * Math.cos(w.heading) } : {};
+      const velocity = hasRadarDoppler ? { vx: c.v * Math.cos(w.heading) - vd * Math.sin(w.heading), vy: c.v * Math.sin(w.heading) + vd * Math.cos(w.heading) } : {};
       const offset=c.crossing?(Math.sign(c.crossingToD-c.d)||1)*Math.PI/2:c.headingOffset??0;
       objects.push({ x: w.x, y: w.y, ...trafficFootprint(c), kind: "car", ...velocity,
         yaw:w.heading+offset,occlusionLength:c.length,occlusionWidth:c.width });
@@ -765,14 +994,42 @@ export class Simulation {
       if (p.state === "done") continue;
       const w = this.path.toCartesian(p.s, p.d);
       const vd = this.pedestrians.lateralVel(p);
-      const velocity = this.controlMode === "adas" ? { vx: -vd * Math.sin(w.heading), vy: vd * Math.cos(w.heading) } : {};
+      const velocity = hasRadarDoppler ? { vx: -vd * Math.sin(w.heading), vy: vd * Math.cos(w.heading) } : {};
       objects.push({ x: w.x, y: w.y, length: p.radius * 2, width: p.radius * 2, kind: "ped", ...velocity });
     }
-    const detections = this.sensor.sense(this.ego.x, this.ego.y, objects, this.ego.yaw);
-    this.tracker.update(detections, dt);
+    if (this.controlMode === 'adas') {
+      this.dualChannelSensor.capture(this.ego.x, this.ego.y, this.ego.yaw, objects, {
+          weather: this.weather,
+          night: this.night,
+          bodyPitchRad: this.ego.bodyPitch,
+          cameraAvailable: this.sensorAvailability.camera,
+          frontRadarAvailable: this.sensorAvailability.frontRadar,
+          rearRadarAvailable: this.sensorAvailability.rearRadar,
+          referenceConfig: this.sensor.config,
+          simTime: this.simTime,
+        });
+      this.deliverProcessedScans(dt);
+      return;
+    }
+    const detections = this.sensor.sense(this.ego.x, this.ego.y, objects, this.ego.yaw, this.simTime);
+    this.tracker.update(detections, dt, { simTime: this.simTime, hasNewSample: true });
     // Use all tracks for safety/ADAS; confirmed still preferred by others
     this.tracks = this.tracker.tracks.length > 0 ? this.tracker.tracks : [];
-    this.occupancy.build(this.ego.x, this.ego.y, this.tracks.filter((t: any) => t.confirmed));
+    this.occupancy.build(this.ego.x, this.ego.y, this.tracks.filter((t) => t.confirmed));
+  }
+
+  private deliverProcessedScans(dt: number): void {
+    const scans = this.dualChannelSensor.poll(this.simTime, {
+      cameraAvailable: this.sensorAvailability.camera,
+      frontRadarAvailable: this.sensorAvailability.frontRadar,
+      rearRadarAvailable: this.sensorAvailability.rearRadar,
+    });
+    if (scans.length === 0) this.tracker.update([], dt, { simTime: this.simTime, hasNewSample: false });
+    else for (const scan of scans) this.tracker.update(scan.detections, dt, {
+      simTime: this.simTime, hasNewSample: true, sampleIntervalSec: scan.sampleIntervalSec || dt,
+    });
+    this.tracks = this.tracker.tracks;
+    this.occupancy.build(this.ego.x, this.ego.y, this.tracks.filter(t => t.confirmed));
   }
 
   private replan(): void {
@@ -789,9 +1046,19 @@ export class Simulation {
     this.behaviorState = decision.state;
     // Slow for road curvature (lateral-acceleration limit) so the car can
     // actually hold its lane through bends instead of understeering wide.
-    const aLatMax = 2.2;
-    const k = this.path.maxCurvatureAhead(state.s, 100);
-    const curveCap = k > 1e-4 ? Math.sqrt(aLatMax / k) : Infinity;
+    const mu = clamp(this.ego.surfaceMu, 0.35, 1.0);
+    const aLatMax = 2.8 * mu;
+    const comfortableDecel = 2.4 * mu;
+    const previewDist = Math.max(100, (this.ego.v * this.ego.v) / (2 * comfortableDecel) + this.ego.v * 1.4);
+    let curveCap = Infinity;
+    for (let dist = 0; dist <= previewDist; dist += 4) {
+      const k = this.path.curvatureAt(state.s + dist);
+      if (k > 1e-4) {
+        const vCurve2 = aLatMax / k;
+        const brakeDist = Math.max(0, dist - this.ego.v * 1.25);
+        curveCap = Math.min(curveCap, Math.sqrt(vCurve2 + 2 * comfortableDecel * brakeDist));
+      }
+    }
     let target = Math.min(decision.targetSpeed * this.weatherSpeedFactor, curveCap);
 
     // The classical stack reads posted speed-limit signs near junction zones.
@@ -854,6 +1121,7 @@ export class Simulation {
     const laneHalf = this.road.laneWidth * 0.6;
     let brake: number | null = null;
     for (const o of this.lastObstacles) {
+      if (o.roadBoundary) continue;
       const fwd = wrapDiff(o.s, f.s, L);
       // This forward braking monitor must not hold the car stopped because a
       // follower is close to its rear bumper. Rear contacts remain covered by
@@ -862,7 +1130,7 @@ export class Simulation {
       const yawOffset = this.ego.yaw - this.path.cartesianAt(f.s).heading;
       const bodyWidth = Math.abs(Math.cos(yawOffset)) * this.ego.dims.width + Math.abs(Math.sin(yawOffset)) * this.ego.dims.length;
       const latTol = Math.max(laneHalf + (o.kind === "ped" ? 1.6 : .4), (bodyWidth + o.width) / 2 + 1.0);
-      const gap = fwd - (2.35 + o.length / 2);
+      const gap = fwd - (this.ego.dims.length + o.length) / 2;
       const closing = this.ego.v - o.v;
       const ttc = closing > 0.1 ? gap / closing : Infinity;
 
@@ -876,13 +1144,18 @@ export class Simulation {
 
       if (!inPath) continue;
       const stoppingDist = (Math.max(closing, 0) ** 2) / (2 * Math.max(this.ego.maxDecel * this.ego.surfaceMu * 0.8, 1)) + this.ego.v * 0.3 + 4;
-      if (gap < stoppingDist || gap < 6.0 || ttc < 2.0) brake = -this.ego.maxDecel;
+      if (gap < stoppingDist || gap < 6.0 || ttc < 2.0) {
+        const changingLane = this.controlMode === "classical" && this.plan && this.plan.targetLane !== this.road.laneOf(f.d);
+        brake = changingLane && gap > 10 ? -this.ego.maxDecel * this.ego.surfaceMu * 0.48 : -this.ego.maxDecel;
+      }
     }
     return brake;
   }
 
   setControlMode(m: ControlMode): void {
     if (m !== this.controlMode) {
+      this.dualChannelSensor.reset(); this.sensorScanStarted = false; this.sensorScanTimer = 0;
+      this.tracker.reset(); this.tracks = [];
       this.parkingAssist.cancel("Đổi chế độ lái · đã hủy đỗ");
       this.metrics.reset(); // fresh scorecard per driver
       this.speedPID.reset();
@@ -961,7 +1234,7 @@ export class Simulation {
     if (this.indicator === 0) { this.signalSettledTime = 0; return; }
     // ALC owns completion while its trajectory is active. Cancelling the
     // signal at the first centre crossing would abort its settling phase.
-    if(this.controlMode==='adas' && this.adas.status.alc==='active'){this.signalSettledTime=0;return;}
+    if(this.controlMode==='adas' && (this.adas.status.alc==='active' || this.adas.status.alc==='armed')){this.signalSettledTime=0;return;}
     const lane = this.road.laneOf(pose.d);
     const changedInDirection = (lane - this.signalStartLane) * this.indicator > 0;
     const centred = Math.abs(pose.d - this.road.laneCenter(lane)) < .35;
@@ -977,13 +1250,16 @@ export class Simulation {
 
   /** Posted limit the ADAS traffic-sign recognition can read right now. */
   nearestSpeedLimit(s: number): number | null {
-    let best: number | null = null;
-    for (const sign of this.roadSigns) {
-      const relative = wrapDiff(sign.s, s, this.path.length);
-      if (relative < -14 || relative > 85) continue;
-      if (best === null || sign.valueKph < best) best = sign.valueKph;
-    }
-    return best;
+    const visible = this.roadSigns.map(sign => ({ sign, relative: wrapDiff(sign.s, s, this.path.length) }))
+      .filter(({ relative }) => relative >= -14 && relative <= 85)
+      .sort((a, b) => Math.abs(a.relative) - Math.abs(b.relative) || a.relative - b.relative || a.sign.id.localeCompare(b.sign.id));
+    const anchor = visible[0]?.sign;
+    if (!anchor) return null;
+    // Fix the closest sign as the zone anchor before comparing restrictions.
+    // Changing the anchor while iterating let a chain of signs join unrelated
+    // zones and made the result depend on array insertion order.
+    return Math.min(...visible.filter(({ sign }) => Math.abs(wrapDiff(sign.s, anchor.s, this.path.length)) < 45)
+      .map(({ sign }) => sign.valueKph));
   }
 
   /** Nearest signalised stop line ahead (for ADAS traffic-light recognition). */
@@ -1067,9 +1343,11 @@ export class Simulation {
 
   private updateSensorRangeForMode(): void {
     const assistedRange = this.controlMode === "adas";
-    // The simplified ADAS safety channel represents long-range radar, which is
-    // not blocked by the visual occlusion rule used for the general perception demo.
-    this.sensor.config.occlusion = !assistedRange;
+    // Physical line-of-sight occlusion is ALWAYS active: solid vehicles block hidden
+    // pedestrians (no X-ray vision), while `pedestrians-only` in ADAS mode models
+    // 77 GHz radar under-body multi-bounce for metal vehicles ahead.
+    this.sensor.config.occlusion = true;
+    this.sensor.config.occlusionMode = assistedRange ? "pedestrians-only" : "full";
     if (this.weather === "rain") this.sensor.config.range = assistedRange ? 165 : 68;
     else if (this.weather === "fog") this.sensor.config.range = assistedRange ? 150 : 46;
     else this.sensor.config.range = assistedRange ? 180 : 95;
@@ -1077,6 +1355,9 @@ export class Simulation {
 
   setDriverInput(input: DriverInput): void {
     if (input.brake > 0 && this.controlMode === "adas") { this.adas.cancelCruise(); this.adasSpeedPID.reset(); }
+    if (input.horn !== undefined) {
+      this.setHorn(input.horn);
+    }
     this.driverInput = {
       steer: clamp(input.steer, -1, 1),
       throttle: clamp(input.throttle, 0, 1),
@@ -1085,10 +1366,22 @@ export class Simulation {
     };
   }
 
+  setHorn(active: boolean): void {
+    this.hornActive = Boolean(active);
+    if (this.hornActive) {
+      this.driverAttentive = true;
+      this.driverHandsOn = true;
+    }
+    if (this.telemetry) {
+      this.telemetry.hornActive = this.hornActive;
+    }
+  }
+
   get signedSpeed(): number { return this.ego.v * this.motionDirection; }
 
   /** Explicit, repeatable training area. No active drive is silently relocated. */
-  prepareParkingLab(): void {
+  prepareParkingLab(orientation: "parallel" | "perpendicular" = this.parkingLabOrientation): void {
+    this.parkingLabOrientation = orientation;
     this.setControlMode("adas");
     this.reset(); this.traffic.clear(); this.pedestrians.clear();
     const s = 150, d = this.road.laneCenter(this.road.numLanes - 1);
@@ -1096,9 +1389,31 @@ export class Simulation {
     this.ego.x = w.x; this.ego.y = w.y; this.ego.yaw = w.heading; this.ego.v = 0;
     this.gear = "D"; this.engineOn = true; this.epbEngaged = false; this.motionDirection = 1;
     this.adas.cancelCruise(); this.driverInput = { steer: 0, throttle: 0, brake: 0 };
-    this.parkingBays = [0, 1, 2].map(i => ({ id: `P${i + 1}`, s: s - 6 + i * 32, d: d + 3.7, length: 10, width: 3.2 }));
-    const occupied = this.traffic.addTestVehicle("stalled", this.road.numLanes - 1, s + 26, 0, 0);
-    occupied.d = d + 3.7;
+    if (orientation === "perpendicular") {
+      const bayStations = [168, 182, 198];
+      this.parkingBays = bayStations.map((bs, i) => ({
+        id: `V${i + 1}`,
+        s: bs,
+        d: d + 5.8,
+        length: 6.2,
+        width: 3.4,
+        orientation: "perpendicular" as const,
+      }));
+      const occupied = this.traffic.addTestVehicle("stalled", this.road.numLanes - 1, 182, 0, 0);
+      occupied.d = d + 5.8;
+      occupied.headingOffset = -Math.PI / 2;
+    } else {
+      this.parkingBays = [0, 1, 2].map(i => ({
+        id: `P${i + 1}`,
+        s: s - 6 + i * 32,
+        d: d + 3.7,
+        length: 10,
+        width: 3.2,
+        orientation: "parallel" as const,
+      }));
+      const occupied = this.traffic.addTestVehicle("stalled", this.road.numLanes - 1, s + 26, 0, 0);
+      occupied.d = d + 3.7;
+    }
     this.tracker.reset(); this.perceive(this.config.fixedDt); this.lastObstacles = this.obstacles();
     this.paused = false;
   }
@@ -1145,12 +1460,18 @@ export class Simulation {
     if (this.ego.v > .1 || this.gear !== "P" || this.parkingAssist.controlling) return false;
     const key = side === "left" ? "doorLeftOpen" : "doorRightOpen";
     const blocked = side === "left" ? this.adas.status.extra.safeExitLeft : this.adas.status.extra.safeExitRight;
-    if (!this[key] && blocked && this.adas.config.safeExit) return false;
-    this[key] = !this[key]; return true;
+    if (!this[key] && blocked && this.adas.config.safeExit) {
+      if (side === "left") this.seaBlockFlashLeft = 2.4;
+      else this.seaBlockFlashRight = 2.4;
+      return false;
+    }
+    this[key] = !this[key];
+    return true;
   }
 
   private rearCrossTraffic(egoS: number, egoD: number): { active: boolean; left: boolean; right: boolean; rearAeb: boolean } {
-    const p = proximitySafety(this.ego, this.path, this.lastObstacles, this.gear === "R");
+    const muEst = this.adas.config.estimatedMu ?? (this.weather === "rain" ? 0.72 : 1.0);
+    const p = proximitySafety(this.ego, this.path, this.lastObstacles, this.gear === "R", muEst);
     const a = assistanceAvailability(this.assistanceFrame(0));
     const enabled = this.controlMode === "adas" && this.gear === 'R' && this.adas.config.rcta && a.sensors.rearRadar;
     const rearDanger = (a.sensors.rearRadar && p.crossBrake) || (a.sensors.ultrasonic && p.parkingBrake);
@@ -1205,6 +1526,8 @@ export class Simulation {
       s.posNoise = 0.35;
       this.weatherSpeedFactor = 1;
     }
+    this.tracker.config.measNoise = s.posNoise;
+    this.adas.resetFrictionAdaptation();
     this.updateSensorRangeForMode();
   }
   setCollecting(on: boolean): void {
@@ -1228,12 +1551,27 @@ export class Simulation {
     }
 
     // --- perception (every step: sensor → Kalman tracks → occupancy) -------
+    this.simTime += dt;
+    this.stepImpactSpeed = null;
     this.perceive(dt);
     // Refresh the hazard list each fixed step so AEB does not act on the last
     // planner cycle's older obstacle snapshot (planning itself remains rate-limited).
     this.lastObstacles = this.obstacles();
     const driverPose = this.path.toFrenet(this.ego.x, this.ego.y, this.lastEgoIndex);
+    if (this.hornActive) {
+      this.driverAttentive = true;
+      this.driverHandsOn = true;
+      const egoLane = this.road.laneOf(driverPose.d);
+      for (const car of this.traffic.cars) {
+        if (car.disabled || car.lane !== egoLane || car.v <= 0.5) continue;
+        const ahead = wrapDiff(car.s, driverPose.s, this.path.length);
+        if (ahead > 0 && ahead < 35 && car.desiredSpeed < this.baseDesiredSpeed * 0.85) {
+          car.desiredSpeed = Math.max(car.desiredSpeed, Math.min(this.baseDesiredSpeed * 0.9, 14));
+        }
+      }
+    }
     const rearAlert = this.rearCrossTraffic(driverPose.s, driverPose.d);
+    const hadEvasiveLaneOwnership = this.controlMode === 'adas' && this.extendedAssistance.activeEvadeLane !== null;
 
     // --- planning (rate-limited) -------------------------------------------
     this.planTimer += dt;
@@ -1250,7 +1588,7 @@ export class Simulation {
     if (this.plan && this.plan.points.length >= 2) {
       // Stanley lateral control tracking the TARGET LANE CENTRE in the road's
       // Frenet frame (the plan chooses which lane + the speed; this holds it).
-      const wb = EGO_DIMS.wheelbase;
+      const wb = this.ego.dims.wheelbase;
       const fx = this.ego.x + (wb / 2) * Math.cos(this.ego.yaw);
       const fy = this.ego.y + (wb / 2) * Math.sin(this.ego.yaw);
       const ff = this.path.toFrenet(fx, fy, -1);
@@ -1259,17 +1597,25 @@ export class Simulation {
       const occupiedLane = this.road.laneOf(driverPose.d);
       const requestedLane = this.plan.targetLane;
       const laneClear = requestedLane === occupiedLane || this.traffic.cars.every(car => {
-        if (Math.abs(car.d - this.road.laneCenter(requestedLane)) > (car.width + EGO_DIMS.width) / 2 + .45) return true;
+        if (Math.abs(car.d - this.road.laneCenter(requestedLane)) > (car.width + this.ego.dims.width) / 2 + .45) return true;
         const ahead = wrapDiff(car.s, driverPose.s, this.path.length);
-        const clearance = Math.abs(ahead) - (car.length + EGO_DIMS.length) / 2;
+        const clearance = Math.abs(ahead) - (car.length + this.ego.dims.length) / 2;
         return clearance > 6 + (ahead > 0 ? this.ego.v : car.v) * 1.2;
       });
       const goalLaneD = this.road.laneCenter(laneClear ? requestedLane : occupiedLane);
-      this.trackLaneD = smoothTowards(this.trackLaneD, goalLaneD, 1.6, dt);
+      const laneTrackRate = Math.max(1.6, Math.min(3.4, this.ego.v * 0.085));
+      this.trackLaneD = smoothTowards(this.trackLaneD, goalLaneD, laneTrackRate, dt);
       const roadHeading = this.path.cartesianAt(ff.s).heading;
+      const roadCurv = this.path.signedCurvatureAt(ff.s);
+      const targetCurv = roadCurv / Math.max(0.25, 1 - roadCurv * this.trackLaneD);
+      const feedForward = Math.atan(wb * targetCurv);
       const headingErr = wrapAngle(roadHeading - this.ego.yaw);
       const crossTrack = ff.d - this.trackLaneD; // +ve when ego is left of tracked centre
-      classicalSteer = stanleyControl(headingErr, crossTrack, this.ego.v, this.steerConfig);
+      classicalSteer = clamp(
+        feedForward + stanleyControl(headingErr, crossTrack, this.ego.v, this.steerConfig),
+        -this.ego.maxSteer,
+        this.ego.maxSteer,
+      );
       // Never target above the current desired-speed cap, so a stop command
       // (red light / yield / emergency) takes effect without the look-ahead lag.
       // Never target above the current desired-speed cap, so a stop command
@@ -1304,7 +1650,7 @@ export class Simulation {
         ? -this.driverInput.brake * this.ego.maxDecel
         : pedalThrottle * this.ego.maxAccel;
       if (pedalThrottle === 0 && this.driverInput.brake === 0) {
-        accel = -coastDeceleration(this.ego.v) - .07;
+        accel = -coastDeceleration(this.ego.v) - .07 - this.ego.extraCoastDecel;
       }
     } else if (this.controlMode === "adas") {
       if (this.gear === "R") {
@@ -1332,16 +1678,25 @@ export class Simulation {
           desiredSpeed: this.baseDesiredSpeed,
           input: this.driverInput,
           dt,
-          speedControl: (error, stepDt) => this.adasSpeedPID.update(error, stepDt),
+          speedControl: (error, stepDt) => {
+            this.adasSpeedPID.clampIntegralSign(error);
+            return this.adasSpeedPID.update(error, stepDt);
+          },
           speedLimitKph: this.nearestSpeedLimit(driverPose.s),
           indicator: this.indicator,
           trafficLight: this.nearestTrafficLight(driverPose.s),
           sensorsAvailable: !this.sensorFault,
           laneConfidence: this.laneMarkingConfidence,
+          estimatedMu: this.weather === "rain" ? 0.72 : 1.0,
+          usePerception: this.usePerception,
+          simTime: this.simTime,
         });
         steer = assisted.steer;
         accel = assisted.accel;
         targetSpeed = assisted.targetSpeed;
+        if (!assisted.status.accActive || assisted.status.accHolding || assisted.status.aeb || assisted.status.aebHolding || this.driverInput.throttle > 0) {
+          this.adasSpeedPID.reset();
+        }
         if (assisted.status.alcComplete) this.indicator = 0;
       } else {
         this.adas.clearStatus();
@@ -1357,9 +1712,36 @@ export class Simulation {
         gear: this.gear, night: this.night, weather: this.weather, attentive: this.driverAttentive, handsOn: this.driverHandsOn, fatigued: this.driverFatigued,
       });
       this.adas.status.extra = extra.status; steer = extra.steer; accel = extra.accel;
+      if (hadEvasiveLaneOwnership && !extra.status.evasiveSteering) {
+        // Ending ESA must release its target in BOTH controllers. Otherwise
+        // LFA inherits the old evasive lane and keeps changing lanes after a
+        // radar/ESC fault even though the cluster says ESA has stopped.
+        this.adas.releaseLaneOwnership();
+        this.adas.setLaneTarget(this.road.laneOf(driverPose.d));
+        this.adas.status.alc = 'off';
+        this.adas.status.alcTargetLane = null;
+        if (!extra.status.blindSpotIntervention && !extra.status.emergencyLaneKeeping) {
+          steer = this.driverInput.steer * this.ego.maxSteer;
+          this.adas.status.laneCenteringActive = false;
+          this.adas.status.laneKeepAssist = false;
+        }
+      }
       if(extra.status.driverResponded){this.driverAttentive=this.driverHandsOn=true;}
       if (extra.status.driverWarning === "takeover") { this.adas.status.takeoverRequired = true; this.adas.cancelCruise(); }
       if (extra.status.pedalMitigation || extra.status.blindSpotBraking) this.adas.status.adasBrakeForce = 1;
+      if (extra.status.evasiveSteering) {
+        this.adas.status.adasBrakeForce = accel < 0 ? clamp(-accel / this.ego.maxDecel, 0, 1) : 0;
+        const targetEvadeLane = this.extendedAssistance.activeEvadeLane;
+        if (targetEvadeLane !== null) {
+          this.adas.setLaneTarget(targetEvadeLane);
+          if (
+            Math.abs(driverPose.d - this.road.laneCenter(targetEvadeLane)) < this.road.laneWidth * 0.35 &&
+            !this.adas.lastAebRisk?.hasCollisionCourse
+          ) {
+            this.adas.releaseAebLatch();
+          }
+        }
+      }
       if (extra.status.minimalRiskBraking) this.adas.status.adasBrakeForce = Math.max(this.adas.status.adasBrakeForce, 2 / this.ego.maxDecel);
     } else this.extendedAssistance.reset();
 
@@ -1404,7 +1786,8 @@ export class Simulation {
 
     const rearAebActive = this.controlMode === "adas" && this.gear === "R" &&
       rearAlert.rearAeb && this.adas.config.rearAeb && !this.epbEngaged;
-    const parking = proximitySafety(this.ego, this.path, this.lastObstacles, this.gear === "R");
+    const parkingMuEst = this.adas.config.estimatedMu ?? (this.weather === "rain" ? 0.72 : 1.0);
+    const parking = proximitySafety(this.ego, this.path, this.lastObstacles, this.gear === "R", parkingMuEst);
     const parkingEnabled = this.controlMode === "adas" && (this.gear === "D" || this.gear === "R") && this.adas.config.parking && this.ego.v < 3 && !this.sensorFault && this.sensorAvailability.ultrasonic;
     this.adas.status = {
       ...this.adas.status,
@@ -1420,6 +1803,7 @@ export class Simulation {
       rctaRight: rearAlert.right,
       rearAeb: rearAebActive,
       aeb: rearAebActive || this.adas.status.aeb,
+      brakeReason: rearAebActive ? "aeb" : this.adas.status.brakeReason,
       adasBrakeForce: rearAebActive ? 1 : this.adas.status.adasBrakeForce,
     };
     if (rearAebActive) accel = Math.min(accel, -this.ego.maxDecel);
@@ -1453,6 +1837,33 @@ export class Simulation {
       if (shield !== null) accel = Math.min(accel, shield);
     }
 
+    // No later steering/parking/emergency controller may weaken the driver's
+    // requested foot brake. Actual tyre grip is still limited by Vehicle.step.
+    if (this.driverInput.brake > 0) accel = Math.min(accel, -this.driverInput.brake * this.ego.maxDecel);
+    let actuatorAccel = accel;
+    if (this.controlMode === "adas" && this.gear === "D" && this.engineOn && !this.epbEngaged) {
+      const forwardAebOrHold =
+        (this.adas.status.aeb && !rearAebActive) ||
+        this.adas.status.aebHolding ||
+        this.adas.status.extra.pedalMitigation ||
+        this.adas.status.extra.blindSpotBraking;
+      actuatorAccel = this.brakeActuator.step({
+        simTime: this.simTime,
+        dt,
+        requestedAccelCmd: accel,
+        driverDecel: this.driverInput.brake * this.ego.maxDecel,
+        driverThrottle: this.driverInput.throttle,
+        baselineHydraulicDecel: this.adas.lastNonAebDecelReq,
+        passiveCoastDecel: coastDeceleration(this.ego.v) + 0.07 + this.ego.extraCoastDecel,
+        aebActiveOrHold: forwardAebOrHold,
+        aebState: this.adas.status.aebState,
+        prefillReady: this.adas.lastAebDecision?.prefill ?? false,
+        calibration: this.adas.resolvedCalibration(),
+      });
+    } else {
+      this.brakeActuator.reset();
+    }
+
     const prevX = this.ego.x;
     const prevY = this.ego.y;
     const egoBefore = this.egoBody();
@@ -1463,7 +1874,12 @@ export class Simulation {
       this.ego.a = 0;
     } else {
       this.ego.limitLateralGrip = true;
-      this.ego.step(steer, accel, dt, this.motionDirection);
+      this.ego.corneringBrakeCoupling = this.controlMode === "adas" || this.controlMode === "manual";
+      this.ego.enableWheelSlipDynamics =
+        this.wheelSlipDynamicsOverride ??
+        (this.vehicleProfileId !== "composite" || (this.config as any).enableWheelSlipDynamics === true);
+      this.ego.wheelAbsEnabled = this.wheelAbsOverride ?? this.escAvailable;
+      this.ego.step(steer, actuatorAccel, dt, this.motionDirection);
     }
 
     // Virtual guardrail for the learned drivers: keep them physically on the
@@ -1483,8 +1899,8 @@ export class Simulation {
     let ef = this.path.toFrenet(this.ego.x, this.ego.y, this.lastEgoIndex);
     this.traffic.update(
       dt,
-      { s: ef.s, d: ef.d, v: this.ego.v * this.motionDirection, length: EGO_DIMS.length,
-        width: Math.abs(Math.cos(this.ego.yaw - this.path.cartesianAt(ef.s).heading)) * EGO_DIMS.width + Math.abs(Math.sin(this.ego.yaw - this.path.cartesianAt(ef.s).heading)) * EGO_DIMS.length, gear: this.gear },
+      { s: ef.s, d: ef.d, v: this.ego.v * this.motionDirection, length: this.ego.dims.length,
+        width: Math.abs(Math.cos(this.ego.yaw - this.path.cartesianAt(ef.s).heading)) * this.ego.dims.width + Math.abs(Math.sin(this.ego.yaw - this.path.cartesianAt(ef.s).heading)) * this.ego.dims.length, gear: this.gear },
       this.controlMode === "adas" || this.controlMode === "manual",
       this.trafficLights,
       this.pedestrians.peds,
@@ -1519,17 +1935,21 @@ export class Simulation {
     for (const c of this.traffic.cars) {
       const ds = wrapDiff(c.s, ef.s, Lm);
       const dd = c.d - ef.d;
-      if (Math.abs(dd) < laneHalf && ds > 0) minGap = Math.min(minGap, ds - (2.35 + c.length / 2));
+      if (Math.abs(dd) < laneHalf && ds > 0) minGap = Math.min(minGap, ds - (this.ego.dims.length + c.length) / 2);
     }
     const steerRate = (this.ego.delta - this.prevDelta) / dt;
     this.prevDelta = this.ego.delta;
+    this.seaBlockFlashLeft = Math.max(0, this.seaBlockFlashLeft - dt);
+    this.seaBlockFlashRight = Math.max(0, this.seaBlockFlashRight - dt);
     this.metrics.update({
       v: this.ego.v,
       accel: this.ego.a,
       steerRate,
-      offRoad: Math.abs(ef.d) > this.road.pavedHalfWidth && !this.parkingBays.some(bay =>
-        Math.abs(wrapDiff(ef.s, bay.s, this.path.length)) < bay.length / 2 + 18 &&
-        ef.d >= Math.min(bay.d - bay.width / 2, this.road.totalWidth / 2 - this.road.laneWidth) && ef.d <= bay.d + bay.width / 2),
+      offRoad: Math.abs(ef.d) > this.road.pavedHalfWidth && !this.parkingBays.some(bay => {
+        const halfD = (bay.orientation === "perpendicular" ? bay.length : bay.width) / 2;
+        return Math.abs(wrapDiff(ef.s, bay.s, this.path.length)) < bay.length / 2 + 18 &&
+          ef.d >= Math.min(bay.d - halfD, this.road.totalWidth / 2 - this.road.laneWidth) && ef.d <= bay.d + halfD + 0.5;
+      }),
       gap: minGap,
       collided,
       desiredSpeed: this.baseDesiredSpeed,
@@ -1555,18 +1975,23 @@ export class Simulation {
     this.telemetry.trackedCount = this.tracks.length;
     this.telemetry.sensorRange = this.sensor.config.range;
     this.telemetry.usePerception = this.usePerception;
+    this.telemetry.perceptionMode = this.usePerception ? "sensor" : "ground-truth-debug";
+    this.telemetry.requestedAccel = accel;
+    this.telemetry.jerk = this.ego.jerkFiltered;
+    this.telemetry.lastImpactSpeed = this.stepImpactSpeed;
     this.telemetry.behaviorState = this.behaviorState;
     this.telemetry.pedCount = this.pedestrians.peds.filter((p) => p.state !== "done").length;
     this.telemetry.controlMode = this.controlMode;
     this.telemetry.adas = this.adas.status;
     const laneCenter = this.road.laneCenter(this.telemetry.lane);
     this.telemetry.laneOffset = ef.d - laneCenter;
-    this.telemetry.speedLimitKph = this.nearestSpeedLimit(ef.s);
+    this.telemetry.speedLimitKph = this.controlMode === 'adas' ? this.adas.status.tsrLimitKph : this.nearestSpeedLimit(ef.s);
     this.telemetry.indicator = this.indicator;
     this.telemetry.indicatorOn = indicatorOn(this.metrics.time);
     this.telemetry.headway = this.adas.status.headway;
     this.telemetry.trafficLight = this.nearestTrafficLight(ef.s);
     this.telemetry.seed = this.config.seed;
+    this.telemetry.hornActive = this.hornActive;
     this.telemetry.gear = this.gear;
     this.telemetry.engineOn = this.engineOn;
     this.telemetry.epbEngaged = this.epbEngaged;
@@ -1580,9 +2005,60 @@ export class Simulation {
     this.telemetry.rearAeb = this.adas.status.rearAeb;
     this.telemetry.rpm = engineRpm(this.ego.v, this.driverInput.throttle, this.gear, this.engineOn);
     this.telemetry.tractionLimited = this.ego.tractionLimited;
+    this.telemetry.vehicleProfile = this.vehicleProfileId;
+    this.telemetry.wheelAbsActive = this.ego.wheelAbsActive;
+    this.telemetry.maxWheelSlip = this.ego.maxWheelSlip;
+    this.telemetry.wheelSlips = [...this.ego.wheelSlips] as [number, number, number, number];
+    this.telemetry.radarDetections = this.controlMode === "adas" ? this.dualChannelSensor.lastRadarDetections.length : 0;
+    this.telemetry.cameraDetections = this.controlMode === "adas" ? this.dualChannelSensor.lastCameraDetections.length : 0;
     this.telemetry.parkingAssist = { ...this.parkingAssist.status };
     this.telemetry.doorLeftOpen = this.doorLeftOpen; this.telemetry.doorRightOpen = this.doorRightOpen;
-    this.recorder.record(this.captureFrame(), dt);
+    if (this.aebLogger.enabled) {
+      const dec = this.adas.lastAebDecision;
+      const risk = this.adas.lastAebRisk;
+      const obs = risk?.obstacle;
+      this.aebLogger.record({
+        simTime: this.simTime,
+        dt,
+        perceptionMode: this.telemetry.perceptionMode,
+        availability: this.adas.status.aebAvailability ?? "unavailable",
+        availabilityReason: this.adas.status.aebAvailabilityReason ?? "",
+        targetId: dec?.targetId ?? risk?.targetId ?? null,
+        targetKind: obs?.kind ?? null,
+        trackAgeSec: obs?.ageSec ?? null,
+        coastingSec: obs?.coastingSec ?? null,
+        confidence: obs?.confidence ?? null,
+        gap: risk && Number.isFinite(risk.longitudinalGap) ? risk.longitudinalGap : null,
+        closingSpeed: risk && Number.isFinite(risk.closingSpeed) ? risk.closingSpeed : null,
+        targetAccel: obs?.accel ?? null,
+        ttc: risk && risk.ttcValid && Number.isFinite(risk.ttc) ? risk.ttc : null,
+        ttcValid: Boolean(risk?.ttcValid && Number.isFinite(risk.ttc)),
+        tti: risk && Number.isFinite(risk.tti) ? risk.tti : null,
+        ttb: risk && Number.isFinite(risk.ttb) ? risk.ttb : null,
+        minPredictedGap: risk && Number.isFinite(risk.minGapFull) ? risk.minGapFull : null,
+        aebState: this.adas.status.aebState ?? "MONITOR",
+        reason: dec?.reasonCode ?? "none",
+        cause: this.adas.status.aebCause ?? "",
+        driverDecelReq: this.adas.lastDriverDecelReq,
+        accDecelReq: this.adas.lastAccDecelReq,
+        aebDecelReq: dec ? (dec.aebActive || dec.holdActive ? dec.decelDemand : 0) : 0,
+        arbiterSource: this.adas.status.arbiterSource ?? "none",
+        finalAccelCmd: accel,
+        actuatorAccelCmd: actuatorAccel,
+        egoSpeed: this.ego.v,
+        actualAccel: this.ego.a,
+        actualLatAccel: this.ego.lateralAccel,
+        jerk: this.ego.jerk,
+        jerkFiltered: this.ego.jerkFiltered,
+        collided,
+        impactSpeed: this.stepImpactSpeed,
+        vehicleProfile: this.vehicleProfileId,
+        sensorChannel: obs?.sensorChannel ?? null,
+        wheelAbsActive: this.ego.wheelAbsActive,
+        maxWheelSlip: this.ego.maxWheelSlip,
+      });
+    }
+    if (this.recorder.recording) this.recorder.record(this.captureFrame(), dt);
   }
 
   private egoBody(): Body2D { return { x: this.ego.x, y: this.ego.y, yaw: this.ego.yaw, ...this.ego.dims }; }
@@ -1643,6 +2119,27 @@ export class Simulation {
     }
     if (!first) return false;
     const egoAtContact = interpolateBody(before, after, Math.max(0, first.time - .0001));
+    const egoVx = this.ego.v * this.motionDirection * Math.cos(egoAtContact.yaw);
+    const egoVy = this.ego.v * this.motionDirection * Math.sin(egoAtContact.yaw);
+    let targetVx = 0;
+    let targetVy = 0;
+    if (first.actor.car) {
+      const c = first.actor.car;
+      const w = this.path.toCartesian(c.s, c.d);
+      const vd = this.trafficLateralSpeed(c);
+      targetVx = c.v * Math.cos(w.heading) - vd * Math.sin(w.heading);
+      targetVy = c.v * Math.sin(w.heading) + vd * Math.cos(w.heading);
+    } else if (first.actor.ped) {
+      const p = first.actor.ped;
+      const w = this.path.toCartesian(p.s, p.d);
+      const vd = this.pedestrians.lateralVel(p);
+      targetVx = -vd * Math.sin(w.heading);
+      targetVy = vd * Math.cos(w.heading);
+    }
+    const relImpactSpeed = Math.hypot(egoVx - targetVx, egoVy - targetVy);
+    this.stepImpactSpeed = relImpactSpeed;
+    this.lastImpactSpeed = relImpactSpeed;
+    this.lastEgoImpactSpeed = this.ego.v;
     this.ego.x = egoAtContact.x; this.ego.y = egoAtContact.y; this.ego.yaw = egoAtContact.yaw;
     this.ego.v = 0; this.ego.a = 0;
     const stop = (actor: typeof actors[number], time?: number) => {
@@ -1752,6 +2249,8 @@ export class Simulation {
   }
 
   private restoreFrame(recordedFrame: SimulationFrame): void {
+    this.dualChannelSensor.reset(); this.sensorScanStarted = false; this.sensorScanTimer = 0;
+    this.tracker.reset();
     const frame=this.currentLayoutFrame(recordedFrame);
     const needsScenarioSetup = frame.scenario !== this.scenario || frame.profile !== this.traffic.profile;
     if (needsScenarioSetup) {

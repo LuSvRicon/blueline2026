@@ -15,6 +15,9 @@ const N = 18; // display points
 const SPACING = 2.0; // metres between them → ~36 m of path shown
 const EASE = 0.35; // temporal smoothing per frame
 
+const BRIGHT_COLOR = new THREE.Color(THEME.pathBlue).multiplyScalar(1.65);
+const FAINT_COLOR = new THREE.Color(THEME.pathBlueFaint);
+
 interface P {
   x: number;
   y: number;
@@ -22,12 +25,31 @@ interface P {
 }
 
 export class PathRibbon {
-  readonly group=new THREE.Group();
+  readonly group = new THREE.Group();
   readonly mesh: THREE.Mesh;
   private geo = new THREE.BufferGeometry();
+  private posBuf = new Float32Array(N * 2 * 3);
+  private colBuf = new Float32Array(N * 2 * 3);
+  private posAttr: THREE.BufferAttribute;
+  private colAttr: THREE.BufferAttribute;
   private smooth: P[] = [];
+  private cumBuf: number[] = [];
 
   constructor() {
+    this.posAttr = new THREE.BufferAttribute(this.posBuf, 3);
+    this.posAttr.setUsage(THREE.DynamicDrawUsage);
+    this.colAttr = new THREE.BufferAttribute(this.colBuf, 3);
+    this.colAttr.setUsage(THREE.DynamicDrawUsage);
+    this.geo.setAttribute("position", this.posAttr);
+    this.geo.setAttribute("color", this.colAttr);
+
+    const indices: number[] = [];
+    for (let i = 0; i < N - 1; i++) {
+      const a = i * 2;
+      indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    }
+    this.geo.setIndex(indices);
+
     const mat = new THREE.MeshBasicMaterial({
       vertexColors: true,
       transparent: true,
@@ -36,6 +58,7 @@ export class PathRibbon {
       depthWrite: false,
     });
     this.mesh = new THREE.Mesh(this.geo, mat);
+    this.mesh.frustumCulled = false;
     this.group.add(this.mesh);
     this.mesh.renderOrder = 5;
   }
@@ -43,10 +66,11 @@ export class PathRibbon {
   /** Resample the plan to N points at fixed arc-length spacing. */
   private resample(pts: Trajectory["points"], startDistance: number): P[] {
     const out: P[] = [];
-    // Cumulative arc length.
-    const cum: number[] = [0];
+    const cum = this.cumBuf;
+    cum.length = pts.length;
+    cum[0] = 0;
     for (let i = 1; i < pts.length; i++) {
-      cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+      cum[i] = cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
     }
     let seg = 0;
     for (let k = 0; k < N; k++) {
@@ -83,10 +107,11 @@ export class PathRibbon {
     }
 
     const s = this.smooth;
-    const positions: number[] = [];
-    const colors: number[] = [];
-    const bright = new THREE.Color(THEME.pathBlue).multiplyScalar(1.6);
-    const faint = new THREE.Color(THEME.pathBlueFaint);
+    const pos = this.posBuf;
+    const col = this.colBuf;
+    const halfW = HALF_WIDTH * displayScale;
+    const denom = Math.max(desiredSpeed, 1);
+
     for (let i = 0; i < N; i++) {
       const prev = s[Math.max(0, i - 1)];
       const next = s[Math.min(N - 1, i + 1)];
@@ -95,22 +120,30 @@ export class PathRibbon {
       const len = Math.hypot(dx, dy) || 1;
       dx /= len;
       dy /= len;
-      const px = -dy * HALF_WIDTH * displayScale;
-      const py = dx * HALF_WIDTH * displayScale;
-      positions.push(s[i].x + px, HEIGHT, s[i].y + py, s[i].x - px, HEIGHT, s[i].y - py);
-      const frac = clamp(s[i].v / Math.max(desiredSpeed, 1), 0, 1);
-      const c = faint.clone().lerp(bright, 0.25 + 0.75 * frac);
-      colors.push(c.r, c.g, c.b, c.r, c.g, c.b);
+      const px = -dy * halfW;
+      const py = dx * halfW;
+      const o = i * 6;
+      pos[o] = s[i].x + px;
+      pos[o + 1] = HEIGHT;
+      pos[o + 2] = s[i].y + py;
+      pos[o + 3] = s[i].x - px;
+      pos[o + 4] = HEIGHT;
+      pos[o + 5] = s[i].y - py;
+
+      const frac = clamp(s[i].v / denom, 0, 1);
+      const w = 0.25 + 0.75 * frac;
+      const r = FAINT_COLOR.r + (BRIGHT_COLOR.r - FAINT_COLOR.r) * w;
+      const g = FAINT_COLOR.g + (BRIGHT_COLOR.g - FAINT_COLOR.g) * w;
+      const b = FAINT_COLOR.b + (BRIGHT_COLOR.b - FAINT_COLOR.b) * w;
+      col[o] = r;
+      col[o + 1] = g;
+      col[o + 2] = b;
+      col[o + 3] = r;
+      col[o + 4] = g;
+      col[o + 5] = b;
     }
-    const indices: number[] = [];
-    for (let i = 0; i < N - 1; i++) {
-      const a = i * 2;
-      indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-    }
-    this.geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-    this.geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-    this.geo.setIndex(indices);
-    this.geo.attributes.position.needsUpdate = true;
-    this.geo.computeBoundingSphere();
+
+    this.posAttr.needsUpdate = true;
+    this.colAttr.needsUpdate = true;
   }
 }

@@ -1,0 +1,17 @@
+/* BlueLine Automotive Glass Cockpit Station Theme & 3D Cabin Mode */
+#ui.game-ui.dashboard-ui.station-ui {
+  --hud-accent: #34d399;
+  --bl-blue: #34d399;
+}
+
+#ui.station-ui.adas-settings-open .game-dock #adas-panel {
+  z-index: 49;
+}
+
+/* First-person 3D cabin camera mode: the 3D instrument cluster already shows speed on desktop,
+   so compact the dock slightly to give an unobstructed view of the 3D steering wheel. */
+@media (min-width: 840px) {
+  #ui.game-ui.dashboard-ui.cockpit-mode:not(.phone-landscape):not(.focus-mode) {
+    --dashboard-height: 196px;
+  }
+}

@@ -13,6 +13,8 @@ export class RoadView {
   readonly group = new THREE.Group();
   private asphaltMaterial: THREE.MeshStandardMaterial;
   private markerMaterials: THREE.MeshStandardMaterial[] = [];
+  private lampBulbMaterial?: THREE.MeshStandardMaterial;
+  private lampPoolMesh?: THREE.InstancedMesh;
 
   constructor(road: Road) {
     const path = road.path;
@@ -46,7 +48,7 @@ export class RoadView {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping; texture.needsUpdate = true;
     texture.generateMipmaps = true; texture.minFilter = THREE.LinearMipmapLinearFilter;
     texture.magFilter = THREE.LinearFilter; texture.anisotropy = 8;
-    this.asphaltMaterial = new THREE.MeshStandardMaterial({ color: 0x70757a, map: texture, roughness: .95, metalness: .03, bumpMap: texture, bumpScale: .012 });
+    this.asphaltMaterial = new THREE.MeshStandardMaterial({ color: 0x6b7178, map: texture, roughness: .88, metalness: .06, envMapIntensity: .65, bumpMap: texture, bumpScale: .012 });
     const surface=new THREE.Mesh(asphalt,this.asphaltMaterial);surface.receiveShadow=true;this.group.add(surface);
     if(typeof window!=='undefined')void requestWorldAsset('roads_pbr').then(()=>{
       const source=worldAsset('roads_pbr');if(!source)return;
@@ -101,14 +103,121 @@ export class RoadView {
     // Glowing roadside delineator posts (blue on the left, amber on the right).
     this.group.add(this.delineators(path, halfW + 3.7, 0xd3e5df));
     this.group.add(this.delineators(path, -(halfW + 3.7), 0xe0c591));
+
+    // Architectural roadside LED streetlights & nighttime ground illumination pools.
+    this.group.add(this.streetlights(path, halfW));
   }
 
   setWeather(weather: "clear" | "rain" | "fog"): void {
-    this.asphaltMaterial.roughness = weather === "rain" ? .34 : .95;
-    this.asphaltMaterial.color.setHex(weather === "rain" ? 0x535e67 : 0x70757a);
+    this.asphaltMaterial.roughness = weather === "rain" ? .28 : .88;
+    this.asphaltMaterial.metalness = weather === "rain" ? .18 : .06;
+    this.asphaltMaterial.envMapIntensity = weather === "rain" ? 1.35 : .65;
+    this.asphaltMaterial.color.setHex(weather === "rain" ? 0x4c5761 : 0x6b7178);
   }
 
-  setNight(night: boolean): void { for (const material of this.markerMaterials) material.emissiveIntensity = night ? .8 : .025; }
+  setNight(night: boolean): void {
+    for (const material of this.markerMaterials) material.emissiveIntensity = night ? .8 : .025;
+    if (this.lampBulbMaterial) this.lampBulbMaterial.emissiveIntensity = night ? 3.8 : 0.08;
+    if (this.lampPoolMesh) this.lampPoolMesh.visible = night;
+  }
+
+  private streetlights(path: ReferencePath, halfW: number): THREE.Group {
+    const group = new THREE.Group();
+    group.name = "road-streetlights";
+    const spacing = 40;
+    const countPerSide = Math.max(1, Math.floor(path.length / spacing));
+    const total = countPerSide * 2;
+
+    const poleMat = new THREE.MeshStandardMaterial({ color: 0x4c5862, metalness: 0.72, roughness: 0.38 });
+    const bulbMat = new THREE.MeshStandardMaterial({
+      color: 0xfff2d6,
+      emissive: 0xffd584,
+      emissiveIntensity: 0.08,
+      roughness: 0.25,
+      toneMapped: false,
+    });
+    this.lampBulbMaterial = bulbMat;
+
+    const poleGeo = new THREE.CylinderGeometry(0.08, 0.12, 6.6, 8);
+    const armGeo = new THREE.BoxGeometry(0.10, 0.10, 2.2);
+    const headGeo = new THREE.BoxGeometry(0.46, 0.11, 0.85);
+
+    const poles = new THREE.InstancedMesh(poleGeo, poleMat, total);
+    const arms = new THREE.InstancedMesh(armGeo, poleMat, total);
+    const heads = new THREE.InstancedMesh(headGeo, bulbMat, total);
+
+    // Radial warm light pool on the asphalt for nighttime ambiance
+    const poolSize = 64;
+    const poolData = new Uint8Array(poolSize * poolSize * 4);
+    for (let y = 0; y < poolSize; y++) {
+      for (let x = 0; x < poolSize; x++) {
+        const dx = (x / (poolSize - 1)) * 2 - 1;
+        const dy = (y / (poolSize - 1)) * 2 - 1;
+        const r = Math.min(1, Math.hypot(dx, dy));
+        const falloff = Math.pow(1 - r, 2.2);
+        const idx = (y * poolSize + x) * 4;
+        poolData[idx] = 255;
+        poolData[idx + 1] = 216;
+        poolData[idx + 2] = 152;
+        poolData[idx + 3] = Math.round(falloff * 110);
+      }
+    }
+    const poolTex = new THREE.DataTexture(poolData, poolSize, poolSize);
+    poolTex.needsUpdate = true;
+    const poolGeo = new THREE.PlaneGeometry(11.5, 11.5);
+    poolGeo.rotateX(-Math.PI / 2);
+    const poolMat = new THREE.MeshBasicMaterial({
+      map: poolTex,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      toneMapped: false,
+    });
+    const pools = new THREE.InstancedMesh(poolGeo, poolMat, total);
+    pools.visible = false;
+    this.lampPoolMesh = pools;
+
+    const dummy = new THREE.Object3D();
+    let idx = 0;
+    for (let i = 0; i < countPerSide; i++) {
+      const s = i * spacing + 10;
+      for (const side of [-1, 1] as const) {
+        const dPole = side * (halfW + 3.25);
+        const pPole = path.toCartesian(s, dPole);
+        dummy.position.set(pPole.x, 3.3, pPole.y);
+        dummy.rotation.set(0, -pPole.heading, 0);
+        dummy.updateMatrix();
+        poles.setMatrixAt(idx, dummy.matrix);
+
+        const dArm = side * (halfW + 2.25);
+        const pArm = path.toCartesian(s, dArm);
+        dummy.position.set(pArm.x, 6.52, pArm.y);
+        dummy.rotation.set(0, -pArm.heading, 0);
+        dummy.updateMatrix();
+        arms.setMatrixAt(idx, dummy.matrix);
+
+        const dHead = side * (halfW + 1.35);
+        const pHead = path.toCartesian(s, dHead);
+        dummy.position.set(pHead.x, 6.46, pHead.y);
+        dummy.rotation.set(0, -pHead.heading, 0);
+        dummy.updateMatrix();
+        heads.setMatrixAt(idx, dummy.matrix);
+
+        const pPool = path.toCartesian(s, side * Math.max(0, halfW - 1.8));
+        dummy.position.set(pPool.x, 0.042, pPool.y);
+        dummy.rotation.set(0, -pPool.heading, 0);
+        dummy.updateMatrix();
+        pools.setMatrixAt(idx, dummy.matrix);
+        idx++;
+      }
+    }
+    poles.instanceMatrix.needsUpdate = true;
+    arms.instanceMatrix.needsUpdate = true;
+    heads.instanceMatrix.needsUpdate = true;
+    pools.instanceMatrix.needsUpdate = true;
+    group.add(poles, arms, heads, pools);
+    return group;
+  }
 
   private delineators(path: ReferencePath, dOff: number, color: number): THREE.InstancedMesh {
     const spacing = 20; // metres between posts

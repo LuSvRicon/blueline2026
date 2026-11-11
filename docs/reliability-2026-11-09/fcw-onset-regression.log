@@ -1,0 +1,114 @@
+SOURCE 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94 — 214 files
+
+=== aeb-following-test ===
+{
+  cancelled: false,
+  throttle: 0,
+  perception: false,
+  minGap: 3.22,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 0,
+  perception: true,
+  minGap: 8.86,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: false,
+  minGap: 2.89,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: false,
+  throttle: 1,
+  perception: true,
+  minGap: 9.55,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: false,
+  minGap: 3.02,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 0,
+  perception: true,
+  minGap: 3.34,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: false,
+  minGap: 2.89,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+{
+  cancelled: true,
+  throttle: 1,
+  perception: true,
+  minGap: 9.55,
+  collisions: 0,
+  aeb: true,
+  hold: true,
+  speed: 0
+}
+clear: real scenario, 7.60m clearance, 100% brake hold, no contact
+rain: real scenario, 1.70m clearance, 100% brake hold, no contact
+{
+  profile: 'international',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+{
+  profile: 'vietnam',
+  collisionAt: null,
+  lead: null,
+  pressure: 0,
+  aeb: false
+}
+AEB-FOLLOWING PASS — moving lead emergency braking, noisy perception, held throttle and five-minute shortest-headway runs.
+
+=== aeb-audit-test ===
+  [metrics] CCRs sensor stop clearances: 30km/h=3.62m, 50km/h=5.25m, 80km/h=7.23m
+  [metrics] Unavoidable impact (gap=13m, v0=79.2km/h): cold OFF=21.72, ON=18.56, earliest causal reference=18.56 m/s; established OFF=21.72, ON=18.01 m/s
+  [metrics] dt convergence: trigger(60/120/240Hz)=0.350/0.342/0.342s | stopGap=6.444/6.368/6.323m
+AEB-AUDIT-TEST PASS — actuator physics, CCRs/CCRm/same-speed/CCRb, cut-in/out, 3-phase pedestrian, curved road, occlusion, multi-rate/dropout/faults, low-mu/grade/cornering, unavoidable mitigation, arbiter/override, 6-way permutation, 30/60/144 FPS, dt convergence & diagnostic logger.
+
+=== adas-coordination-audit ===
+boulevard/civic/clear          v̄= 37km/h AEB=0 ok
+
+ADAS-COORDINATION-AUDIT PASS — 1 runs × 60s + active multi-ADAS checks.
+SOURCE FINAL 79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94
+
+TEST SUITE PASS — 3 headless checks in 41.0s.

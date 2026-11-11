@@ -68,10 +68,15 @@ export function attachDetailedVehicle(vehicle: THREE.Group, paint: number, prepa
     });
     object.material=multiple?converted:converted[0];
     if(object.name.includes("Turnsignal")) {
-      const geo=object.geometry.index ? object.geometry.toNonIndexed() : object.geometry.clone();
-      const position=geo.getAttribute("position"); geo.clearGroups();
-      for(let i=0;i<position.count;i+=3)geo.addGroup(i,3,(position.getZ(i)+position.getZ(i+1)+position.getZ(i+2))<0?0:1);
-      object.geometry=geo; object.userData.sharedVehicleAsset=false; object.material=signals;
+      let splitGeo=object.geometry.userData.splitTurnsignalGeo as THREE.BufferGeometry|undefined;
+      if(!splitGeo){
+        const built: THREE.BufferGeometry = object.geometry.index ? object.geometry.toNonIndexed() : object.geometry.clone();
+        const position=built.getAttribute("position"); built.clearGroups();
+        for(let i=0;i<position.count;i+=3)built.addGroup(i,3,(position.getZ(i)+position.getZ(i+1)+position.getZ(i+2))<0?0:1);
+        object.geometry.userData.splitTurnsignalGeo=built;
+        splitGeo=built;
+      }
+      object.geometry=splitGeo; object.userData.sharedVehicleAsset=true; object.material=signals;
     }
   });
   const shell=vehicle.userData.shell as THREE.Group;

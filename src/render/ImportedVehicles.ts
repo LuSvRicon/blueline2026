@@ -29,7 +29,9 @@ export function requestImportedVehicle(id:VehicleModelId):Promise<void>{
 }
 
 /** Convert Sketchfab transforms to +X forward, preserve actual vertices/UVs,
- * and batch parts by material and articulated wheel rather than by mesh name. */
+ * and batch parts by material and articulated wheel rather than by mesh name.
+ * The canonical authoring envelope below keeps wheel/cabin rigs stable;
+ * attachDetailedVehicle fits each instance to its simulation body dimensions. */
 export function prepareImportedVehicle(source:THREE.Group,id?:VehicleModelId):THREE.Group{
   source.rotation.y+=Math.PI/2;source.updateMatrixWorld(true);
   const bounds=new THREE.Box3().setFromObject(source,true),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
@@ -100,6 +102,7 @@ export function prepareImportedVehicle(source:THREE.Group,id?:VehicleModelId):TH
     parts.push({geometry,material,box,wheel,window,interior:/interior/i.test(material.name)});
   });
   const root=new THREE.Group();root.name="ImportedVehicle";
+  root.userData.assetDimensions={length:4.6,width:1.9};
   const steering=new THREE.Group();steering.name="asset-steering-wheel";
   const rig=id?IMPORTED_CABINS[id]:undefined;
   if(rig){steering.position.set(...rig.wheel);root.add(steering);}

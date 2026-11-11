@@ -13,9 +13,12 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { THEME } from "./theme.ts";
 import { clamp, smoothTowards } from "../core/math.ts";
 import { COCKPIT_RIG, cockpitCameraPose, cockpitVerticalFov } from "./CockpitRig.ts";
+import { DrivingMirror } from "./DrivingMirror.ts";
 
 export type CameraMode = "chase" | "top" | "cockpit" | "orbit";
 export type SurroundView = "360" | "front" | "rear" | "left" | "right";
+export type GraphicsQuality = "auto" | "low" | "medium" | "ultra";
+export type QualityTier = "low" | "medium" | "ultra";
 
 export class Scene {
   readonly scene = new THREE.Scene();
@@ -24,9 +27,16 @@ export class Scene {
   readonly renderer: THREE.WebGLRenderer;
   private composer: EffectComposer;
   private bloom:UnrealBloomPass;
+  graphicsState: 'ready' | 'lost' | 'restoring' | 'failed' = 'ready';
+  graphicsError = '';
+  onGraphicsStateChange?: (state: Scene['graphicsState']) => void;
+  private environmentTargets: THREE.WebGLRenderTarget[] = [];
+  vehicleLength = 4.7;
+  vehicleWidth = 2;
   cameraMode: CameraMode = "chase";
   timeOfDay: "day" | "night" = "night";
   private hudInset = 0;
+  private floatingHudInset = 0;
   cockpitFov = COCKPIT_RIG.horizontalFov;
   cockpitEyeHeight = COCKPIT_RIG.eye.y;
   cockpitModelRig: {eye:THREE.Vector3;pitch:number;viewYaw?:number}|undefined;
@@ -36,6 +46,11 @@ export class Scene {
   private weather: "clear" | "rain" | "fog" = "clear";
   private terrain?:THREE.Mesh<THREE.PlaneGeometry,THREE.MeshStandardMaterial>;
   private terrainGrid?:THREE.GridHelper;
+  qualityMode: GraphicsQuality = "auto";
+  effectiveQuality: QualityTier = "medium";
+  private lowFpsAccum = 0;
+  private highFpsAccum = 0;
+
   setLandscape(environment:'urban'|'suburban'|'rural'):void{
     this.terrain?.material.color.setHex(environment==='rural'?0x596749:environment==='suburban'?0x555e4d:0x30383b);
     if(this.terrainGrid)this.terrainGrid.visible=false;
@@ -44,15 +59,76 @@ export class Scene {
   setCockpitFov(degrees: number): void { this.cockpitFov = clamp(degrees, 75, 125); this.projectedCameraMode = null; }
   setCabinLook(yaw: number, pitch = 0): void { this.cabinLookTarget = { yaw: clamp(yaw, -1.3, 1.3), pitch: clamp(pitch, -.3, .25) }; }
 
-  private setMaximumQuality(): void {
-    const ratio = Math.min(window.devicePixelRatio, 2);
+  setQualityMode(mode: GraphicsQuality): void {
+    this.qualityMode = mode;
+    this.lowFpsAccum = 0;
+    this.highFpsAccum = 0;
+    try {
+      localStorage.setItem("blueline.setting.quality", mode);
+    } catch { /* ignore storage errors */ }
+    if (mode === "auto") {
+      const isMobile = typeof window !== "undefined" && (window.innerWidth < 840 || window.innerHeight < 520);
+      this.applyQualityTier(isMobile ? "low" : "medium");
+    } else {
+      this.applyQualityTier(mode);
+    }
+  }
+
+  stepAdaptiveQuality(fps: number, dt: number): void {
+    if (this.qualityMode !== "auto" || !Number.isFinite(fps) || dt <= 0) return;
+    const isMobile = typeof window !== "undefined" && (window.innerWidth < 840 || window.innerHeight < 520);
+    if (fps < 46) {
+      this.lowFpsAccum += dt;
+      this.highFpsAccum = 0;
+      if (this.lowFpsAccum > 1.3) {
+        this.lowFpsAccum = 0;
+        if (this.effectiveQuality === "ultra") this.applyQualityTier("medium");
+        else if (this.effectiveQuality === "medium") this.applyQualityTier("low");
+      }
+    } else if (fps > 57.5 && !isMobile) {
+      this.highFpsAccum += dt;
+      this.lowFpsAccum = Math.max(0, this.lowFpsAccum - dt * 0.5);
+      if (this.highFpsAccum > 4.5) {
+        this.highFpsAccum = 0;
+        if (this.effectiveQuality === "low") this.applyQualityTier("medium");
+        else if (this.effectiveQuality === "medium") this.applyQualityTier("ultra");
+      }
+    } else {
+      this.lowFpsAccum = Math.max(0, this.lowFpsAccum - dt * 0.5);
+      this.highFpsAccum = Math.max(0, this.highFpsAccum - dt * 0.5);
+    }
+  }
+
+  private applyQualityTier(tier: QualityTier): void {
+    this.effectiveQuality = tier;
+    const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+    const ratio = tier === "ultra" ? Math.min(dpr, 2) : tier === "medium" ? Math.min(dpr, 1.35) : 1;
     this.renderer.setPixelRatio(ratio);
     this.composer.setPixelRatio(ratio);
-    const samples=this.renderer.capabilities.isWebGL2?Math.min(this.renderer.capabilities.maxSamples,4):0;
-    for(const target of [this.composer.renderTarget1,this.composer.renderTarget2]){
-      if(target.samples!==samples){target.dispose();target.samples=samples;}
+
+    const maxSamples = this.renderer.capabilities.isWebGL2 ? this.renderer.capabilities.maxSamples : 0;
+    const samples = tier === "ultra" ? Math.min(maxSamples, 4) : tier === "medium" ? Math.min(maxSamples, 2) : 0;
+    for (const target of [this.composer.renderTarget1, this.composer.renderTarget2]) {
+      if (target.samples !== samples) {
+        target.dispose();
+        target.samples = samples;
+      }
     }
-    this.renderer.shadowMap.enabled=true;
+
+    const shadowsOn = tier !== "low";
+    this.renderer.shadowMap.enabled = shadowsOn;
+    this.renderer.shadowMap.type = tier === "ultra" ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap;
+    if (this.key) {
+      this.key.castShadow = shadowsOn;
+      const mapDim = tier === "ultra" ? 2048 : 1024;
+      if (shadowsOn && (this.key.shadow.mapSize.x !== mapDim || this.key.shadow.mapSize.y !== mapDim)) {
+        this.key.shadow.mapSize.set(mapDim, mapDim);
+        this.key.shadow.map?.dispose();
+        this.key.shadow.map = null;
+      }
+    }
+
+    this.camera.userData.mirrorIntervalMs = tier === "ultra" ? 1000 / 30 : tier === "medium" ? 1000 / 22 : 1000 / 15;
     this.onResize();
   }
 
@@ -85,6 +161,30 @@ export class Scene {
     this.camera.position.copy(this.camPos);
 
     this.pmrem = new THREE.PMREMGenerator(this.renderer);
+    this.setupEnvironments();
+
+    this.setupLights();
+    this.setupGround();
+    this.setupRain();
+    this.setupOrbitControls(canvas);
+
+    // Post-processing chain: render -> bloom -> output(color-correct).
+    const target=new THREE.WebGLRenderTarget(window.innerWidth,window.innerHeight,{type:THREE.HalfFloatType});
+    target.samples=this.renderer.capabilities.isWebGL2?Math.min(4,this.renderer.capabilities.maxSamples):0;
+    this.composer = new EffectComposer(this.renderer,target);
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), .4, .5, .92);
+    this.composer.addPass(bloom);
+    this.bloom=bloom;
+    this.composer.addPass(new OutputPass());
+    this.surroundCamera.userData.skipMirrorPass = true;
+    this.setQualityMode('ultra');
+    canvas.addEventListener('webglcontextlost', event => this.handleContextLost(event));
+    canvas.addEventListener('webglcontextrestored', () => this.handleContextRestored());
+    window.addEventListener("resize", () => this.onResize());
+  }
+
+  private setupEnvironments(): void {
     this.envNight = this.makeEnvironment(
       [
         [0, "#05070b"],
@@ -105,30 +205,49 @@ export class Scene {
       ],
       { x: 360, y: 48, r: 46, color: "rgba(255, 250, 232, 0.95)" },
     );
-    this.scene.environment = this.envNight;
+    this.scene.environment = this.timeOfDay === 'day' ? this.envDay : this.envNight;
+  }
 
-    this.setupLights();
-    this.setupGround();
-    this.setupRain();
-    this.setupOrbitControls(canvas);
+  private handleContextLost(event: Event): void {
+    event.preventDefault();
+    this.graphicsState = 'lost';
+    this.onGraphicsStateChange?.(this.graphicsState);
+  }
 
-    // Post-processing chain: render -> bloom -> output(color-correct).
-    const target=new THREE.WebGLRenderTarget(window.innerWidth,window.innerHeight,{type:THREE.HalfFloatType});
-    target.samples=this.renderer.capabilities.isWebGL2?Math.min(4,this.renderer.capabilities.maxSamples):0;
-    this.composer = new EffectComposer(this.renderer,target);
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-    const bloom = new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.4, // strength — subtle glow, keep lane lines crisp not blown out
-      0.5, // radius
-      0.92, // threshold — only the brightest (emissive) things bloom
-    );
-    this.composer.addPass(bloom);
-    this.bloom=bloom;
-    this.composer.addPass(new OutputPass());
-    this.setMaximumQuality();
+  private handleContextRestored(): void {
+    this.graphicsState = 'restoring';
+    this.onGraphicsStateChange?.(this.graphicsState);
+    try {
+      // Renderer restores its GL state; generated lighting/post-processing
+      // targets must also be rebuilt, rather than leaving a black cabin.
+      this.composer.reset();
+      for (const target of this.environmentTargets) target.dispose();
+      this.environmentTargets = [];
+      this.scene.environment = null;
+      this.pmrem.dispose();
+      this.pmrem = new THREE.PMREMGenerator(this.renderer);
+      this.setupEnvironments();
+      this.applyQualityTier(this.effectiveQuality);
+      this.graphicsError = '';
+      this.graphicsState = 'ready';
+    } catch (error) {
+      // A partial day/night rebuild must not retain disposed or half-created
+      // lighting targets. Reload starts from a clean resource state.
+      for (const target of this.environmentTargets) target.dispose();
+      this.environmentTargets = [];
+      this.scene.environment = null;
+      this.pmrem.dispose();
+      this.graphicsState = 'failed';
+      this.graphicsError = error instanceof Error ? error.message : String(error);
+    }
+    this.onGraphicsStateChange?.(this.graphicsState);
+  }
 
-    window.addEventListener("resize", () => this.onResize());
+  testGraphicsRecovery(): boolean {
+    if (this.graphicsState !== 'ready' || !this.renderer.getContext().getExtension('WEBGL_lose_context')) return false;
+    this.renderer.forceContextLoss();
+    setTimeout(() => this.renderer.forceContextRestore(), 650);
+    return true;
   }
 
   /** Vertical navy gradient background — the Tesla "sky", never pure black. */
@@ -180,9 +299,13 @@ export class Scene {
     const texture = new THREE.CanvasTexture(canvas);
     texture.mapping = THREE.EquirectangularReflectionMapping;
     texture.colorSpace = THREE.SRGBColorSpace;
-    const target = this.pmrem.fromEquirectangular(texture);
-    texture.dispose();
-    return target.texture;
+    try {
+      const target = this.pmrem.fromEquirectangular(texture);
+      this.environmentTargets.push(target);
+      return target.texture;
+    } finally {
+      texture.dispose();
+    }
   }
 
   private setupLights(): void {
@@ -370,6 +493,10 @@ export class Scene {
     if (cameraChanged) {
       this.camera.fov = this.cameraMode === "cockpit" ? cockpitVerticalFov(this.cockpitFov, this.camera.aspect) : 55;
       this.camera.near = this.cameraMode === "cockpit" ? .04 : .1;
+      if (this.floatingHudInset > 0) {
+        const h = Math.max(160, window.innerHeight - this.hudInset);
+        this.camera.setViewOffset(window.innerWidth, h, 0, this.floatingHudInset * (this.cameraMode === "cockpit" ? .2 : .5), window.innerWidth, h);
+      }
       this.camera.updateProjectionMatrix();
       this.projectedCameraMode = this.cameraMode;
       this.renderer.domElement.classList.toggle("camera-orbit-enabled", this.cameraMode === "orbit");
@@ -390,7 +517,8 @@ export class Scene {
       // Behind and above, aimed just ahead of the car: the ego sits in the
       // lower third of the frame, clear of the HUD speed cluster, with the road
       // sweeping away toward the horizon.
-      targetPos = new THREE.Vector3(egoX - fx * 8.5, 3.5, egoY - fz * 8.5);
+      const follow = 8.5 * Math.sqrt((this.vehicleLength ?? 4.7) / 4.7);
+      targetPos = new THREE.Vector3(egoX - fx * follow, 3.5, egoY - fz * follow);
       targetLook = new THREE.Vector3(egoX + fx * 2.5, .9, egoY + fz * 2.5);
     } else if (this.cameraMode === "top") {
       targetPos = new THREE.Vector3(egoX - fx * 2, 60, egoY - fz * 2);
@@ -433,14 +561,28 @@ export class Scene {
   }
 
   render(): void {
-    this.composer.render();
+    if (this.graphicsState && this.graphicsState !== 'ready') return;
+    DrivingMirror.beginMainPass();
+    this.camera.userData.skipMirrorPass = this.cameraMode !== "cockpit";
+    this.camera.userData.staggerMirrors = true;
+    const useBloomComposer =
+      this.effectiveQuality === "ultra" ||
+      (this.effectiveQuality === "medium" && this.timeOfDay === "night");
+    if (useBloomComposer) {
+      this.composer.render();
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 
   /** Reserve actual viewport space for the cockpit instead of covering the road. */
-  setHudInset(pixels: number): void {
+  setHudInset(pixels: number, floating = false): void {
     const next = Math.max(0, Math.min(pixels, window.innerHeight - 160));
-    if (Math.abs(next - this.hudInset) < 1) return;
-    this.hudInset = next;
+    const reserved = floating ? 0 : next;
+    const offset = floating ? next : 0;
+    if (Math.abs(reserved - this.hudInset) < 1 && Math.abs(offset - this.floatingHudInset) < 1) return;
+    this.hudInset = reserved;
+    this.floatingHudInset = offset;
     this.onResize();
   }
 
@@ -452,6 +594,7 @@ export class Scene {
     yaw: number,
     view: SurroundView,
   ): void {
+    if (this.graphicsState && this.graphicsState !== 'ready') return;
     const rect = viewport.getBoundingClientRect();
     if (rect.width < 2 || rect.height < 2) return;
 
@@ -460,6 +603,7 @@ export class Scene {
     const rightX = -forwardZ;
     const rightZ = forwardX;
     const camera = this.surroundCamera;
+    camera.userData.skipMirrorPass = true;
     camera.aspect = rect.width / rect.height;
     camera.fov = view === "360" ? 68 : 74;
     camera.updateProjectionMatrix();
@@ -472,11 +616,11 @@ export class Scene {
       camera.up.set(0, 1, 0);
       // Mount at the front bumper so the image shows the roadway ahead rather
       // than the host vehicle's bonnet and rear body.
-      camera.position.set(egoX + forwardX * 2.35, 1.25, egoZ + forwardZ * 2.35);
+      camera.position.set(egoX + forwardX * (this.vehicleLength ?? 4.7) / 2, 1.25, egoZ + forwardZ * (this.vehicleLength ?? 4.7) / 2);
       camera.lookAt(egoX + forwardX * 38, 1.25, egoZ + forwardZ * 38);
     } else if (view === "rear") {
       camera.up.set(0, 1, 0);
-      camera.position.set(egoX - forwardX * 2.35, 1.25, egoZ - forwardZ * 2.35);
+      camera.position.set(egoX - forwardX * (this.vehicleLength ?? 4.7) / 2, 1.25, egoZ - forwardZ * (this.vehicleLength ?? 4.7) / 2);
       camera.lookAt(egoX - forwardX * 38, 1.25, egoZ - forwardZ * 38);
     } else {
       const side = view === "left" ? -1 : 1;
@@ -521,10 +665,16 @@ export class Scene {
     const w = window.innerWidth;
     const h = Math.max(160, window.innerHeight - this.hudInset);
     this.camera.aspect = w / h;
+    // Keep the driver/ego above floating controls while drawing the world
+    // across the complete screen, including the transparent gaps below.
+    if (this.floatingHudInset > 0) this.camera.setViewOffset(w, h, 0, this.floatingHudInset * (this.cameraMode === "cockpit" ? .2 : .5), w, h);
+    else this.camera.clearViewOffset();
     if (this.cameraMode === "cockpit") this.camera.fov = cockpitVerticalFov(this.cockpitFov, this.camera.aspect);
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
     this.composer.setSize(w, h);
+    const bloomScale = this.effectiveQuality === "ultra" ? 0.75 : 0.5;
+    this.bloom.resolution.set(Math.max(1, Math.round(w * bloomScale)), Math.max(1, Math.round(h * bloomScale)));
   }
 }
 

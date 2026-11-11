@@ -1,0 +1,861 @@
+{
+  "sha256": "79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94",
+  "files": [
+    {
+      "path": "index.html",
+      "sha256": "df9743a70f1b484125c0cf3574c70ca4e03374d46e6db361af2ebbaf24297a55"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "5f939e4075e1d15f40ae0a7428dace5db4b4a2b406385c38f7d7503c28995f9c"
+    },
+    {
+      "path": "package.json",
+      "sha256": "67c20ed2ddb430fdef492c419a1d55e84f6e219e1083b8d2d3e4c99dfad8ea1f"
+    },
+    {
+      "path": "public/models/car-concept/CarConcept.glb",
+      "sha256": "c272098089d78c5cd9fd9f24ff50ee8acf8d932c55f2d55fc10adb6c8998966b"
+    },
+    {
+      "path": "public/models/car-concept/LICENSE.txt",
+      "sha256": "c8041334a99cb48852b2139253cbde5f8ac87e27f124aed51223e0d5bf0080eb"
+    },
+    {
+      "path": "public/models/car-concept/SOURCE.md",
+      "sha256": "af5f76ead54a5039288924f37081d6e1fcd5ccc5b2628faedb926325a73099cd"
+    },
+    {
+      "path": "public/models/car-concept/TRADEMARKS.txt",
+      "sha256": "2ea9821de870cf8d3faaa115ffc47f56632bf9f98d54d2ac1ce61592040b765c"
+    },
+    {
+      "path": "public/models/imported/ATTRIBUTION.json",
+      "sha256": "3a502117a837204f629e14eef3fea28150ffad4f89f12f3b5a06ec65b63dd65a"
+    },
+    {
+      "path": "public/models/imported/civic.glb",
+      "sha256": "4e290998d72f38b0375aaeeec8796048eb42348ae2aee52be0824fbf3c363de8"
+    },
+    {
+      "path": "public/models/imported/everest.glb",
+      "sha256": "553ee8f6b19533002adce8c1f19c0371978581f2277e32f6f4ae0d999c9992da"
+    },
+    {
+      "path": "public/models/imported/santafe.glb",
+      "sha256": "a3dbece1e24f7c052045433f0342a1751f5604b4973b06f520311c89333fbe8a"
+    },
+    {
+      "path": "public/models/imported/vf9.glb",
+      "sha256": "4561cdbd269e16cb1c1dcef20bea3b681da0031be19ae4deb41c2b81f1758ed3"
+    },
+    {
+      "path": "public/models/world/ATTRIBUTION.json",
+      "sha256": "b3fca6e4ef8c285c0d58ed2d788063a384fb4bdbbd05dec6b77c414378f28fb7"
+    },
+    {
+      "path": "public/models/world/bus.glb",
+      "sha256": "61abe5649a2162a4ae725207c4ae001393966c86de1a4fc5193734501d526497"
+    },
+    {
+      "path": "public/models/world/hanoi.glb",
+      "sha256": "1f3c158904222b04709bd043c348ffcd82e3488f04544bba15feee5c0be551ad"
+    },
+    {
+      "path": "public/models/world/motorcycle.glb",
+      "sha256": "1475604a32941339d74a7262d12eafae940328aa81a380a906f17b4a6b3fccb7"
+    },
+    {
+      "path": "public/models/world/ola.glb",
+      "sha256": "1ec1d9e4aa7d6c9fbbc07c0284b8e554cae96f62ea331c80288c07af4c5b10d2"
+    },
+    {
+      "path": "public/models/world/roads_city.glb",
+      "sha256": "a99c859af846fce372b81e614c41405062bd27ef11fcf7b84ce7f035f512b86e"
+    },
+    {
+      "path": "public/models/world/roads_modular.glb",
+      "sha256": "2b00c667fb54bd6025103845f098743c83cd364c3c1d04c72eb33d054038842e"
+    },
+    {
+      "path": "public/models/world/roads_pbr.glb",
+      "sha256": "b18236a16a9f8a7c77ea39287380736dcd7d0cd82c3c3b24eea9c27e54a492f5"
+    },
+    {
+      "path": "public/models/world/tata.glb",
+      "sha256": "fe05dcd2d94de1822b447fcda2a5a0b875bf3811978d6454e3b42ea948936b64"
+    },
+    {
+      "path": "scripts/acc-aeb-audit-20261108.ts",
+      "sha256": "7910a93abb0f3b4a7dd2ce5ec97a6e3bee47780d4ed13d6886418c41f7a3bb53"
+    },
+    {
+      "path": "scripts/acc-aeb-handoff-test.ts",
+      "sha256": "ad034c2d9f5902e0d5f6dcb2727e2bbfac105c87e1dda656c408f2086311cc68"
+    },
+    {
+      "path": "scripts/acc-curve-recovery-test.ts",
+      "sha256": "d6230689fee2638e0897de9ab7b325c9582d16c3a76f38c97da84029fd598b4a"
+    },
+    {
+      "path": "scripts/adas-audit-support.ts",
+      "sha256": "04419be43e1b952ce15658f5ee01fb329ced08d85327e5343a13418f886569e1"
+    },
+    {
+      "path": "scripts/adas-brake-test.ts",
+      "sha256": "4d708074b80a6c5a06e53102b2196ad65848fcbe0ce16958977dda0b82c4377c"
+    },
+    {
+      "path": "scripts/adas-coordination-audit.ts",
+      "sha256": "8b79b76adb56c81375bff94961746d196c635f5ae5ff4b9e7d2d1b31bb601246"
+    },
+    {
+      "path": "scripts/adas-endurance-test.ts",
+      "sha256": "90cc5e63414cc075c6d603bc9b2fe638b23410a8af67a72faf3ac1a534b71fb7"
+    },
+    {
+      "path": "scripts/adas-features-test.ts",
+      "sha256": "c80d8d5fddf72bc0454b7b08985959dd7d21de51ea2409dba4760c0ccbf26a2a"
+    },
+    {
+      "path": "scripts/adas-motorway-domain-test.ts",
+      "sha256": "70048b4b25e071e0da3e0f73e26608a89702d6f5489688a4a7257da16502769f"
+    },
+    {
+      "path": "scripts/adas-noisy-sequence-test.ts",
+      "sha256": "dd335ec62a42537ea00b1b0ce7284d2fb0f248a29455b0420df2eaad33e4cc48"
+    },
+    {
+      "path": "scripts/adas-reference-test.ts",
+      "sha256": "bd46299b1d50efd51b395cbd5cac626cd6d9f02e40737478cb582f57e6348f02"
+    },
+    {
+      "path": "scripts/adas-regression-test.ts",
+      "sha256": "f41706e7fcbad650618e39ccda96f70485e345bc4282ef9ead8798adc0bbc8cf"
+    },
+    {
+      "path": "scripts/adas-runtime-audit-test.ts",
+      "sha256": "6d6022a83e919d3050801ce828e66b63194b37536330ce89f5232ad8de6f1e7f"
+    },
+    {
+      "path": "scripts/adas-test.ts",
+      "sha256": "3346fe75489c2789feb557567b7cccb53dcbe03270f350b0d0b661865476dfbd"
+    },
+    {
+      "path": "scripts/aeb-audit-test.ts",
+      "sha256": "e13dfccbf860885dd91f5c6f3a57ff9f970f0e313296273bdc2b62052806be30"
+    },
+    {
+      "path": "scripts/aeb-deep-physics-test.ts",
+      "sha256": "970be7c86425abc4e6da670ef315731f8c2bcefb386a1b3f52e0b184c53c03ce"
+    },
+    {
+      "path": "scripts/aeb-following-test.ts",
+      "sha256": "524f459d751b3f1bfa4fd1d9738a824468453273f274e2bce3e1f4aff086905b"
+    },
+    {
+      "path": "scripts/alc-all-speeds-test.ts",
+      "sha256": "832fd40bdc38cf7a9d32abcdeae51f3ae39f4799f3c3dd3d49db948883cb5b5e"
+    },
+    {
+      "path": "scripts/alc-indicator-repeat-test.ts",
+      "sha256": "ad2007dc6852cca975f6b052a976a76e56167967cded11b375b3bb4f29b9a69b"
+    },
+    {
+      "path": "scripts/all-scenarios-smoke.ts",
+      "sha256": "bdd214ff74175d7b3f12a8e1c4237df2bc5f520ba1d02916a9c1ea8564d09902"
+    },
+    {
+      "path": "scripts/audio-runtime-test.ts",
+      "sha256": "b4539dc4ecca72b00b49630ff6926a110128564d5c8ef1a5321a9c3493f78e53"
+    },
+    {
+      "path": "scripts/cabin-look-test.ts",
+      "sha256": "bbc0dd1ad26f596c4ce539e8d7337e462ce3d59046155055b7e9085b2f44d81e"
+    },
+    {
+      "path": "scripts/cockpit-view-test.ts",
+      "sha256": "a75bd426744f88f0a4e15086ae19dae580086af38ceef9b0dd6e72b757f6b3e8"
+    },
+    {
+      "path": "scripts/detailed-vehicle-test.ts",
+      "sha256": "9c5a5699014b30729805a090f13327b9f9fa2a0a6a2fb63e14ddc9ceb5977c62"
+    },
+    {
+      "path": "scripts/drive-input-test.ts",
+      "sha256": "69fa21b3ed4ca35111d2440378d236b60f03ee2a088246ea1ed4872222eb48ac"
+    },
+    {
+      "path": "scripts/driver-feedback-test.ts",
+      "sha256": "a61e0053d75bba76a0e4144fef03d6f49acaaf759d5ffecf32ce78281fe167f7"
+    },
+    {
+      "path": "scripts/driving-systems-test.ts",
+      "sha256": "836d5189d0a641d19e019a4bae320cbf5197abbee37f4d030cad9ce02765d737"
+    },
+    {
+      "path": "scripts/dynamics-collision-test.ts",
+      "sha256": "d272c700d8faba8b96d9bbc95fedf155f7f5efe26dfea2050b0f1673f2b53c40"
+    },
+    {
+      "path": "scripts/emergency-shoulder-test.ts",
+      "sha256": "1aa6e1a3e759aaa164efc5932ac0f44f0c40d60ce9bdcf5d7126a0cf06185708"
+    },
+    {
+      "path": "scripts/evo-test.ts",
+      "sha256": "31ae10e2bb8818a18bd3995eb8a44f89ae481217f6ea56e1fe2272138e7044fa"
+    },
+    {
+      "path": "scripts/extended-adas-test.ts",
+      "sha256": "de5af88e2591b499ad11f4984ebd1f1258fa5ecbd03e11d35b41cf92e27a1a70"
+    },
+    {
+      "path": "scripts/extended-audit-20261108.ts",
+      "sha256": "d7b9e34c16110bd3628849a4b5c4627aeacb5c944325691b50c92483b0e09797"
+    },
+    {
+      "path": "scripts/graphics-recovery-test.ts",
+      "sha256": "258bd4b0c81abeb1ec08820d9afa92b1fb4767510f5776268454326cbbfc5347"
+    },
+    {
+      "path": "scripts/handling-traffic-test.ts",
+      "sha256": "654d508e3ce2c89e1aa6981372c306a15e9beb2319f094b9c4fe181f0e3181aa"
+    },
+    {
+      "path": "scripts/high-speed-lane-test.ts",
+      "sha256": "707fd4ae840f21065e581c4a64d8a1f53035e6d69f80f72d1fab3316a6f2ed05"
+    },
+    {
+      "path": "scripts/imported-cabin-test.ts",
+      "sha256": "eb36993d5ad18a5c83213476f84c3a7b9eb27a23e89a03ad9df9bcdbee00ac1e"
+    },
+    {
+      "path": "scripts/imported-vehicles-test.ts",
+      "sha256": "e1c25aa97ee7a53861118531155b7268b0d2e04ef250f0eb0b356f4578832add"
+    },
+    {
+      "path": "scripts/inspect-cabin.mjs",
+      "sha256": "7e0224a663d0da509af37fb164a2a65127420a89ff3d483a8c29d102c52cfd45"
+    },
+    {
+      "path": "scripts/inspect-vehicle-assets.mjs",
+      "sha256": "4e663bf0bd5ebfcf3aad08551914d2a9aa6623898cb5a3df3da51c4c6f1b466b"
+    },
+    {
+      "path": "scripts/inspect-world-assets.mjs",
+      "sha256": "d20525c3243c67f1041524745ffa2211970b59ffcedc74281c0e8fe8931cee90"
+    },
+    {
+      "path": "scripts/isa-limit-audit-20261108.ts",
+      "sha256": "9efd517abd1b9287f4093ebe07278fed37cb45887d600057c0df779ea706a4d4"
+    },
+    {
+      "path": "scripts/lateral-audit-20261108.ts",
+      "sha256": "5cf9026090df11dec3e415d1bed1fca61a4067d064da0578137ecfe3a38a8dd3"
+    },
+    {
+      "path": "scripts/learn-test.ts",
+      "sha256": "0479e83542ab41ee7aa51fac4426ad2881fefac7009ee03110e74200dfc6640b"
+    },
+    {
+      "path": "scripts/lights-test.ts",
+      "sha256": "b5de9d3c8c138e9bad4bbe658f83b4d4a78523090d106d0acf33d570c4878115"
+    },
+    {
+      "path": "scripts/maps-traffic-test.ts",
+      "sha256": "d992ecd5e557288c243e3202b322531b3296bb9d6e665c3e2da1f6d6444fd7de"
+    },
+    {
+      "path": "scripts/mirror-refresh-test.ts",
+      "sha256": "3935999d386d67398591c9575c4cd0280996678c341788dccc10047d730702ce"
+    },
+    {
+      "path": "scripts/network-matrix-test.ts",
+      "sha256": "cb9e8be63e791d5e87450e96e7e2890e5169db33d5b074142427ce4f855da592"
+    },
+    {
+      "path": "scripts/optimize-world-assets.mjs",
+      "sha256": "f30986493a584eddbcbfe0e5ab9b3726f1b3a8098f62d8f45518561f9d19b998"
+    },
+    {
+      "path": "scripts/parking-assist-test.ts",
+      "sha256": "bc4771535286d11d1d09e9b784f58145e3423e673c10086b2098d370ed602103"
+    },
+    {
+      "path": "scripts/pedal-console-input-test.ts",
+      "sha256": "ead62189b1767421cc1b8b2a8162a3638d1d84acc854b50b3970833ed4ae2120"
+    },
+    {
+      "path": "scripts/planner-rear-clearance-test.ts",
+      "sha256": "de362365d8152e1026e2763426cb0c0c4223d2b74d7f4b78c71590911571a168"
+    },
+    {
+      "path": "scripts/probe.mjs",
+      "sha256": "e3e1683a7f218fe098b7d8f2e5d10e9921a9ae740cff86f2fcb655a6894ca38b"
+    },
+    {
+      "path": "scripts/projection-cache-test.ts",
+      "sha256": "b0818862160252fdc7c47a7f925de66970e389351322dc28ea0580ae2d345dad"
+    },
+    {
+      "path": "scripts/record-replay-test.ts",
+      "sha256": "8b8d9fcb7b4dbdfc0d01aea5e82f2ba28fae851a81078e0c115a1e53e3bb2bdf"
+    },
+    {
+      "path": "scripts/render-geometry-test.ts",
+      "sha256": "6cd5f10b5933a8c0b4ed248cb6d45f24fec9dee59059dedee50f5755654a3734"
+    },
+    {
+      "path": "scripts/render-motion-test.ts",
+      "sha256": "4f66fa763b9612b3e19623a7c120bc21c86aeb0be6e62737731317435060adf6"
+    },
+    {
+      "path": "scripts/render-runtime-test.ts",
+      "sha256": "d1c46ddb44f6e9216f58bf34450a52c50ac095022748d198ee9dfc778bf7121c"
+    },
+    {
+      "path": "scripts/road-profiles-test.ts",
+      "sha256": "77cd9f12dfcd00dcd2a62b0e3d8dd99025dba925f38acaa8316043b4005fb1ca"
+    },
+    {
+      "path": "scripts/road-sign-test.ts",
+      "sha256": "af4f734792b9ac310f29e908b995ccb31345ad5c51a705c0b6aa34d96236fc11"
+    },
+    {
+      "path": "scripts/runtime-performance-test.ts",
+      "sha256": "990cf9b07e54d122e0fbba9b5c692fbc111a3bf914be195aa082a5186abaabda"
+    },
+    {
+      "path": "scripts/runtime-recovery-test.ts",
+      "sha256": "0624196ec495c3883165395f8020b42f34c71b7eb407de75384d813dd1e6d99b"
+    },
+    {
+      "path": "scripts/scenario-lab-test.ts",
+      "sha256": "69182fa4ff374f61de952e9445b33e29e46c172b7c9c2837ccd5c2b2772b7f61"
+    },
+    {
+      "path": "scripts/scenario-matrix-test.ts",
+      "sha256": "553fdeb30c1a7050e18fd90dec495c541c1c0789140f7fe97767a5411ff7a62a"
+    },
+    {
+      "path": "scripts/sensor-latency-pipeline-test.ts",
+      "sha256": "c94dab24ec6794ad7a77a125820ae7b47e297c14f082c59f2ac83071c29e5e16"
+    },
+    {
+      "path": "scripts/sensor-visibility-test.ts",
+      "sha256": "c85ec32e9b118b3c662c13a4dbe03e6c0cb7f0ce1d07268a4b993a9bb7ee5998"
+    },
+    {
+      "path": "scripts/session-timeline-test.ts",
+      "sha256": "5908743122c1836faa834f74b8f2ea6aaa8e4253948059ccee23ca80f361dac2"
+    },
+    {
+      "path": "scripts/smoke.ts",
+      "sha256": "fd81c39a8d4e204956492280714701b48f83cf9fb9251f06eab2e94ca4980a31"
+    },
+    {
+      "path": "scripts/source-fingerprint.mjs",
+      "sha256": "cea614af70dae5f84596ecb1f66a3b1866c0b91602b8cc7663fa18911324b399"
+    },
+    {
+      "path": "scripts/spatial-scenery-test.ts",
+      "sha256": "89548b08ac86f95ea5d3cc5d708ab0a775f95ad1a6451a9ab982ac5216dbc980"
+    },
+    {
+      "path": "scripts/static-traffic-adas-test.ts",
+      "sha256": "f766b6d3c905de8cb62641bd7812a42024fd8f9a9af11429424c3b9b8f9009e3"
+    },
+    {
+      "path": "scripts/test.mjs",
+      "sha256": "8ce55d9709dca2a1de09b20f21d92c4582646d470304fb53006dff8717491058"
+    },
+    {
+      "path": "scripts/touch-steering-test.ts",
+      "sha256": "8ccf81a67b7aaacc63f0515d875c63d80438529be71a6793e61edafd8774534c"
+    },
+    {
+      "path": "scripts/traffic-flow-test.ts",
+      "sha256": "c916237c402a936c64e6a2bb1622390e1c54fc182db18c76955787fca3f95348"
+    },
+    {
+      "path": "scripts/traffic-profile-test.ts",
+      "sha256": "048b6bb9fa281d91aaee277e7b8c61134f7cfb18ac9b57915ed80766d845e030"
+    },
+    {
+      "path": "scripts/vehicle-envelope-test.ts",
+      "sha256": "33747b2c9fa19915d841ac323f5034ff8f2c2d3aa1658eb7db92e64cb30d1652"
+    },
+    {
+      "path": "scripts/vietnam-scenario-smoke.ts",
+      "sha256": "77f5cd79a61a6964cc4ff4995a87434f92325daae5a7016f84020b84c1395b98"
+    },
+    {
+      "path": "scripts/vietnam-scenarios-test.ts",
+      "sha256": "90c0f1de259860f3a5f346384faf5feef0d9e75d37473d5af7faaf63ae734ecf"
+    },
+    {
+      "path": "scripts/view-quality-test.ts",
+      "sha256": "042b9d8eb87b94607979435ef634ecec850c1b80f5476574dcba198bfcf732b8"
+    },
+    {
+      "path": "scripts/weather-test.ts",
+      "sha256": "ceb106daa75f94012c798f3c4188f1b7c1a399750bf9903cff33995ccde34cbe"
+    },
+    {
+      "path": "scripts/world-assets-test.ts",
+      "sha256": "02628a6f4f2cc0f020b630d46802edc297d2b3ad2788cd29b679cdd9cc551e18"
+    },
+    {
+      "path": "src/audio/SimulationAudio.ts",
+      "sha256": "238e10946367194d8aea406dd693d769f9e1ac502f5bc257836e4186ca8d7dd6"
+    },
+    {
+      "path": "src/behavior/BehaviorPlanner.ts",
+      "sha256": "9621e7bc23cf692293ede4028726d747c306a17a325220828fd015561b8ef730"
+    },
+    {
+      "path": "src/control/PID.ts",
+      "sha256": "365d876843448e5f2a38bacf38d078165e1f44c75f50df46bdbffc6a2caf4c92"
+    },
+    {
+      "path": "src/control/PurePursuit.ts",
+      "sha256": "30eb28af1c9c16b0c68889f2cd363f0c4f140cd8611ba144618c4c7a277fea6c"
+    },
+    {
+      "path": "src/control/Stanley.ts",
+      "sha256": "51a45571f8848eb5d707e7b2ad55940faf4e054d04b940673615fad9f60cbef6"
+    },
+    {
+      "path": "src/core/collision.ts",
+      "sha256": "eda2dfde35f0ed7db737079454944492dcd78f8941f90e8c61833675f8d4bf15"
+    },
+    {
+      "path": "src/core/linalg.ts",
+      "sha256": "20a0d5fd35b7bab91323bd8411d58be9699230c5ff50f094ecbab24aaa4f8f3d"
+    },
+    {
+      "path": "src/core/mat.ts",
+      "sha256": "4eac7891c3f1ced618c44035d411d2c0e11c136e9d1486057c30288d2dca0e27"
+    },
+    {
+      "path": "src/core/math.ts",
+      "sha256": "92081e6af1d057a7eaa6cf263a91479c76d0e843bfc9f9790898d086b56dc806"
+    },
+    {
+      "path": "src/core/poly.ts",
+      "sha256": "7e05dcad5026a6c6453dea2a1fd2ed60c5acdae74167343f5117519ab647fbc6"
+    },
+    {
+      "path": "src/core/rng.ts",
+      "sha256": "ca6cb8c7891d6f73595145ccd82890992d979effbe1609ae212db6a4475f8685"
+    },
+    {
+      "path": "src/core/viewProjection.ts",
+      "sha256": "b2a9cbfe74e24b78c3b90e29bf50aa05cba5902179aa52eec355bf5301201954"
+    },
+    {
+      "path": "src/diagnostics/RuntimePerformance.ts",
+      "sha256": "a431c2876d544375ab2835a2945c4c69c9bfc502c8c6f8be9900094ecac2664a"
+    },
+    {
+      "path": "src/learn/Benchmark.ts",
+      "sha256": "d8f018639d18bf6c7bb63ade410e348f59ba615b7fc71a8dafe0aaa9240c9dac"
+    },
+    {
+      "path": "src/learn/Evolution.ts",
+      "sha256": "fa45467be41716a6f2c68d4bd069217058c627f49b17ce4af42c7fe1726ad05c"
+    },
+    {
+      "path": "src/learn/features.ts",
+      "sha256": "f287eb2278d92e889bc4da50aa9cd0fedefd141d75887588b0732dfc4b1e38e2"
+    },
+    {
+      "path": "src/learn/ImitationAgent.ts",
+      "sha256": "f172c767282aacf2b5647d44552283f67c55246ace9b80f278426262b7589427"
+    },
+    {
+      "path": "src/learn/NN.ts",
+      "sha256": "a1fa98c4ce2cffd33a861b5d8ee3c2330121770686ffef8a17a41aeb36e85efa"
+    },
+    {
+      "path": "src/learn/Trainer.ts",
+      "sha256": "8d77cdc00ee3cdf79da61a4176f87552bbb997c4ae884613143c3e988525de32"
+    },
+    {
+      "path": "src/main.ts",
+      "sha256": "a47ef7227aa1c8e0e82d85d431f1461b7de3ea72785fb2053c24f340b85efd17"
+    },
+    {
+      "path": "src/pedestrian/PedestrianManager.ts",
+      "sha256": "ed9e30021d3fee574f97b91598a2b35b308b5b9ef479935385c7ecbbc424b096"
+    },
+    {
+      "path": "src/perception/OccupancyGrid.ts",
+      "sha256": "91eb618587f6e2f08eec6c728e96dae9aa4f864e9505f0e5460323dce2935672"
+    },
+    {
+      "path": "src/perception/Sensor.ts",
+      "sha256": "3708d5484d9dad5e68c9f0aaeaa5bc5f0937e447e7b6859b7d4cc953a6471401"
+    },
+    {
+      "path": "src/perception/Tracker.ts",
+      "sha256": "9c99ea3d94b6403c2c32e07df78d1e3013f58271f69ec62d427c5a6bee39b444"
+    },
+    {
+      "path": "src/planner/FrenetPlanner.ts",
+      "sha256": "8fc578f5c31e403328621bc110253f97e0d8bafc15017edfe1e5801138e7a49c"
+    },
+    {
+      "path": "src/planner/Trajectory.ts",
+      "sha256": "aa182bb279067fafbb38f4ef2a027117ee81bd80e32b6d98adbd60baa9561c8e"
+    },
+    {
+      "path": "src/render/ARHudView.ts",
+      "sha256": "41cc4a7b10bbcffe680eadf234dbdcd818b22ce3c05ef8b7738dae6d8d7e5a42"
+    },
+    {
+      "path": "src/render/BuildingsView.ts",
+      "sha256": "ee7b466e00139a13655173b3ebbeb119d7ec7bc9abe64e59b39be766da220e5f"
+    },
+    {
+      "path": "src/render/CandidatesView.ts",
+      "sha256": "a22d34afa0a5577807712421764598fbf1f729e0d500b7c422c7b2c120d5813a"
+    },
+    {
+      "path": "src/render/CarFleet.ts",
+      "sha256": "c3d8e18555951510db40209e19b49af16d1991128c213ef05b9b75f01d2dc335"
+    },
+    {
+      "path": "src/render/CarInterior.ts",
+      "sha256": "56831b13d8ed6e93a0c4eabdbd9c59628d20b6b8709fcd18182b1fd4874f2be5"
+    },
+    {
+      "path": "src/render/CockpitGeometry.ts",
+      "sha256": "dcf2f2f69cb9e6ab73788f1660fcdb9dedaed4b9bf64e7323bb6dfaa69da9700"
+    },
+    {
+      "path": "src/render/CockpitInstruments.ts",
+      "sha256": "9efc903caade91f7bc478adbadc18e4ee3ca80df0bd78f3f1bcf15f403b766df"
+    },
+    {
+      "path": "src/render/CockpitRig.ts",
+      "sha256": "2a010eaf5616dd6ad8e4bb6a99476266adbbceff214afa7cbe8543203708a224"
+    },
+    {
+      "path": "src/render/CrossStreetView.ts",
+      "sha256": "3299cff3428a966849f110d812b95cd78e3955453d3795d2029330477e720a6a"
+    },
+    {
+      "path": "src/render/DetailedVehicle.ts",
+      "sha256": "7145a3383fdcde124d45ccce9ee06223b303111248a69f5d02bad25f208fa243"
+    },
+    {
+      "path": "src/render/DrivingMirror.ts",
+      "sha256": "03fbb21a994f90774ac8467e52b1e926152585286db7656cdb7d4edb7d3a5aa1"
+    },
+    {
+      "path": "src/render/ImportedCabin.ts",
+      "sha256": "76fac656e431a74495ba7417312123788e29dcd1943a00b4010408e59a0e1cfc"
+    },
+    {
+      "path": "src/render/ImportedVehicles.ts",
+      "sha256": "96b30ff971fc22a5dd75e549789f16facc506d5ff6b7533d88de7f6d61df7d1b"
+    },
+    {
+      "path": "src/render/OccupancyView.ts",
+      "sha256": "0241a67276691393fa17c739676f759003168ad3ef5010b2ad10e94a2079bbff"
+    },
+    {
+      "path": "src/render/ParkingView.ts",
+      "sha256": "60fce3bb9a983d52b1470cd26a1efc18a69d3451aa214178054d4f8de5b22279"
+    },
+    {
+      "path": "src/render/PathRibbon.ts",
+      "sha256": "b1c1bf7bc6ce69fbde5247c4cd02aa9169e58f5e6dc09328a73510de569f678d"
+    },
+    {
+      "path": "src/render/PedestrianView.ts",
+      "sha256": "d27efb947fee0917593b3ec6fc66622ece2b2e00a1fbfb6344fd497e041fe1b4"
+    },
+    {
+      "path": "src/render/RenderMotion.ts",
+      "sha256": "a5f68cf20154e9f08a50f7acab40d01fb54876f0236acb634c88a19ca3bb0291"
+    },
+    {
+      "path": "src/render/RoadSignsView.ts",
+      "sha256": "79c44b3e8fda01aea26fdde1a4dd1569283cb8fc65b6f9a46333da92dbe75f66"
+    },
+    {
+      "path": "src/render/RoadView.ts",
+      "sha256": "6dc4384a64c7c12393e6126cb6c19037e78d94ed620da8c383f40c07f12cfbae"
+    },
+    {
+      "path": "src/render/Scene.ts",
+      "sha256": "98223f7a46da0300a1a302e467ea5563c22ce38449b8643093c42a1c54ae7b49"
+    },
+    {
+      "path": "src/render/SensorView.ts",
+      "sha256": "9068d253f7f0bcda932c5b9bacbaeb0e15986f5613f839ed86eb19602f5ac002"
+    },
+    {
+      "path": "src/render/SpatialInstances.ts",
+      "sha256": "226f708fe424b2ea42caf645b4375f026b42f30e9cbbe64e56b1c534c99dcb1c"
+    },
+    {
+      "path": "src/render/theme.ts",
+      "sha256": "c594d2e04181098eec25fade83bb9fd81b7949ba670114417b7ac42b941eabc2"
+    },
+    {
+      "path": "src/render/TracksView.ts",
+      "sha256": "313b6c73f75705551ced3c231115bf194153e9ad9196f12275a8302aa24bc99a"
+    },
+    {
+      "path": "src/render/TrafficLightView.ts",
+      "sha256": "da13f4d21096a1b5f23017571b95ee886d4cfe0cab9dc47397fbfc6b0f3ff9ed"
+    },
+    {
+      "path": "src/render/TrailView.ts",
+      "sha256": "4219e44fe18d215d90924252dfb9e3ff2994eb30a8fed81029dff788b01c6fa5"
+    },
+    {
+      "path": "src/render/VehicleCatalog.ts",
+      "sha256": "c2527a35892214544eb324fe0f8c3f56830175825d5dc5a1fed8bfd3827bd8a8"
+    },
+    {
+      "path": "src/render/WorldAssets.ts",
+      "sha256": "9a5ba67e876e374a40ce001b5914a5dca27752b5b7975560f39bf7e70bc55916"
+    },
+    {
+      "path": "src/render/WorldSceneryView.ts",
+      "sha256": "e7d9e8a2249142f49ba9dbc9a3b79217fc4ffff710a09b1105ce13c64f4f0648"
+    },
+    {
+      "path": "src/sim/ADAS.ts",
+      "sha256": "8953e6aea9ff86527836c2488513cd20490b34b9cd4189663432c5177f5caca8"
+    },
+    {
+      "path": "src/sim/AEB.ts",
+      "sha256": "cf7039b90b0b9fc966c0e4155803f59500f9f5444ad00068eafad91281ebb20d"
+    },
+    {
+      "path": "src/sim/AssistancePolicy.ts",
+      "sha256": "c3a5022dcd9cb44909f9d3a567352deac23a7e381677fe4e3ab6c1145bb78b1f"
+    },
+    {
+      "path": "src/sim/config.ts",
+      "sha256": "b605db5d84ddb40e26aa73236aedc99b52ec11eb2d43e7127f1606f44ef5d27e"
+    },
+    {
+      "path": "src/sim/EmergencyPullOver.ts",
+      "sha256": "724e1b56e82011ae753deb2722de971d97343a7c24089b6d0c887ade968feb7a"
+    },
+    {
+      "path": "src/sim/ExtendedAssistance.ts",
+      "sha256": "18fff9e2460e8d32e5b9cfe00bd73a21e14eea70dde6eaa5033bedebaff59089"
+    },
+    {
+      "path": "src/sim/Metrics.ts",
+      "sha256": "4d7ea214acaf0daa83f61ee0a69cbcace49f44c9c6418de5f5262e42d4362225"
+    },
+    {
+      "path": "src/sim/ParkingAssist.ts",
+      "sha256": "b8dc092a1be22a28d7e2dff69f195405e474f2e4a74a4c7c5b52a7f4c024ec18"
+    },
+    {
+      "path": "src/sim/ProximitySafety.ts",
+      "sha256": "6e8b6165ebd4c80bbee378cdb74db1a15cd8103459057bffc48a9871088fbcea"
+    },
+    {
+      "path": "src/sim/SessionRecorder.ts",
+      "sha256": "c54dab012acc410f2342a04592aa61b856c8a704130c7278aa46e0bb5c343310"
+    },
+    {
+      "path": "src/sim/Simulation.ts",
+      "sha256": "858f4effd21a813f1072ee795acd4b05bc9e3f2e17d4589e8f1b5fb1c606f277"
+    },
+    {
+      "path": "src/traffic/IDM.ts",
+      "sha256": "230d6ca7375db540c8056da6b6936d40fbd51f67fbc48061f1ee87a9434a8883"
+    },
+    {
+      "path": "src/traffic/MOBIL.ts",
+      "sha256": "eb261344f3049d79ec5ca193a0b8ac093f9b54e3e100a26ff4536a4a35ffa113"
+    },
+    {
+      "path": "src/traffic/TrafficContacts.ts",
+      "sha256": "0cbb6c7dd2820e531c8d144810066bb56a60257f604e25786a8fca74f83779b7"
+    },
+    {
+      "path": "src/traffic/TrafficManager.ts",
+      "sha256": "4825812fa0aae3e475d5d2c4b02a5b6fb258af44d9c7c74840e642376d28a8c2"
+    },
+    {
+      "path": "src/traffic/TrafficStatus.ts",
+      "sha256": "c1e4e76f9c523e08ec4fcd18d13badd12ece28c24d9516ed6fe80131dae6ffe4"
+    },
+    {
+      "path": "src/ui/ADASPanel.ts",
+      "sha256": "9ccc6996729ef3a6af084b00464fc9a47bcd852f2e33b1ee29d9d5de89cef3f0"
+    },
+    {
+      "path": "src/ui/CabinLookControls.ts",
+      "sha256": "3ec08dd4b6cb622219617a32da07aaad8b03eb41377a4d7984a87de9f969bc9d"
+    },
+    {
+      "path": "src/ui/Camera360Widget.ts",
+      "sha256": "d705d92bbdf83715dce09b1edb3f6b38f3241676a39f2651d5e37f243733e870"
+    },
+    {
+      "path": "src/ui/CenterConsoleControls.ts",
+      "sha256": "dc1f71786e975aaa6c1e29ab877fba6189cf61faf38613a8abd2b8a431fadc86"
+    },
+    {
+      "path": "src/ui/CockpitLayout.ts",
+      "sha256": "e705d13451bb644fbc745af3b68758d71cd890870cef6a2e86ffd54a42323d0f"
+    },
+    {
+      "path": "src/ui/ControlPanel.ts",
+      "sha256": "3c65120d7d8716c8c37ace4386f99add3c23e04062917d220ae41cf8f4566a4e"
+    },
+    {
+      "path": "src/ui/dashboard-adas.css",
+      "sha256": "92fabb74e07862511294573fd4458490356ef7d32ca72018917ddb0de29b09fc"
+    },
+    {
+      "path": "src/ui/dashboard-controls.css",
+      "sha256": "6ae95b52ecee3aae10f738a235c507a6cd9c13d23379ebc673d46df56aff8e41"
+    },
+    {
+      "path": "src/ui/dashboard.css",
+      "sha256": "355131662bd9267837995f457fcd6a2229bb4670c2beb741806b6704a4d8817d"
+    },
+    {
+      "path": "src/ui/DriveControls.ts",
+      "sha256": "aea9323cec217bf52b30e4b23baa292d59f5a1f5acb5f43a8f7728fcaa23c832"
+    },
+    {
+      "path": "src/ui/game.css",
+      "sha256": "ddb145272510d05f9d576ecd02d89c9e878563f439c2805ff3ed1f0e811ec43c"
+    },
+    {
+      "path": "src/ui/HUD.ts",
+      "sha256": "46a974ac8033e805335367c3da20c1f77892462bc7314e7763472139f9f1ee9d"
+    },
+    {
+      "path": "src/ui/input.ts",
+      "sha256": "93f978fee2347c4f558ee97e161ef1dba65031d5b727475d5c9725c8ad90b04f"
+    },
+    {
+      "path": "src/ui/IntroOverlay.ts",
+      "sha256": "f21c5965b376662e90843b19ec984b4c50a819a4969087021301cd36cfc563e3"
+    },
+    {
+      "path": "src/ui/LearningPanel.ts",
+      "sha256": "be6c15ffa94372d7630336f3355d1396b909b84cf57f296b2a74d686e2079fa4"
+    },
+    {
+      "path": "src/ui/Minimap.ts",
+      "sha256": "9e62033ee25e8103b067263987ed8c8fe66a30e6b2d7cf0fc5f41c8bec791702"
+    },
+    {
+      "path": "src/ui/mobile.css",
+      "sha256": "7f9284689ee6e9af08cc5d4a9f998402662a6017cc159c688bc29b0764716f00"
+    },
+    {
+      "path": "src/ui/PedalControls.ts",
+      "sha256": "00d7f10a39384be5878a490a1b95659865657f0a4935f15901e62d9eb6ccc07d"
+    },
+    {
+      "path": "src/ui/runtime-performance.css",
+      "sha256": "3e1b577f5d50c9475148291d66be310bce834d07cd11993c3e8ed70eddd671c3"
+    },
+    {
+      "path": "src/ui/scenarios.ts",
+      "sha256": "cb46c54173c267581f1bb59d7dc2419533bb6c4b6f1e1d879e923a609149510a"
+    },
+    {
+      "path": "src/ui/Scorecard.ts",
+      "sha256": "eb598da83f0d9caa28facd014cb3222fb548cdafef5dbf5c0c0ae41225bb318f"
+    },
+    {
+      "path": "src/ui/Shortcuts.ts",
+      "sha256": "2780afd380208d06642c7331deee6efa9023477354a9b54de9c687a7a48b0044"
+    },
+    {
+      "path": "src/ui/station.css",
+      "sha256": "19697b56620861d1e01c4f9e129f4695a3b983d1e1b88dd76b4ebc836ec3b481"
+    },
+    {
+      "path": "src/ui/styles.css",
+      "sha256": "7700e4e33419bacc161ccbea96319617072920ea0b0557e52d7295bde4f0b074"
+    },
+    {
+      "path": "src/ui/TelemetryPanel.ts",
+      "sha256": "64324b6dca599817fdd98264e44899a86213bc46a039ed894fc44782fc57b02c"
+    },
+    {
+      "path": "src/ui/TouchSteering.ts",
+      "sha256": "30da3cf150fc0a0313993a08f61b1202d0de33a21633c7c5914dfcdf1553dbc6"
+    },
+    {
+      "path": "src/vehicle/Powertrain.ts",
+      "sha256": "4120e8bf7c8d1558612e09e2797943578a6594a7befe6f8d50cdd2a1ef4476ba"
+    },
+    {
+      "path": "src/vehicle/Signals.ts",
+      "sha256": "887b123deb9889f460451a4322d535e902908b9931c97a570492fd1e536c7313"
+    },
+    {
+      "path": "src/vehicle/Vehicle.ts",
+      "sha256": "af72d5972e657c494637b74f771a40fcdbcabe6e549e02c0edbbe80d9a25576d"
+    },
+    {
+      "path": "src/vehicle/VehicleProfiles.ts",
+      "sha256": "f55401e9ea4e5cae954bb7e7b4ced92728994e85691f93f98faa3199eaf06b5e"
+    },
+    {
+      "path": "src/vehicle/WheelDynamics.ts",
+      "sha256": "c4fee196dfb8b81fc03a4b4725ccc7651df11da94d8a53b89839afbd28de1a8b"
+    },
+    {
+      "path": "src/vite-env.d.ts",
+      "sha256": "67ba1f5b1f143fc83aaae9454c491d181061a1e1feff96966887dc45c117d694"
+    },
+    {
+      "path": "src/world/ProjectionCache.ts",
+      "sha256": "3f4dcc57dfa8d1035073901d0189c55e19fb0a13ead0e70ccd35ed63efe2deac"
+    },
+    {
+      "path": "src/world/ReferencePath.ts",
+      "sha256": "9c0fb1f47a298f18a55107273296cefb72f484f6010a21ab8ff07224d55b8f87"
+    },
+    {
+      "path": "src/world/Road.ts",
+      "sha256": "3cc9e974b9cd6ee56427f15b3368682a67ff7f2967c273916c0b56110c1deb52"
+    },
+    {
+      "path": "src/world/RoadSign.ts",
+      "sha256": "954285b745971c206074c5cc47636f058c3bd8b6cc39969fe7382aef722b0da4"
+    },
+    {
+      "path": "src/world/StaticWorld.ts",
+      "sha256": "5b65c1c44260fec9124e637f4fc8962b9cd081d447d675b7b07fb51339a0af95"
+    },
+    {
+      "path": "src/world/track.ts",
+      "sha256": "1af4c1abcf872f357af48726972f50fcefeab3f2c71a0eb13be53c562ebaae8d"
+    },
+    {
+      "path": "src/world/TrafficLight.ts",
+      "sha256": "3d2065fff9ecad1e83abeac9e8876d27206f2835256d61ef35fa191b2fd6df4d"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "5c933184b38ad3df45520d7ab5b1e5b1a4335435919f1b5e1b316b72b0eab109"
+    },
+    {
+      "path": "vite.config.ts",
+      "sha256": "7c2581aa935d40063d4037959d5fe427138077295452c81424cf370f37887a3a"
+    }
+  ]
+}

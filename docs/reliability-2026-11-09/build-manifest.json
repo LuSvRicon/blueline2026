@@ -1,0 +1,116 @@
+{
+  "capturedAt": "2026-11-11T14:35:27.971Z",
+  "source": "79129c282f49f368a7c70048be2f3848848062cbf2fc6b797a1b257b26c9cc94",
+  "files": [
+    {
+      "path": "assets/index-Cv4d9HLv.css",
+      "bytes": 89557,
+      "sha256": "2b976ee32433a941afc2f643db82997e85e323e5bb6233bc9bd374fb331ab3e9"
+    },
+    {
+      "path": "assets/index-CYHZBlGw.js",
+      "bytes": 518176,
+      "sha256": "599c7e76f9320f3e969f3e8ce736e5fa6fa88d3723fa2f4cf8d0635bbc618a89"
+    },
+    {
+      "path": "assets/three-addons-VqhdXD9i.js",
+      "bytes": 633205,
+      "sha256": "a3a70b0d169739ded0051cf998d6a3fc505d2325c87b9ff93213cbfce8d2f716"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1897,
+      "sha256": "817504cb82caf89d7197717806f00ee1fecf20cd989c43891ee9bf37ce0dcbc5"
+    },
+    {
+      "path": "models/car-concept/CarConcept.glb",
+      "bytes": 11778688,
+      "sha256": "c272098089d78c5cd9fd9f24ff50ee8acf8d932c55f2d55fc10adb6c8998966b"
+    },
+    {
+      "path": "models/car-concept/LICENSE.txt",
+      "bytes": 13034,
+      "sha256": "c8041334a99cb48852b2139253cbde5f8ac87e27f124aed51223e0d5bf0080eb"
+    },
+    {
+      "path": "models/car-concept/SOURCE.md",
+      "bytes": 20382,
+      "sha256": "af5f76ead54a5039288924f37081d6e1fcd5ccc5b2628faedb926325a73099cd"
+    },
+    {
+      "path": "models/car-concept/TRADEMARKS.txt",
+      "bytes": 589,
+      "sha256": "2ea9821de870cf8d3faaa115ffc47f56632bf9f98d54d2ac1ce61592040b765c"
+    },
+    {
+      "path": "models/imported/ATTRIBUTION.json",
+      "bytes": 3085,
+      "sha256": "3a502117a837204f629e14eef3fea28150ffad4f89f12f3b5a06ec65b63dd65a"
+    },
+    {
+      "path": "models/imported/civic.glb",
+      "bytes": 4011096,
+      "sha256": "4e290998d72f38b0375aaeeec8796048eb42348ae2aee52be0824fbf3c363de8"
+    },
+    {
+      "path": "models/imported/everest.glb",
+      "bytes": 977724,
+      "sha256": "553ee8f6b19533002adce8c1f19c0371978581f2277e32f6f4ae0d999c9992da"
+    },
+    {
+      "path": "models/imported/santafe.glb",
+      "bytes": 5419032,
+      "sha256": "a3dbece1e24f7c052045433f0342a1751f5604b4973b06f520311c89333fbe8a"
+    },
+    {
+      "path": "models/imported/vf9.glb",
+      "bytes": 1656448,
+      "sha256": "4561cdbd269e16cb1c1dcef20bea3b681da0031be19ae4deb41c2b81f1758ed3"
+    },
+    {
+      "path": "models/world/ATTRIBUTION.json",
+      "bytes": 5082,
+      "sha256": "b3fca6e4ef8c285c0d58ed2d788063a384fb4bdbbd05dec6b77c414378f28fb7"
+    },
+    {
+      "path": "models/world/bus.glb",
+      "bytes": 71616,
+      "sha256": "61abe5649a2162a4ae725207c4ae001393966c86de1a4fc5193734501d526497"
+    },
+    {
+      "path": "models/world/hanoi.glb",
+      "bytes": 292256,
+      "sha256": "1f3c158904222b04709bd043c348ffcd82e3488f04544bba15feee5c0be551ad"
+    },
+    {
+      "path": "models/world/motorcycle.glb",
+      "bytes": 253448,
+      "sha256": "1475604a32941339d74a7262d12eafae940328aa81a380a906f17b4a6b3fccb7"
+    },
+    {
+      "path": "models/world/ola.glb",
+      "bytes": 684004,
+      "sha256": "1ec1d9e4aa7d6c9fbbc07c0284b8e554cae96f62ea331c80288c07af4c5b10d2"
+    },
+    {
+      "path": "models/world/roads_city.glb",
+      "bytes": 831908,
+      "sha256": "a99c859af846fce372b81e614c41405062bd27ef11fcf7b84ce7f035f512b86e"
+    },
+    {
+      "path": "models/world/roads_modular.glb",
+      "bytes": 344268,
+      "sha256": "2b00c667fb54bd6025103845f098743c83cd364c3c1d04c72eb33d054038842e"
+    },
+    {
+      "path": "models/world/roads_pbr.glb",
+      "bytes": 1273452,
+      "sha256": "b18236a16a9f8a7c77ea39287380736dcd7d0cd82c3c3b24eea9c27e54a492f5"
+    },
+    {
+      "path": "models/world/tata.glb",
+      "bytes": 656020,
+      "sha256": "fe05dcd2d94de1822b447fcda2a5a0b875bf3811978d6454e3b42ea948936b64"
+    }
+  ]
+}

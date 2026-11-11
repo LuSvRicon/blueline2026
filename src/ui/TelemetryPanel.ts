@@ -3,6 +3,7 @@
 
 import { Simulation } from "../sim/Simulation.ts";
 import { isTypingTarget, launchMenuOpen } from "./input.ts";
+import { RuntimePerformance } from '../diagnostics/RuntimePerformance.ts';
 
 export class TelemetryPanel {
   private panel: HTMLElement;
@@ -11,8 +12,9 @@ export class TelemetryPanel {
   private visible = false;
   private history: { time: number; speed: number; target: number; accel: number; d: number }[] = [];
   private lastUpdate = 0;
+  private lastPerformanceUpdate = -Infinity;
 
-  constructor(root: HTMLElement, private sim: Simulation) {
+  constructor(root: HTMLElement, private sim: Simulation, private runtime?: RuntimePerformance, private testGraphics?: () => boolean) {
     const el = document.createElement("div");
     el.className = "telemetry-panel panel";
     el.id = "telemetry-panel";
@@ -44,6 +46,13 @@ export class TelemetryPanel {
           <div class="tel-desc" id="tel-d-desc">Chính giữa làn</div>
         </div>
       </div>
+      <div class="telemetry-chart-title" id="tel-tire-abs-status">Độ trượt lốp: 0.0% · ABS 4 kênh: Sẵn sàng</div>
+      <section class="runtime-diagnostics" aria-label="Đo hiệu năng phiên lái">
+        <b>HIỆU NĂNG ĐO THỰC TẾ</b>
+        <output id="runtime-performance-readout" aria-live="off">Đang thu thập dữ liệu…</output>
+        <div><button type="button" id="runtime-export">Lưu báo cáo hiệu năng</button><button type="button" id="runtime-test-graphics">Kiểm tra khôi phục hình ảnh</button></div>
+        <small>Đo thời gian dựng khung hình và bộ nhớ; không thay đổi mức đồ họa. Bài thử khôi phục sẽ làm hình ảnh gián đoạn ngắn.</small>
+      </section>
       <div class="telemetry-chart-title">Biểu đồ động thái thời gian thực (10 giây)</div>
       <canvas class="telemetry-canvas" id="telemetry-canvas" width="340" height="96"></canvas>
       <div class="telemetry-legend">
@@ -59,6 +68,18 @@ export class TelemetryPanel {
     this.ctx = this.canvas.getContext("2d")!;
 
     el.querySelector("#telemetry-close")?.addEventListener("click", () => this.toggle(false));
+    el.querySelector('#runtime-export')?.addEventListener('click', () => {
+      if (!this.runtime) return;
+      const report = { format: 'blueline-runtime-v1', capturedAt: new Date().toISOString(),
+        track: this.sim.track.id, vehicle: this.sim.vehicleProfileId, weather: this.sim.weather,
+        simulatedSeconds: this.sim.simTime, ...this.runtime.snapshot() };
+      const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
+      const link = document.createElement('a'); link.href = url; link.download = 'blueline-hieu-nang.json'; link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+    el.querySelector('#runtime-test-graphics')?.addEventListener('click', () => {
+      if (!this.testGraphics?.()) this.panel.querySelector('#runtime-performance-readout')!.textContent = 'Trình duyệt chưa hỗ trợ bài thử khôi phục hình ảnh.';
+    });
 
     // Shortcut: Press G to toggle telemetry graphs
     window.addEventListener("keydown", (e) => {
@@ -83,6 +104,15 @@ export class TelemetryPanel {
     const now = performance.now();
     if (now - this.lastUpdate < 32) return; // ~30 fps graph refresh
     this.lastUpdate = now;
+    if (this.runtime && now - this.lastPerformanceUpdate >= 1000) {
+      const report = this.runtime.snapshot();
+      const round = (n: number | null) => n === null ? '—' : n.toFixed(1);
+      const heap = report.jsHeapBytes === null ? 'Trình duyệt không cung cấp' : `${(report.jsHeapBytes / 1048576).toFixed(0)} MB`;
+      const output = this.panel.querySelector<HTMLOutputElement>('#runtime-performance-readout')!;
+      output.textContent = `${round(report.fps)} FPS · khung hình chậm P95 ${round(report.frameP95Ms)} ms\nGiật >50 ms: ${report.longFramesOver50Ms} · nặng nhất ${round(report.worstFrameMs)} ms\nBộ nhớ JS: ${heap} · lượt vẽ ${report.render.calls}\nHình học ${report.render.geometries} · texture ${report.render.textures} · khôi phục ${report.contextRestores}/${report.contextLosses}`;
+      output.dataset.report = JSON.stringify(report);
+      this.lastPerformanceUpdate = now;
+    }
 
     const v = this.sim.ego.v;
     const aLong = this.sim.ego.a; // m/s^2
@@ -132,6 +162,19 @@ export class TelemetryPanel {
     const dDesc = document.getElementById("tel-d-desc");
     if (dDesc) {
       dDesc.textContent = Math.abs(laneOffset) < 0.15 ? "Chính giữa làn" : laneOffset > 0 ? "Lệch phải" : "Lệch trái";
+    }
+
+    const tireAbsEl = document.getElementById("tel-tire-abs-status");
+    if (tireAbsEl) {
+      const slipPct = (this.sim.ego.maxWheelSlip * 100).toFixed(1);
+      const absLabel = this.sim.ego.wheelAbsActive
+        ? "ĐANG ĐIỀU BIẾN ÁP SUẤT"
+        : this.sim.ego.wheelAbsEnabled
+          ? "Sẵn sàng"
+          : "TẮT";
+      const frontLoadPct = Math.round(this.sim.ego.frontLoadFraction * 100);
+      tireAbsEl.textContent = `${this.sim.ego.physicsProfile.massKg} kg · Tải cầu trước ${frontLoadPct}% · Trượt lốp ${slipPct}% · ABS: ${absLabel}`;
+      tireAbsEl.style.color = this.sim.ego.wheelAbsActive ? "#facc15" : "";
     }
 
     // Push history (rolling 10s = 300 samples at 30 Hz)

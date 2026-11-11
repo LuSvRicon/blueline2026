@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import * as THREE from "three";
 import { dashboardGeometry, makeSteeringWheel, disposeVehicle } from "../src/render/CockpitGeometry.ts";
-import { ribbon } from "../src/render/RoadView.ts";
+import { ribbon, RoadView } from "../src/render/RoadView.ts";
+import { ARHudView } from "../src/render/ARHudView.ts";
+import { TracksView } from "../src/render/TracksView.ts";
+import { ParkingView } from "../src/render/ParkingView.ts";
 import { Simulation } from "../src/sim/Simulation.ts";
 import { projectEgoPoint } from "../src/core/viewProjection.ts";
 
@@ -33,4 +36,37 @@ geometry.addEventListener("dispose",()=>geometryDisposals++); material.addEventL
 const group = new THREE.Group(); group.add(new THREE.Mesh(geometry,material),new THREE.Mesh(geometry,material));
 disposeVehicle(group);
 assert.equal(geometryDisposals,1); assert.equal(materialDisposals,1);
-console.log("RENDER-GEOMETRY PASS — dashboard volume/winding, wheel scale, road lighting normals, map projection and resource disposal. Visual appearance still needs browser verification.");
+
+// Verify 3D AR HUD (Lane Carpet, Chevrons, 3D Target Lock Cage, and Stop Wall)
+const arSim = new Simulation({ trafficCount: 0 });
+arSim.setControlMode("adas");
+const f = arSim.path.toFrenet(arSim.ego.x, arSim.ego.y);
+arSim.traffic.addTestVehicle("car", arSim.road.laneOf(f.d), f.s + 22, 10);
+arSim.step(1 / 60);
+const arHud = new ARHudView();
+arHud.update(arSim, 1 / 60, false);
+const arMesh = arHud.group.children[0] as THREE.Mesh;
+const arLines = arHud.group.children[1] as THREE.LineSegments;
+assert(arMesh.geometry.drawRange.count > 0, "AR HUD must emit lane carpet and stop wall triangles");
+assert(arLines.geometry.drawRange.count > 40, "AR HUD must emit lane rails, chevrons, and 3D target lock cage");
+
+const tracksView = new TracksView();
+tracksView.update([{ id: 1, px: 10, py: 5, vx: 12, vy: 0, length: 4.6, width: 1.9, age: 5, misses: 0 }]);
+assert(tracksView.object.geometry.drawRange.count >= 24, "TracksView must render 3D volumetric bounding cage + velocity arrow");
+
+// Verify RoadView streetlights and nighttime light pool toggle
+const roadView = new RoadView(sim.road);
+const streetlights = roadView.group.getObjectByName("road-streetlights")!;
+assert(streetlights && streetlights.children.length === 4, "RoadView must build instanced streetlight poles, arms, luminaire heads, and light pools");
+roadView.setNight(true);
+assert.equal(streetlights.children[3].visible, true, "Streetlight ground pools must illuminate at night");
+roadView.setNight(false);
+assert.equal(streetlights.children[3].visible, false, "Streetlight ground pools must turn off during the day");
+
+// Verify ParkingView perpendicular 90-degree bay rendering
+sim.prepareParkingLab("perpendicular");
+const parkingView = new ParkingView(sim);
+parkingView.update();
+assert.equal(parkingView.group.children[0].children.length, 3, "ParkingView must render all 3 perpendicular bays with wheel stoppers");
+
+console.log("RENDER-GEOMETRY PASS — dashboard volume/winding, wheel scale, road lighting normals, streetlights, 3D AR HUD, 3D perception cages, perpendicular bays, map projection and resource disposal. Visual appearance still needs browser verification.");

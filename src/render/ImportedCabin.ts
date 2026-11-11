@@ -34,6 +34,7 @@ export function installImportedCabinEquipment(root:THREE.Group,options:{
   makeMirror:(w:number,h:number,name:string)=>THREE.Object3D;
   blindSpot:{left:THREE.Material;right:THREE.Material};
   instrument:THREE.Texture;navigation:THREE.Texture;
+  windshieldHud?:THREE.Texture;
 }):void {
   const rig=root.userData.cabinRig as NonNullable<typeof IMPORTED_CABINS.santafe>|undefined;
   if(!rig||root.getObjectByName("imported-cabin-equipment"))return;
@@ -72,5 +73,17 @@ export function installImportedCabinEquipment(root:THREE.Group,options:{
   ] as const){
     const screen=new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshBasicMaterial({map:texture,toneMapped:false}));
     screen.name=name;screen.position.set(...point);screen.rotation.y=-Math.PI/2;group.add(screen);
+  }
+  if(options.windshieldHud){
+    const hudScreen=new THREE.Mesh(
+      new THREE.PlaneGeometry(.26,.095),
+      new THREE.MeshBasicMaterial({map:options.windshieldHud,transparent:true,opacity:.04,depthWrite:false,toneMapped:false}),
+    );
+    hudScreen.name="imported-windshield-hud";
+    hudScreen.position.set(rig.cluster[0]+.07,(rig.eye[1]+rig.cluster[1])*.5+.025,rig.cluster[2]);
+    hudScreen.rotation.y=-Math.PI/2;
+    hudScreen.rotation.z=.12;
+    hudScreen.renderOrder=5;
+    group.add(hudScreen);
   }
 }

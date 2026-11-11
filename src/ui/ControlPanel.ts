@@ -13,6 +13,7 @@ import { SCENARIOS } from "./scenarios.ts";
 import { releaseDrivingInputs } from "./input.ts";
 import {VEHICLE_MODELS,selectedVehicleModel,selectVehicleModel,vehicleModelStatus} from "../render/VehicleCatalog.ts";
 import {WORLD_ASSETS,worldAssetStatus} from '../render/WorldAssets.ts';
+import {formatVehiclePhysicsSummary} from "../vehicle/VehicleProfiles.ts";
 
 export interface OverlayObjects {
   occupancy: THREE.Object3D;
@@ -52,7 +53,8 @@ export class ControlPanel {
                 ${VEHICLE_MODELS.map(model=>`<button type="button" class="vehicle-choice" data-vehicle-model="${model.id}" aria-pressed="${model.id===selectedVehicleModel()}"><b>${model.name}</b><small>${model.id==="santafe"||model.id==="civic"?"Nội thất từ GLB":"Cabin mô phỏng chung"}</small></button>`).join("")}
               </div>
               <p id="c-vehicle-status" class="scenario-description" role="status" aria-live="polite">Đang tải mô hình xe…</p>
-              <p class="scenario-description">Đổi xe ngay trong phiên lái. Santa Fe và Civic dùng nội thất từ GLB; VF 9 và Everest dùng cabin chung. Động lực học vẫn là cấu hình mô phỏng chung.</p>
+              <p id="c-vehicle-physics-spec" class="scenario-description"></p>
+              <p class="scenario-description">Đổi xe ngay trong phiên lái: khối lượng, chiều dài cơ sở, phanh thủy lực, độ trượt lốp Pacejka/ABS 4 kênh và hiệu chuẩn AEB cập nhật theo từng mẫu xe.</p>
               <details><summary>Nguồn mô hình & giấy phép</summary>${VEHICLE_MODELS.map(model=>`<p class="scenario-description"><a href="${model.source}" target="_blank" rel="noopener">${model.name}</a> · ${model.author} · ${model.license}. Đã căn trục, giảm lưới và nén vật liệu để mô phỏng. Xi nhan bổ sung có vị trí gần đúng.</p>`).join("")}</details>
             </div>
           </details>
@@ -90,6 +92,7 @@ export class ControlPanel {
                 <button class="bl" data-event="motorcycle-cutin">Xe máy tạt đầu</button>
                 <button class="bl" data-event="vehicle-crossing">Xe cắt ngang</button>
                 <button class="bl" data-event="pedestrian-crossing">Người đi bộ sang đường</button>
+                <button class="bl" data-event="junction-turn-oncoming">Xe ngược chiều khi rẽ</button>
                 <button class="bl" data-event="motorcycle-weave">Xe máy luồn làn</button>
                 <button class="bl" data-event="bus-stop">Xe buýt đón khách</button>
                 <button class="bl" data-event="rear-crossing-left">Cắt ngang sau từ trái · R</button>
@@ -174,6 +177,7 @@ export class ControlPanel {
     const vehicleSelect=root.querySelector<HTMLSelectElement>("#c-vehicle-model")!;
     const chooseVehicle=()=>{
       selectVehicleModel(vehicleSelect.value);
+      this.sim.setVehicleProfile(selectedVehicleModel());
       this.updateVehiclePicker(true);
     };
     // Handle input immediately, including native keyboard/touch pickers. Never
@@ -183,6 +187,7 @@ export class ControlPanel {
     root.querySelectorAll<HTMLButtonElement>("[data-vehicle-model]").forEach(button=>{
       button.addEventListener("click",()=>{
         selectVehicleModel(button.dataset.vehicleModel!);
+        this.sim.setVehicleProfile(selectedVehicleModel());
         this.updateVehiclePicker(true);
       });
     });
@@ -289,6 +294,9 @@ export class ControlPanel {
       const status=document.getElementById(id);
       if(status&&status.textContent!==vehicleModelStatus())status.textContent=vehicleModelStatus();
     }
+    const specEl=document.getElementById("c-vehicle-physics-spec");
+    const specText=formatVehiclePhysicsSummary(this.sim.ego.physicsProfile);
+    if(specEl&&specEl.textContent!==specText)specEl.textContent=specText;
   }
 
   private wireDriveModes(): void {
@@ -421,6 +429,7 @@ export class ControlPanel {
           "motorcycle-cutin": "Đã thêm xe máy phía trước sẽ tạt đầu khi xe đến gần.",
           "vehicle-crossing": "Đã thêm phương tiện cắt ngang khi xe tiếp cận.",
           "pedestrian-crossing": "Đã thêm người đi bộ qua đường khi xe đến gần.",
+          "junction-turn-oncoming": "Đã thêm xe ngược chiều lao tới ở làn đối diện; đánh lái rẽ qua tâm đường để thử AEB giao lộ (CCFtap).",
           "motorcycle-weave": "Đã thêm xe máy luồn lách phía trước.",
           "bus-stop": "Đã thêm xe buýt dừng đỗ và hành khách sang đường phía trước.",
           "rear-crossing-left": "Đã thêm xe máy cắt ngang phía sau từ trái; chọn R để thử RCTA.",
